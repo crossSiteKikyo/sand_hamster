@@ -1,0 +1,2 @@
+<base href="https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/dist/">
+로 base를 추가해야한다. 근데 base를 하면 react의 Link같은것도 옮겨지려나? 그러면 build 할때마다 직접 넣는수밖에 없다.

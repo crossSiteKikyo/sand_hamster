@@ -2,7 +2,7 @@
 // @name         sand_hamster
 // @version      0.0.1
 // @author       crossSiteKikyo
-// @icon
+// @icon         https://github.com/crossSiteKikyo/sand_hamster/blob/main/public/sand_hamster_logo.jpg?raw=true
 // @grant        GM_registerMenuCommand
 // @match        https://hitomi.la
 // @require      https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js
@@ -14,7 +14,7 @@
   "use strict";
   const supabaseUrl = "";
   const supabaseKey = "";
-  const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  // const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
   function Sleep(ms) {
     return new Promise(function (resolve, reject) {
@@ -28,7 +28,9 @@
 
   const HtmlManager = {
     changeHtml: async function () {
-      const response = await fetch("");
+      const response = await fetch(
+        "https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/dist/index.html",
+      );
       const responseText = await response.text();
       console.log(responseText);
       document.writeln(responseText);
