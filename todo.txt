@@ -1,2 +1,7 @@
-<base href="https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/dist/">
-로 base를 추가해야한다. 근데 base를 하면 react의 Link같은것도 옮겨지려나? 그러면 build 할때마다 직접 넣는수밖에 없다.
+근데 base를 하면 react의 Link같은것도 옮겨지려나? 그러면 build 할때마다 직접 넣는수밖에 없다.
+
+https://raw.githack.com/crossSiteKikyo/sand_hamster/main/dist/assets/index-B0Xe7tf0.js
+https://raw.githack.com/crossSiteKikyo/sand_hamster/main/dist/assets/index-Dy6OTJGP.css
+
+raw.githubusercontent.com를 사용하면 content-type이 text/plain이 되어 js나 css로 인식 거부한다.
+그래서 raw.githack.com을 사용

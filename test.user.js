@@ -15,6 +15,8 @@
   const supabaseUrl = "";
   const supabaseKey = "";
   // const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  const GITHUB_BASE =
+    "https://cdn.jsdelivr.net/gh/crossSiteKikyo/sand_hamster@main/dist/";
 
   function Sleep(ms) {
     return new Promise(function (resolve, reject) {
