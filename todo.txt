@@ -4,4 +4,8 @@ https://raw.githack.com/crossSiteKikyo/sand_hamster/main/dist/assets/index-B0Xe7
 https://raw.githack.com/crossSiteKikyo/sand_hamster/main/dist/assets/index-Dy6OTJGP.css
 
 raw.githubusercontent.com를 사용하면 content-type이 text/plain이 되어 js나 css로 인식 거부한다.
-그래서 raw.githack.com을 사용
+그래서 raw.githack.com을 사용.
+
+1. npm run build
+2. dist의 index.html에 script와 link태그 없애기
+3. 유저스크립트에 바뀐 .js파일과 .css파일 넣기
