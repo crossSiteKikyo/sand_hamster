@@ -5,6 +5,8 @@
 // @icon         https://github.com/crossSiteKikyo/sand_hamster/blob/main/public/sand_hamster_logo.jpg?raw=true
 // @grant        GM_registerMenuCommand
 // @match        https://hitomi.la
+// @updateURL    https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/test.user.js
+// @downloadURL  https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/test.user.js
 // @require      https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js
 // @require      https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 // @run-at       document-end
@@ -12,9 +14,7 @@
 
 (function () {
   "use strict";
-  const supabaseUrl = "";
-  const supabaseKey = "";
-  // const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  // raw.githubusercontent.com를 사용하면 content-type이 text/plain이 되어 js나 css로 인식 거부한다. 그래서 raw.githack.com을 사용.
   const GithubHack_base =
     "https://raw.githack.com/crossSiteKikyo/sand_hamster/main/dist/";
 
@@ -26,8 +26,6 @@
     });
   }
 
-  const SupabaseManager = {};
-
   const HtmlManager = {
     changeHtml: async function () {
       const response = await fetch(
@@ -36,14 +34,14 @@
       const responseText = await response.text();
       console.log(responseText);
       document.documentElement.innerHTML = responseText;
-
-      // 2. CSS 주입
+      // DOM이 생성 된 후 동적으로 삽입된 link와 script는 보안 및 실행 순서 문제로 실행되지 않는다.
+      // 그러므로 따로 주입
+      // CSS 주입
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.crossOrigin = "anonymous";
       link.href = `${GithubHack_base}assets/index.css`;
       document.head.appendChild(link);
-
       // JS 주입 (type="module" 설정 필수)
       const script = document.createElement("script");
       script.type = "module";
@@ -54,5 +52,5 @@
   };
   // HtmlManager.changeHtml();
   // ui 추가
-  GM_registerMenuCommand("html 변경", HtmlManager.changeHtml);
+  GM_registerMenuCommand("sand_hamster 로딩", HtmlManager.changeHtml);
 })();
