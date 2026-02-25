@@ -1,14 +1,21 @@
 import { useEffect } from "react";
 import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { useThemeStore } from "./store";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useThemeStore, useUserStore } from "./store";
 import Navigation from "./pages/Navigation";
 import FloatingActionButton from "./pages/FloatingActionButton";
 import NotificationPage from "./pages/NotificationPage";
 import FirstPage from "./pages/FirstPage";
+import Login from "./pages/Login";
+import Myinfo from "./pages/Myinfo";
 
 function App() {
   const { isDarkMode } = useThemeStore();
+  const { getUser } = useUserStore();
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   useEffect(() => {
     if (isDarkMode) document.documentElement.classList.add("dark");
@@ -27,9 +34,17 @@ function App() {
           >
             <Routes>
               <Route path="/" element={<FirstPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/list" element={<ListPage />}></Route>
               <Route path="/notification" element={<NotificationPage />} />
-              <Route path="/list" element={<Category />}></Route>
-              <Route path="/drink" element={<Drink />}></Route>
+              <Route
+                path="/myinfo"
+                element={
+                  <UserNecessaryRoute>
+                    <Myinfo />
+                  </UserNecessaryRoute>
+                }
+              ></Route>
             </Routes>
           </div>
         </div>
@@ -38,18 +53,19 @@ function App() {
   );
 }
 
-function Category() {
+function UserNecessaryRoute({ children }) {
+  const { user } = useUserStore();
+  if (user === null) {
+    console.log("로그인 필요용~");
+    return <Navigate to="/list" replace></Navigate>;
+  }
+  return children;
+}
+
+function ListPage() {
   return (
     <div>
       <p>갤러리 리스트</p>
-    </div>
-  );
-}
-
-function Drink() {
-  return (
-    <div>
-      <p>드드드드드링크</p>
     </div>
   );
 }

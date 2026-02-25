@@ -60,7 +60,7 @@ export default function NavigationDrawerMenu({ children, className }) {
                       />
                     </div>
                     <div
-                      className="flex flex-col justify-center p-3"
+                      className="flex flex-col justify-center p-3 cursor-pointer"
                       onClick={toggleDarkMode}
                     >
                       {isDarkMode ? (

@@ -15,7 +15,7 @@
 (function () {
   "use strict";
   // raw.githubusercontent.com를 사용하면 content-type이 text/plain이 되어 js나 css로 인식 거부한다. 그래서 raw.githack.com을 사용.
-  const GithubHack_base =
+  const GitHack_base =
     "https://raw.githack.com/crossSiteKikyo/sand_hamster/main/dist/";
 
   function Sleep(ms) {
@@ -40,13 +40,13 @@
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.crossOrigin = "anonymous";
-      link.href = `${GithubHack_base}assets/index.css`;
+      link.href = `${GitHack_base}assets/index.css`;
       document.head.appendChild(link);
       // JS 주입 (type="module" 설정 필수)
       const script = document.createElement("script");
       script.type = "module";
       script.crossOrigin = "anonymous";
-      script.src = `${GithubHack_base}assets/index.js`;
+      script.src = `${GitHack_base}assets/index.js`;
       document.head.appendChild(script);
     },
   };

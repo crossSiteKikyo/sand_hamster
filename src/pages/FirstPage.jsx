@@ -5,7 +5,7 @@ export default function FirstPage() {
     <div className="p-10 bg-white dark:bg-black flex flex-col grow items-center justify-center">
       <img
         src="https://i.namu.wiki/i/vuilaXbYQcXXbOzw5dx25apTIvdsIovqWkwyYg9MeR3SAbQWJOVTm6jWu7E_09gKKCtaRpvNGiAFGn_hS9wHHCE7xNjUrQXDpYlnIwjLB9Xi5JCt9yLE2jaMFlRR5s7jz35Y0DF9g5-4TxisCA7cPg.svg"
-        className="w-30"
+        className="w-3"
       />
       <div className="flex flex-col text-center font-extrabold text-xl m-2">
         <p>이 정보내용은 청소년 유해매체물로서 정보통신망</p>
