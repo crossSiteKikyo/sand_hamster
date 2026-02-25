@@ -29,7 +29,7 @@ export default function FirstPage() {
       <Link to="/list" className="bg-cyan-500 rounded-2xl p-2 m-2 border">
         19세 이상 성인입니다
       </Link>
-      <Link to="/list" className="rounded-2xl p-2 m-2 border">
+      <Link to="/" className="rounded-2xl p-2 m-2 border">
         19세 미만 나가기
       </Link>
     </div>

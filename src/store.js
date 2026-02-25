@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import authApi from "./api/authApi";
+import galleryApi from "./api/galleryApi";
 
 const useThemeStore = create(
   persist(
@@ -24,4 +25,13 @@ const useUserStore = create((set) => ({
   },
 }));
 
-export { useThemeStore, useUserStore };
+const useGalleryStore = create((set) => ({
+  galleryList: [],
+  getGalleryListAnonymous: async (page) => {
+    let { data, error } = await galleryApi.getGalleryListAnonymous(page);
+    if (data) set({ galleryList: data });
+    console.log(data);
+  },
+}));
+
+export { useThemeStore, useUserStore, useGalleryStore };

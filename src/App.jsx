@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useThemeStore, useUserStore } from "./store";
 import Navigation from "./pages/Navigation";
 import FloatingActionButton from "./pages/FloatingActionButton";
@@ -8,13 +8,24 @@ import NotificationPage from "./pages/NotificationPage";
 import FirstPage from "./pages/FirstPage";
 import Login from "./pages/Login";
 import Myinfo from "./pages/Myinfo";
+import ListPage from "./pages/ListPage";
+import Footer from "./pages/Footer";
 
 function App() {
   const { isDarkMode } = useThemeStore();
   const { getUser } = useUserStore();
+  const location = useLocation(); // 현재 경로를 가져옵니다.
+  const isHomePage = location.pathname === "/";
+  const [isInitializing, setIsInitializing] = useState(true);
 
+  const init = async () => {
+    setIsInitializing(true);
+    await getUser();
+    // 태그 정보들도 가져와야 한다.
+    setIsInitializing(false);
+  };
   useEffect(() => {
-    getUser();
+    init();
   }, []);
 
   useEffect(() => {
@@ -23,33 +34,42 @@ function App() {
   }, [isDarkMode]);
 
   return (
-    <BrowserRouter>
-      <div className="bg-gray-50 dark:bg-gray-950 text-gray-950 dark:text-gray-50 flex h-screen overflow-hidden">
-        <div className="max-w-7xl mx-auto flex grow">
-          <Navigation />
-          <FloatingActionButton />
-          <div
-            className="flex flex-col grow overflow-y-auto"
-            id="content-scroll"
-          >
-            <Routes>
-              <Route path="/" element={<FirstPage />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/list" element={<ListPage />}></Route>
-              <Route path="/notification" element={<NotificationPage />} />
-              <Route
-                path="/myinfo"
-                element={
-                  <UserNecessaryRoute>
-                    <Myinfo />
-                  </UserNecessaryRoute>
-                }
-              ></Route>
-            </Routes>
-          </div>
-        </div>
+    <div className="bg-gray-50 dark:bg-gray-950 text-gray-950 dark:text-gray-50 flex h-screen overflow-hidden">
+      <div className="max-w-7xl mx-auto flex grow">
+        {isInitializing ? (
+          <div className="text-center w-full">초기화중...</div>
+        ) : (
+          <>
+            {!isHomePage && (
+              <>
+                <Navigation />
+                <FloatingActionButton />
+              </>
+            )}
+            <div
+              className="flex flex-col grow overflow-y-auto"
+              id="content-scroll"
+            >
+              <Routes>
+                <Route path="/" element={<FirstPage />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/list" element={<ListPage />}></Route>
+                <Route path="/notification" element={<NotificationPage />} />
+                <Route
+                  path="/myinfo"
+                  element={
+                    <UserNecessaryRoute>
+                      <Myinfo />
+                    </UserNecessaryRoute>
+                  }
+                ></Route>
+              </Routes>
+              {!isHomePage && <Footer />}
+            </div>
+          </>
+        )}
       </div>
-    </BrowserRouter>
+    </div>
   );
 }
 
@@ -60,14 +80,6 @@ function UserNecessaryRoute({ children }) {
     return <Navigate to="/list" replace></Navigate>;
   }
   return children;
-}
-
-function ListPage() {
-  return (
-    <div>
-      <p>갤러리 리스트</p>
-    </div>
-  );
 }
 
 export default App;
