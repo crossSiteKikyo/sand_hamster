@@ -14,6 +14,13 @@ export default function GalleryList({ galleryList, isLoading }) {
     like_count: 0,
     dislike_count: 0,
   });
+  const [selectedType, setSelectedType] = useState({
+    type_id: 1,
+    name: "doujinshi",
+    title_bg_color: "CC9999",
+    sub_bg_color: "FFCCCC",
+    sub_text_color: "663333",
+  });
   if (isLoading) {
     return <div className="text-center">데이터를 불러오는 중입니다...</div>;
   }
@@ -23,6 +30,7 @@ export default function GalleryList({ galleryList, isLoading }) {
         isOpen={isTagModalOpen}
         onClose={() => setIsTagModalOpen(false)}
         tag={selectedTag}
+        _type={selectedType}
       />
       {galleryList.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-1">
@@ -76,6 +84,7 @@ export default function GalleryList({ galleryList, isLoading }) {
                         type={type}
                         setSelectedTag={setSelectedTag}
                         setIsTagModalOpen={setIsTagModalOpen}
+                        selectTypeCallback={() => setSelectedType(type)}
                       />
                     ))}
                   </div>
@@ -90,6 +99,7 @@ export default function GalleryList({ galleryList, isLoading }) {
                         type={type}
                         setSelectedTag={setSelectedTag}
                         setIsTagModalOpen={setIsTagModalOpen}
+                        selectTypeCallback={() => setSelectedType(type)}
                       />
                     ))}
                   </div>
@@ -104,6 +114,7 @@ export default function GalleryList({ galleryList, isLoading }) {
                         type={type}
                         setSelectedTag={setSelectedTag}
                         setIsTagModalOpen={setIsTagModalOpen}
+                        selectTypeCallback={() => setSelectedType(type)}
                       />
                     ))}
                   </div>
@@ -119,6 +130,7 @@ export default function GalleryList({ galleryList, isLoading }) {
                           type={type}
                           setSelectedTag={setSelectedTag}
                           setIsTagModalOpen={setIsTagModalOpen}
+                          selectTypeCallback={() => setSelectedType(type)}
                         />
                       ))}
                     </div>

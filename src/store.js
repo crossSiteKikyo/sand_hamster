@@ -47,20 +47,26 @@ const useTypeStore = create((set) => ({
 
 const useTagStore = create((set) => ({
   tagMap: new Map(),
+  tagList: [],
   getAllTag: async () => {
     // 태그 데이터를 더이상 가져올 수 없을 때까지 가져온다.
-    const tagMap = new Map();
-    for (let i = 0; ; i++) {
-      let { data, error } = await tagApi.getTagList(i);
+    const newTagMap = new Map();
+    let newTagList = [];
+    let page = 0;
+    while (true) {
+      const { data, error } = await tagApi.getTagList(page);
       if (error) {
-        console.error("태그 가져오기 에러: ", error);
         toast(`태그 가져오기 에러: ${i}번째 페이지`);
-      } else if (data.length > 0) {
-        data.forEach((tag) => tagMap.set(tag.tag_id, tag));
+        break;
+      }
+      if (data && data.length > 0) {
+        data.forEach((tag) => newTagMap.set(tag.tag_id, tag));
+        newTagList = [...newTagList, ...data];
+        page++;
       } else break;
     }
-    console.log(tagMap);
-    set({ tagMap: tagMap });
+    console.log(newTagList);
+    set({ tagMap: newTagMap, tagList: newTagList });
   },
 }));
 

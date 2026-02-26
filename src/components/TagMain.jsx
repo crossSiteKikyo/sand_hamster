@@ -8,6 +8,7 @@ export default function TagMain({
   type,
   setSelectedTag,
   setIsTagModalOpen,
+  selectTypeCallback,
 }) {
   const { user } = useUserStore();
   const { tagLikeList } = useTagLikeStore();
@@ -23,6 +24,7 @@ export default function TagMain({
     } else {
       setSelectedTag(tag);
       setIsTagModalOpen(true);
+      selectTypeCallback();
     }
   });
   let name = tag.name;

@@ -4,16 +4,24 @@ import MyButton from "../components/MyButton";
 import { useTagLikeStore, useUserStore } from "../store";
 import { toast } from "react-toastify";
 import tagLikeApi from "../api/tagLikeApi";
-export default function ModalTagLike({ isOpen, onClose, tag }) {
+export default function ModalTagLike({ isOpen, onClose, tag, _type }) {
   const { user } = useUserStore();
   const { tagLikeList, getTagLikeList } = useTagLikeStore();
   const colorMap = {
+    artist: `bg-[#${_type.title_bg_color}] dark:bg-[#${_type.sub_bg_color}]`,
+    group: `bg-[#${_type.title_bg_color}] dark:bg-[#${_type.sub_bg_color}]`,
+    parody: `bg-[#${_type.title_bg_color}] dark:bg-[#${_type.sub_bg_color}]`,
+    character: `bg-[#${_type.title_bg_color}] dark:bg-[#${_type.sub_bg_color}]`,
     male: "bg-blue-300 dark:bg-blue-600",
     female: "bg-pink-300 dark:bg-pink-600",
     other: "bg-gray-300 dark:bg-gray-700",
   };
   let type = "other";
-  if (tag.name.startsWith("male:")) type = "male";
+  if (tag.name.startsWith("artist:")) type = "artist";
+  else if (tag.name.startsWith("group:")) type = "group";
+  else if (tag.name.startsWith("parody:")) type = "parody";
+  else if (tag.name.startsWith("character:")) type = "character";
+  else if (tag.name.startsWith("male:")) type = "male";
   else if (tag.name.startsWith("female:")) type = "female";
   let tagLike = tagLikeList.find((v) => v.tag_id == tag.tag_id);
   let tagLikeText = "none";
