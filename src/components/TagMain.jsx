@@ -3,7 +3,12 @@ import { useTagLikeStore, useUserStore } from "../store";
 import { toast } from "react-toastify";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 
-export default function Tag({ tag, type, setSelectedTag, setIsTagModalOpen }) {
+export default function TagMain({
+  tag,
+  type,
+  setSelectedTag,
+  setIsTagModalOpen,
+}) {
   const { user } = useUserStore();
   const { tagLikeList } = useTagLikeStore();
   const likeTagIds = tagLikeList.map((t) => {
@@ -20,21 +25,20 @@ export default function Tag({ tag, type, setSelectedTag, setIsTagModalOpen }) {
       setIsTagModalOpen(true);
     }
   });
-  const colorMap = {
-    male: "bg-blue-300 dark:bg-blue-600",
-    female: "bg-pink-300 dark:bg-pink-600",
-    other: "bg-gray-300 dark:bg-gray-700",
-  };
   let name = tag.name;
-  if (type == "male") {
-    name = name.replace("male:", "");
-  } else if (type == "female") {
-    name = name.replace("female:", "");
+  if (tag.name.startsWith("artist:")) {
+    name = name.replace("artist:", "");
+  } else if (tag.name.startsWith("group:")) {
+    name = name.replace("group:", "");
+  } else if (tag.name.startsWith("parody:")) {
+    name = name.replace("parody:", "");
+  } else if (tag.name.startsWith("character:")) {
+    name = name.replace("character:", "");
   }
   return (
     <button
       {...handlers()}
-      className={`flex px-1 rounded-md cursor-pointer select-none ${colorMap[type]}`}
+      className={`flex grow text-start px-1 border-r border-[#${type.title_bg_color}] cursor-pointer select-none bg-[#${type.sub_bg_color}]`}
     >
       {name}
       {likeTagIds.includes(tag.tag_id) && <ThumbsUp className="pl-1 w-5" />}

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import {
+  useGalleryLikeStore,
+  useTagLikeStore,
   useTagStore,
   useThemeStore,
   useTypeStore,
@@ -15,19 +17,32 @@ import Login from "./pages/Login";
 import Myinfo from "./pages/Myinfo";
 import ListPage from "./pages/ListPage";
 import Footer from "./pages/Footer";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const { isDarkMode } = useThemeStore();
   const { getUser } = useUserStore();
   const { getTypeList } = useTypeStore();
   const { getAllTag } = useTagStore();
+  const { getTagLikeList } = useTagLikeStore();
+  const { getGalleryLikeList } = useGalleryLikeStore();
   const location = useLocation(); // 현재 경로를 가져옵니다.
   const isHomePage = location.pathname === "/";
   const [isInitializing, setIsInitializing] = useState(true);
+  const [loadingInfo, setLoadingInfo] = useState("유저정보 받아오는중...");
 
   const init = async () => {
     setIsInitializing(true);
-    await Promise.all([getUser(), getTypeList(), getAllTag()]);
+    setLoadingInfo("유저정보 받아오는중...");
+    await getUser();
+    setLoadingInfo("타입 정보 받아오는중...");
+    await getTypeList();
+    setLoadingInfo("태그 정보 받아오는중...");
+    await getAllTag();
+    setLoadingInfo("태그 좋아요/싫어요 정보 받아오는중...");
+    await getTagLikeList();
+    setLoadingInfo("갤러리 좋아요/싫어요 정보 받아오는중...");
+    await getGalleryLikeList();
     // 태그 정보들도 가져와야 한다.
     setIsInitializing(false);
   };
@@ -43,8 +58,12 @@ function App() {
   return (
     <div className="bg-gray-50 dark:bg-gray-950 text-gray-950 dark:text-gray-50 flex h-screen overflow-hidden">
       <div className="max-w-7xl mx-auto flex grow">
+        <ToastContainer position="bottom-center" />
         {isInitializing ? (
-          <div className="text-center w-full">초기화중...</div>
+          <div className="text-center w-full">
+            <p>초기화중...</p>
+            <p>{loadingInfo}</p>
+          </div>
         ) : (
           <>
             {!isHomePage && (

@@ -26,7 +26,6 @@ export default function Pagination({ page }) {
       if (i > 0) _pageList.push(i);
     }
     setPageList(_pageList);
-    console.log(pageList);
   }, [page]);
 
   return (
