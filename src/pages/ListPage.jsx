@@ -24,7 +24,7 @@ export default function ListPage() {
       <div className="grow">
         <GalleryList galleryList={galleryList} isLoading={isLoading} />
       </div>
-      <div className="flex justify-center w-full">
+      <div className="flex justify-center w-full pt-5">
         <Pagination page={page} />
       </div>
     </div>

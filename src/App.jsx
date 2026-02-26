@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { useThemeStore, useUserStore } from "./store";
+import {
+  useTagStore,
+  useThemeStore,
+  useTypeStore,
+  useUserStore,
+} from "./store";
 import Navigation from "./pages/Navigation";
 import FloatingActionButton from "./pages/FloatingActionButton";
 import NotificationPage from "./pages/NotificationPage";
@@ -14,13 +19,15 @@ import Footer from "./pages/Footer";
 function App() {
   const { isDarkMode } = useThemeStore();
   const { getUser } = useUserStore();
+  const { getTypeList } = useTypeStore();
+  const { getAllTag } = useTagStore();
   const location = useLocation(); // 현재 경로를 가져옵니다.
   const isHomePage = location.pathname === "/";
   const [isInitializing, setIsInitializing] = useState(true);
 
   const init = async () => {
     setIsInitializing(true);
-    await getUser();
+    await Promise.all([getUser(), getTypeList(), getAllTag()]);
     // 태그 정보들도 가져와야 한다.
     setIsInitializing(false);
   };
@@ -52,8 +59,8 @@ function App() {
             >
               <Routes>
                 <Route path="/" element={<FirstPage />} />
-                <Route path="/login" element={<Login />} />
                 <Route path="/list" element={<ListPage />}></Route>
+                <Route path="/login" element={<Login />} />
                 <Route path="/notification" element={<NotificationPage />} />
                 <Route
                   path="/myinfo"

@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import authApi from "./api/authApi";
 import galleryApi from "./api/galleryApi";
+import typeApi from "./api/typeApi";
+import tagApi from "./api/tagApi";
 
 const useThemeStore = create(
   persist(
@@ -25,6 +27,33 @@ const useUserStore = create((set) => ({
   },
 }));
 
+const useTypeStore = create((set) => ({
+  typeList: [],
+  getTypeList: async () => {
+    let { data, error } = await typeApi.getTypeList();
+    if (data) set({ typeList: data });
+    console.log(data);
+  },
+}));
+
+const useTagStore = create((set) => ({
+  tagMap: new Map(),
+  getAllTag: async () => {
+    // 태그 데이터를 더이상 가져올 수 없을 때까지 가져온다.
+    const tagMap = new Map();
+    for (let i = 0; ; i++) {
+      let { data, error } = await tagApi.getTagList(i);
+      if (error) {
+        console.error("태그 가져오기 에러: ", error);
+      } else if (data.length > 0) {
+        data.forEach((tag) => tagMap.set(tag.tag_id, tag));
+      } else break;
+    }
+    console.log(tagMap);
+    set({ tagMap: tagMap });
+  },
+}));
+
 const useGalleryStore = create((set) => ({
   galleryList: [],
   getGalleryListAnonymous: async (page) => {
@@ -34,4 +63,10 @@ const useGalleryStore = create((set) => ({
   },
 }));
 
-export { useThemeStore, useUserStore, useGalleryStore };
+export {
+  useThemeStore,
+  useUserStore,
+  useTypeStore,
+  useTagStore,
+  useGalleryStore,
+};
