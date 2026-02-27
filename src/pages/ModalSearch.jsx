@@ -3,9 +3,13 @@ import { useEffect, useState } from "react";
 import { useTagStore, useTypeStore } from "../store";
 import { X } from "lucide-react";
 import SearchRecommendList from "./SearchRecommendList";
+import { useSearchParams } from "react-router-dom";
 
 export default function ModalSearch({ isOpen, onClose }) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [tagSearch, setTagSearch] = useState("");
+  const [titleSearch, setTitleSearch] = useState("");
+  const [galleryIdSearch, setGalleryIdSearch] = useState("");
   const [isTagSearchFocused, setIsTagSearchFocused] = useState(false);
   const [filteredTags, setFilteredTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -28,9 +32,17 @@ export default function ModalSearch({ isOpen, onClose }) {
   }, [tagSearch]);
   const handleIdSearch = (e) => {
     e.preventDefault();
+    setSearchParams({ galleryId: galleryIdSearch });
+    onClose();
   };
   const handleTitleTagSearch = (e) => {
     e.preventDefault();
+    // setSearchParams로 selectedTags, titleSearch를 url에 반영한다.
+    setSearchParams({
+      title: titleSearch,
+      tag: selectedTags.map((t) => t.tag_id),
+    });
+    onClose();
   };
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -60,7 +72,10 @@ export default function ModalSearch({ isOpen, onClose }) {
               else if (tag.name.startsWith("male:")) type = "male";
               else if (tag.name.startsWith("female:")) type = "female";
               return (
-                <div className={`flex ${colorMap[type]} pl-1 rounded-sm`}>
+                <div
+                  key={tag.tag_id}
+                  className={`flex ${colorMap[type]} pl-1 rounded-sm justify-between`}
+                >
                   {tag.name}
                   <X
                     onClick={() => {
@@ -72,7 +87,7 @@ export default function ModalSearch({ isOpen, onClose }) {
                 </div>
               );
             })}
-            {filteredTags.length === 50 && isTagSearchFocused && (
+            {filteredTags.length === 50 && (
               <p>검색 결과가 너무 많아 50개만 표시합니다.</p>
             )}
             <div className="flex relative">
@@ -85,34 +100,34 @@ export default function ModalSearch({ isOpen, onClose }) {
                 onChange={(e) => setTagSearch(e.target.value)}
               ></input>
               <X
-                className="absolute right-0"
+                className={`absolute right-0 ${tagSearch ? "" : "hidden"}`}
                 onMouseDown={() => setTagSearch("")}
               />
             </div>
-            {isTagSearchFocused &&
-              (tagSearch == "" ? (
+            <div className="flex flex-col border p-1 gap-1 border-gray-500 rounded-xl h-44 overflow-y-auto">
+              {tagSearch == "" ? (
                 <SearchRecommendList setTagSearch={setTagSearch} />
               ) : (
-                <div className="flex flex-col border p-1 gap-1 border-gray-500 rounded-xl max-h-64 overflow-y-auto">
-                  {filteredTags.map((tag) => (
-                    <p
-                      key={tag.tag_id}
-                      className="cursor-pointer"
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        setSelectedTags([...selectedTags, tag]);
-                        setTagSearch("");
-                      }}
-                    >
-                      {tag.name}
-                    </p>
-                  ))}
-                </div>
-              ))}
-            태그 검색 리스트 보여주기
+                filteredTags.map((tag) => (
+                  <p
+                    key={tag.tag_id}
+                    className="cursor-pointer"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setSelectedTags([...selectedTags, tag]);
+                      setTagSearch("");
+                    }}
+                  >
+                    {tag.name}
+                  </p>
+                ))
+              )}
+            </div>
             <input
               className="border rounded-md pl-1"
               placeholder="제목 검색"
+              value={titleSearch}
+              onChange={(e) => setTitleSearch(e.target.value)}
             ></input>
             <div className="flex justify-end">
               <button className="border rounded-md bg-gray-400 dark:bg-gray-600">
@@ -129,6 +144,8 @@ export default function ModalSearch({ isOpen, onClose }) {
               placeholder="갤러리 아이디로 검색"
               name="g_id"
               type="number"
+              value={galleryIdSearch}
+              onChange={(e) => setGalleryIdSearch(e.target.value)}
             />
             <button className="border rounded-r-md bg-gray-400 dark:bg-gray-600 px-2">
               검색

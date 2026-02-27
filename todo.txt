@@ -7,4 +7,4 @@ raw.githubusercontent.com를 사용하면 content-type이 text/plain이 되어 j
 그래서 raw.githack.com을 사용.
 
 1. npm run build
-2. dist의 index.html에 script와 link태그 없애기
+2. dist의 index.html에 script(index.js)와 link(index.css)태그 없애기

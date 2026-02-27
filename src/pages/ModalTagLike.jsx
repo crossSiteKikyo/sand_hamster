@@ -4,7 +4,13 @@ import MyButton from "../components/MyButton";
 import { useTagLikeStore, useUserStore } from "../store";
 import { toast } from "react-toastify";
 import tagLikeApi from "../api/tagLikeApi";
-export default function ModalTagLike({ isOpen, onClose, tag, _type }) {
+export default function ModalTagLike({
+  isOpen,
+  onClose,
+  getGalleryList,
+  tag,
+  _type,
+}) {
   const { user } = useUserStore();
   const { tagLikeList, getTagLikeList } = useTagLikeStore();
   const colorMap = {
@@ -30,6 +36,8 @@ export default function ModalTagLike({ isOpen, onClose, tag, _type }) {
     else tagLikeText = "dislike";
   }
   const changeLikeStatus = async (selected) => {
+    // 똑같은 것을 클릭했으면 아무일도 일어나지 않는다.
+    if (selected == tagLikeText) return;
     // 좋아요나 싫어요를 클릭했으면, insert하거나 update해야함.
     if (selected == "like" || selected == "dislike") {
       // 전 상태가 none이라면 insert, 아니면 update
@@ -48,6 +56,8 @@ export default function ModalTagLike({ isOpen, onClose, tag, _type }) {
         );
         if (error) toast("태그 정보 update 에러");
       }
+      // dislike를 클릭했다면 갤러리를 다시 로딩해야한다.
+      getGalleryList();
     }
     // 상태없음을 클릭했으면, delete하거나 아무것도 안함.
     else if (selected == "none") {
@@ -75,19 +85,19 @@ export default function ModalTagLike({ isOpen, onClose, tag, _type }) {
           </DialogTitle>
           <div className="flex flex-col gap-2">
             <button
-              className={`bg-gray-500 rounded-md px-2 text-2xl flex items-center cursor-pointer ${tagLikeText !== "like" ? "opacity-50" : ""}`}
+              className={`bg-gray-500 rounded-md px-2 text-2xl flex items-center ${tagLikeText !== "like" ? "opacity-50 cursor-pointer" : ""}`}
               onClick={() => changeLikeStatus("like")}
             >
               좋아요 <ThumbsUp />
             </button>
             <button
-              className={`bg-gray-500 rounded-md px-2 text-2xl cursor-pointer ${tagLikeText !== "none" ? "opacity-50" : ""}`}
+              className={`bg-gray-500 rounded-md px-2 text-2xl ${tagLikeText !== "none" ? "opacity-50 cursor-pointer" : ""}`}
               onClick={() => changeLikeStatus("none")}
             >
               상태없음
             </button>
             <button
-              className={`bg-gray-500 rounded-md px-2 text-2xl flex items-center cursor-pointer ${tagLikeText !== "dislike" ? "opacity-50" : ""}`}
+              className={`bg-gray-500 rounded-md px-2 text-2xl flex items-center ${tagLikeText !== "dislike" ? "opacity-50 cursor-pointer" : ""}`}
               onClick={() => changeLikeStatus("dislike")}
             >
               싫어요 <ThumbsDown />

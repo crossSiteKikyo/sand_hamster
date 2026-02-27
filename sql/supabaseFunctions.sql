@@ -1,4 +1,4 @@
--- gallery와 gallery_tag를 트랜잭션으로 insert
+-- gallery와 gallery_tag를 트랜잭션으로 insert - 크롤링에 사용되는 함수
 CREATE OR REPLACE FUNCTION insert_gallery_with_tags(
   p_g_id int8,
   p_title text,

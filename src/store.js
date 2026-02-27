@@ -66,6 +66,7 @@ const useTagStore = create((set) => ({
       } else break;
     }
     console.log(newTagList);
+    console.log(newTagMap);
     set({ tagMap: newTagMap, tagList: newTagList });
   },
 }));
@@ -100,10 +101,33 @@ const useGalleryLikeStore = create((set) => ({
 
 const useGalleryStore = create((set) => ({
   galleryList: [],
-  getGalleryListAnonymous: async (page) => {
-    let { data, error } = await galleryApi.getGalleryListAnonymous(page);
+  getGalleryListAnonymous: async (page, title, tagIds, sort_by) => {
+    let { data, error } = await galleryApi.getGalleryListAnonymous(
+      page,
+      title,
+      tagIds,
+      sort_by,
+    );
     if (data) set({ galleryList: data });
     console.log(data);
+    if (error) toast("익명유저 갤러리 가져오기 오류");
+  },
+  getGalleryListUser: async (page, title, tagIds, sort_by) => {
+    let { data, error } = await galleryApi.getGalleryListUser(
+      page,
+      title,
+      tagIds,
+      sort_by,
+    );
+    if (data) set({ galleryList: data });
+    console.log(data);
+    if (error) toast("유저 갤러리 가져오기 오류");
+  },
+  getGalleryListById: async (g_id) => {
+    let { data, error } = await galleryApi.getGalleryListById(g_id);
+    if (data) set({ galleryList: data });
+    console.log(data);
+    if (error) toast("id로 갤러리 검색 오류");
   },
 }));
 
