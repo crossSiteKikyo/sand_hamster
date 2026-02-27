@@ -94,6 +94,13 @@ begin
     from gallery g
     -- 제목 검색. ''이면 통과, 아니면 ilike로 `%${p_title}%`식으로 찾는다.
     WHERE (p_title = '' OR g.title ILIKE '%' || p_title || '%')
+    -- 싫어하는 갤러리 제외 필터링
+    and not exists (
+      select 1 from user_gallery_like ugl
+      where ugl.g_id = g.g_id
+      and ugl.user_id = auth.uid()
+      and ugl.flag = false
+    )
     -- 싫어하는 태그 제외 필터링
     and not exists (
       select 1 
@@ -127,6 +134,12 @@ begin
         having count(tag_id) = array_length(search_tags, 1)
     ) as filter on g.g_id = filter.g_id
     WHERE (p_title = '' OR g.title ILIKE '%' || p_title || '%')
+    and not exists (
+      select 1 from user_gallery_like ugl
+      where ugl.g_id = g.g_id
+      and ugl.user_id = auth.uid()
+      and ugl.flag = false
+    )
     and not exists (
       select 1 
       from gallery_tag gt_sub

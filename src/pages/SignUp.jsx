@@ -1,10 +1,8 @@
 import authApi from "../api/authApi";
-import { useUserStore } from "../store";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function SignUp() {
-  const { getUser } = useUserStore();
   const navigate = useNavigate();
   const signup = async (e) => {
     e.preventDefault();

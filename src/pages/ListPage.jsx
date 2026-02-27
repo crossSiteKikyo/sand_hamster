@@ -15,6 +15,7 @@ export default function ListPage() {
   const tagIds = searchParams.getAll("tag") || [];
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortBy, setSortBy] = useState("g_id");
   const {
     galleryList,
     getGalleryListAnonymous,
@@ -26,19 +27,18 @@ export default function ListPage() {
     setIsLoading(true);
     if (galleryId != "") await getGalleryListById(galleryId);
     else if (user == null)
-      await getGalleryListAnonymous(Number(page), title, tagIds, "g_id");
-    else await getGalleryListUser(Number(page), title, tagIds, "g_id");
+      await getGalleryListAnonymous(Number(page), title, tagIds, sortBy);
+    else await getGalleryListUser(Number(page), title, tagIds, sortBy);
     setIsLoading(false);
   }
   useEffect(() => {
-    // toast(`page: ${page}, title: ${title}, tags: ${tagIds}`);
     getGalleryList();
-  }, [page, title, galleryId, searchParams.toString()]);
+  }, [page, sortBy, title, galleryId, searchParams.toString()]);
   useEffect(() => {
     setTags(tagIds.map((tag_id) => tagMap.get(Number(tag_id))));
-    // console.log(tagIds.map((tag_id) => tagMap.get(Number(tag_id))));
   }, [tagIds.toString()]);
 
+  // 태그 모달창을 위한 변수들
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [selectedTag, setSelectedTag] = useState({
     tag_id: 1,
@@ -64,6 +64,26 @@ export default function ListPage() {
         tag={selectedTag}
         _type={selectedType}
       />
+      <div className="flex justify-end gap-2 mb-2">
+        <button
+          className={`border border-gray-500 rounded-xl p-2 ${sortBy == "g_id" ? "bg-amber-200" : "cursor-pointer"}`}
+          onClick={() => setSortBy("g_id")}
+        >
+          최신순
+        </button>
+        <button
+          className={`border border-gray-500 rounded-xl p-2 ${sortBy == "like_count" ? "bg-amber-200" : "cursor-pointer"}`}
+          onClick={() => setSortBy("like_count")}
+        >
+          좋아요순
+        </button>
+        <button
+          className={`border border-gray-500 rounded-xl p-2 ${sortBy == "view_count" ? "bg-amber-200" : "cursor-pointer"}`}
+          onClick={() => setSortBy("view_count")}
+        >
+          조회순
+        </button>
+      </div>
       <div
         className={`flex flex-col text-center ${galleryId.trim() || title.trim() || tagIds.length > 0 ? "border mb-4 rounded-xl border-gray-500" : ""}`}
       >
@@ -90,6 +110,7 @@ export default function ListPage() {
           setSelectedTag={setSelectedTag}
           setIsTagModalOpen={setIsTagModalOpen}
           setSelectedType={setSelectedType}
+          getGalleryList={getGalleryList}
         />
       </div>
       <div className="flex justify-center pt-5">

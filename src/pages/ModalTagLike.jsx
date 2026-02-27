@@ -14,10 +14,10 @@ export default function ModalTagLike({
   const { user } = useUserStore();
   const { tagLikeList, getTagLikeList } = useTagLikeStore();
   const colorMap = {
-    artist: `bg-[#${_type.title_bg_color}] dark:bg-[#${_type.sub_bg_color}]`,
-    group: `bg-[#${_type.title_bg_color}] dark:bg-[#${_type.sub_bg_color}]`,
-    parody: `bg-[#${_type.title_bg_color}] dark:bg-[#${_type.sub_bg_color}]`,
-    character: `bg-[#${_type.title_bg_color}] dark:bg-[#${_type.sub_bg_color}]`,
+    artist: `dark:bg-[#${_type.title_bg_color}] bg-[#${_type.sub_bg_color}]`,
+    group: `dark:bg-[#${_type.title_bg_color}] bg-[#${_type.sub_bg_color}]`,
+    parody: `dark:bg-[#${_type.title_bg_color}] bg-[#${_type.sub_bg_color}]`,
+    character: `dark:bg-[#${_type.title_bg_color}] bg-[#${_type.sub_bg_color}]`,
     male: "bg-blue-300 dark:bg-blue-600",
     female: "bg-pink-300 dark:bg-pink-600",
     other: "bg-gray-300 dark:bg-gray-700",

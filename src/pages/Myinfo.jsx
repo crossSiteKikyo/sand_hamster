@@ -1,11 +1,12 @@
 import authApi from "../api/authApi";
 import { useUserStore } from "../store";
 
-export default function Myinfo() {
-  const { user, getUser } = useUserStore();
+export default function Myinfo({ afterLogin }) {
+  const { user } = useUserStore();
   const logout = async () => {
     const { error } = await authApi.signOut();
-    await getUser();
+    if (error) toast("로그아웃 에러");
+    afterLogin();
   };
   const deleteUser = async () => {
     const ok = confirm(

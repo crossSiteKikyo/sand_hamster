@@ -44,7 +44,16 @@ function App() {
     await getTagLikeList();
     setLoadingInfo("갤러리 좋아요/싫어요 정보 받아오는중...");
     await getGalleryLikeList();
-    // 태그 정보들도 가져와야 한다.
+    setIsInitializing(false);
+  };
+  const afterLogin = async () => {
+    setIsInitializing(true);
+    setLoadingInfo("유저정보 받아오는중...");
+    await getUser();
+    setLoadingInfo("태그 좋아요/싫어요 정보 받아오는중...");
+    await getTagLikeList();
+    setLoadingInfo("갤러리 좋아요/싫어요 정보 받아오는중...");
+    await getGalleryLikeList();
     setIsInitializing(false);
   };
   useEffect(() => {
@@ -80,14 +89,17 @@ function App() {
               <Routes>
                 <Route path="/" element={<FirstPage />} />
                 <Route path="/list" element={<ListPage />}></Route>
-                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/login"
+                  element={<Login afterLogin={afterLogin} />}
+                />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/notification" element={<NotificationPage />} />
                 <Route
                   path="/myinfo"
                   element={
                     <UserNecessaryRoute>
-                      <Myinfo />
+                      <Myinfo afterLogin={afterLogin} />
                     </UserNecessaryRoute>
                   }
                 ></Route>

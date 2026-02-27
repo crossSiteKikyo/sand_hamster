@@ -1,10 +1,8 @@
 import authApi from "../api/authApi";
-import { useUserStore } from "../store";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-export default function Login() {
-  const { getUser } = useUserStore();
+export default function Login({ afterLogin }) {
   const navigate = useNavigate();
   const login = async (e) => {
     e.preventDefault();
@@ -13,7 +11,7 @@ export default function Login() {
     const { error } = await authApi.logIn(data.email, data.password);
     if (error) toast("로그인 에러");
     else {
-      await getUser();
+      afterLogin();
       navigate("/list");
     }
   };
