@@ -5,6 +5,7 @@
 // @icon         https://github.com/crossSiteKikyo/sand_hamster/blob/main/public/sand_hamster_logo.jpg?raw=true
 // @grant        GM_registerMenuCommand
 // @match        https://hitomi.la
+// @match        https://hitomi.la/*
 // @updateURL    https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/test.user.js
 // @downloadURL  https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/test.user.js
 // @require      https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js
