@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         sand_hamster
-// @version      0.0.2
+// @version      0.0.3
 // @author       crossSiteKikyo
 // @icon         https://github.com/crossSiteKikyo/sand_hamster/blob/main/public/sand_hamster_logo.jpg?raw=true
 // @grant        GM_registerMenuCommand
@@ -36,12 +36,6 @@
       document.documentElement.innerHTML = responseText;
       // DOM이 생성 된 후 동적으로 삽입된 link와 script는 보안 및 실행 순서 문제로 실행되지 않는다.
       // 그러므로 따로 주입
-      // tailwind cdn 주입
-      const link1 = document.createElement("link");
-      link1.rel = "stylesheet";
-      link1.crossOrigin = "anonymous";
-      link1.href = `https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4`;
-      document.head.appendChild(link1);
       // index.css 주입
       const link2 = document.createElement("link");
       link2.rel = "stylesheet";
@@ -49,11 +43,17 @@
       link2.href = `${GitHack_base}assets/index.css`;
       document.head.appendChild(link2);
       // index.js 주입 (type="module" 설정 필수)
-      const script = document.createElement("script");
-      script.type = "module";
-      script.crossOrigin = "anonymous";
-      script.src = `${GitHack_base}assets/index.js`;
-      document.head.appendChild(script);
+      const script1 = document.createElement("script");
+      script1.type = "module";
+      script1.crossOrigin = "anonymous";
+      script1.src = `${GitHack_base}assets/index.js`;
+      document.head.appendChild(script1);
+      // tailwind js 주입
+      const script2 = document.createElement("script");
+      script2.type = "module";
+      script2.crossOrigin = "anonymous";
+      script2.src = `https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4`;
+      document.head.appendChild(script2);
     },
   };
   // HtmlManager.changeHtml();
