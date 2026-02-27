@@ -4,7 +4,7 @@ const authApi = {
   loginWithGoogle: () =>
     supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: "/" },
+      options: { redirectTo: "https://hitomi.la/list" },
     }),
   getUser: () => supabase.auth.getUser(),
   signOut: () => supabase.auth.signOut(),
