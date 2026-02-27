@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         sand_hamster
-// @version      0.0.3
+// @version      0.0.4
 // @author       crossSiteKikyo
 // @icon         https://github.com/crossSiteKikyo/sand_hamster/blob/main/public/sand_hamster_logo.jpg?raw=true
 // @grant        GM_registerMenuCommand
@@ -25,6 +25,11 @@
         resolve();
       }, ms);
     });
+  }
+
+  async function autoLoad() {
+    await Sleep(1000);
+    HtmlManager.changeHtml();
   }
 
   const HtmlManager = {
@@ -57,7 +62,9 @@
       document.head.appendChild(script2);
     },
   };
+  // 1초뒤 자동으로 로딩
+  autoLoad();
   // HtmlManager.changeHtml();
   // ui 추가
-  GM_registerMenuCommand("sand_hamster 로딩", HtmlManager.changeHtml);
+  GM_registerMenuCommand("모래 햄스터 로딩", HtmlManager.changeHtml);
 })();

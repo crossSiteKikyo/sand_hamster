@@ -57,7 +57,7 @@ export default function ModalTagLike({
         if (error) toast("태그 정보 update 에러");
       }
       // dislike를 클릭했다면 갤러리를 다시 로딩해야한다.
-      getGalleryList();
+      if (selected == "dislike") getGalleryList();
     }
     // 상태없음을 클릭했으면, delete하거나 아무것도 안함.
     else if (selected == "none") {

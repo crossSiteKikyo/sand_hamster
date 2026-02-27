@@ -18,6 +18,7 @@ import Myinfo from "./pages/Myinfo";
 import ListPage from "./pages/ListPage";
 import Footer from "./pages/Footer";
 import { ToastContainer } from "react-toastify";
+import SignUp from "./pages/SignUp";
 
 function App() {
   const { isDarkMode } = useThemeStore();
@@ -80,6 +81,7 @@ function App() {
                 <Route path="/" element={<FirstPage />} />
                 <Route path="/list" element={<ListPage />}></Route>
                 <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
                 <Route path="/notification" element={<NotificationPage />} />
                 <Route
                   path="/myinfo"
