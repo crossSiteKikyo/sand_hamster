@@ -54,8 +54,8 @@ export default function NavigationDrawerMenu({ children, className }) {
                   <DialogPanel className="bg-white dark:bg-gray-900 dark:text-gray-50 border-r h-full overflow-y-auto">
                     <div className="flex p-1">
                       <img
-                        src="/sand_hamster_logo.jpg"
-                        alt="tung"
+                        src="https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/public/sand_hamster_logo.jpg"
+                        alt="sand_hamster"
                         className="w-9 h-9 mx-auto"
                       />
                     </div>

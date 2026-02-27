@@ -19,7 +19,11 @@ export default function Navigation() {
       {/* 사이드 네비게이션 */}
       <div className="flex-col shrink-0 border-r hidden md:flex text-center">
         <div className="flex p-1 mx-auto">
-          <img src="/sand_hamster_logo.jpg" alt="tung" className="w-9 h-9" />
+          <img
+            src="https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/public/sand_hamster_logo.jpg"
+            alt="sand_hamster"
+            className="w-9 h-9"
+          />
         </div>
         <Link to="/list" className="flex flex-col justify-center p-3">
           <House className="w-5 h-5 mx-auto" />홈
