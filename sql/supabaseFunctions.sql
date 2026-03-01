@@ -58,6 +58,22 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
+-- user_tag_like 업데이트 시 date 컬럼을 자동으로 갱신하는 함수 생성
+CREATE OR REPLACE FUNCTION update_date_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.date = now();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- 3. 트리거 등록
+CREATE TRIGGER update_user_tag_like_date
+    BEFORE UPDATE ON user_tag_like
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_date_column();
+
 -- user_gallery_like 테이블에 insert할 때, profiles의 gallery_like_limit 개수를 넘지 못하게 한다
 
 -- user_tag_like 테이블에 insert할 때, profiles의 tag_like_limit 개수를 넘지 못하게 한다
+

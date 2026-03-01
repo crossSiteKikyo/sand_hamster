@@ -2,8 +2,10 @@ import { useLongPress } from "use-long-press";
 import { useTagLikeStore, useUserStore } from "../store";
 import { toast } from "react-toastify";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { createSearchParams, useNavigate } from "react-router-dom";
 
 export default function Tag({ tag, type, setSelectedTag, setIsTagModalOpen }) {
+  const navigate = useNavigate();
   const { user } = useUserStore();
   const { tagLikeList } = useTagLikeStore();
   const likeTagIds = tagLikeList.map((t) => {
@@ -12,6 +14,14 @@ export default function Tag({ tag, type, setSelectedTag, setIsTagModalOpen }) {
   const dislikeTagIds = tagLikeList.map((t) => {
     if (!t.flag) return t.tag_id;
   });
+  const tagSearch = () => {
+    navigate({
+      pathname: "/list",
+      search: `?${createSearchParams({
+        tag: tag.tag_id,
+      })}`,
+    });
+  };
   const handlers = useLongPress(() => {
     if (user == null) {
       toast("태그 좋아요/싫어요 기능을 이용하시려면 로그인 해주세요");
@@ -34,12 +44,13 @@ export default function Tag({ tag, type, setSelectedTag, setIsTagModalOpen }) {
   return (
     <button
       {...handlers()}
-      className={`flex px-1 rounded-md cursor-pointer select-none ${colorMap[type]}`}
+      className={`flex cursor-pointer rounded-md px-1 select-none ${colorMap[type]}`}
+      onClick={tagSearch}
     >
       {name}
-      {likeTagIds.includes(tag.tag_id) && <ThumbsUp className="pl-1 w-5" />}
+      {likeTagIds.includes(tag.tag_id) && <ThumbsUp className="w-5 pl-1" />}
       {dislikeTagIds.includes(tag.tag_id) && (
-        <ThumbsDown className="pl-1 w-5" />
+        <ThumbsDown className="w-5 pl-1" />
       )}
     </button>
   );

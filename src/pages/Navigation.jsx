@@ -1,4 +1,15 @@
-import { Bell, House, LogIn, Moon, Search, Sun, User } from "lucide-react";
+import {
+  Bell,
+  BookHeart,
+  House,
+  Images,
+  LogIn,
+  Moon,
+  Search,
+  Sun,
+  Tags,
+  User,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useThemeStore, useUserStore } from "../store";
 import NavigationDrawerMenu from "./NavigationDrawerMenu";
@@ -17,70 +28,91 @@ export default function Navigation() {
         onClose={() => setIsSearchModalOpen(false)}
       />
       {/* 사이드 네비게이션 */}
-      <div className="flex-col shrink-0 border-r hidden md:flex text-center">
-        <div className="flex p-1 mx-auto">
-          <img
-            src="https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/public/sand_hamster_logo.jpg"
-            alt="sand_hamster"
-            className="w-9 h-9"
-          />
-        </div>
-        <Link to="/list" className="flex flex-col justify-center p-3">
-          <House className="w-5 h-5 mx-auto" />홈
-        </Link>
-        <div
-          className="flex flex-col justify-center p-3 cursor-pointer"
-          onClick={() => setIsSearchModalOpen(true)}
-        >
-          <Search className="w-5 h-5 mx-auto" /> 검색
-        </div>
-        <Link to="/notification" className="flex flex-col justify-center p-3">
-          <Bell className="w-5 h-5 mx-auto" /> 알림
-        </Link>
-        <div
-          className="flex flex-col justify-center p-3 cursor-pointer"
-          onClick={toggleDarkMode}
-        >
-          {isDarkMode ? (
-            <Moon className="w-5 h-5 mx-auto" />
+      <div className="hidden shrink-0 border-r md:block">
+        <img
+          src="https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/public/sand_hamster_logo.jpg"
+          alt="sand_hamster"
+          className="m-1 h-9 w-9"
+        />
+        <div>
+          <Link className="flex h-12 items-center px-3" to="/list">
+            <House className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">홈</p>
+          </Link>
+          <div
+            className="flex h-12 cursor-pointer items-center px-3"
+            onClick={() => setIsSearchModalOpen(true)}
+          >
+            <Search className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">검색</p>
+          </div>
+          <Link className="flex h-12 items-center px-3" to="/notification">
+            <Bell className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">알림</p>
+          </Link>
+          <div className="flex h-12 items-center px-3" onClick={toggleDarkMode}>
+            {isDarkMode ? (
+              <Moon className="h-5 w-5" />
+            ) : (
+              <Sun className="h-5 w-5" />
+            )}
+            <p className="hidden pl-3 xl:block">테마</p>
+          </div>
+          {user ? (
+            <>
+              <Link className="flex h-12 items-center px-3" to="/mygallery">
+                <Images className="h-5 w-5" />
+                <p className="hidden pl-3 xl:block">갤러리</p>
+              </Link>
+              <Link className="flex h-12 items-center px-3" to="/mytag">
+                <Tags className="h-5 w-5" />
+                <p className="hidden pl-3 xl:block">태그</p>
+              </Link>
+              <Link
+                className="flex h-12 items-center px-3"
+                to="/mygalleryhasliketag"
+              >
+                <BookHeart className="h-5 w-5" />
+                <p className="hidden pl-3 xl:block">좋아요</p>
+              </Link>
+              <Link className="flex h-12 items-center px-3" to="/myinfo">
+                <User className="h-5 w-5" />
+                <p className="hidden pl-3 xl:block">계정</p>
+              </Link>
+            </>
           ) : (
-            <Sun className="w-5 h-5 mx-auto" />
+            <>
+              <Link className="flex h-12 items-center px-3" to="/login">
+                <LogIn className="h-5 w-5" />
+                <p className="hidden pl-3 xl:block">로그인</p>
+              </Link>
+            </>
           )}
-          테마
         </div>
-        {user ? (
-          <Link to="/myinfo" className="flex flex-col justify-center p-3">
-            <User className="w-5 h-5 mx-auto" /> 계정
-          </Link>
-        ) : (
-          <Link to="/login" className="flex flex-col justify-center p-3">
-            <LogIn className="w-5 h-5 mx-auto" /> 로그인
-          </Link>
-        )}
       </div>
 
       {/* 바텀 네비게이션 */}
-      <div className="md:hidden fixed bottom-0 right-0 flex min-w-full border-t border-gray-200 bg-white/95 dark:border-gray-800 dark:bg-black/95">
-        <NavigationDrawerMenu className="grow flex justify-center p-3" />
+      <div className="fixed right-0 bottom-0 flex min-w-full border-t border-gray-200 bg-white/95 md:hidden dark:border-gray-800 dark:bg-black/95">
+        <NavigationDrawerMenu className="flex grow justify-center p-3" />
         <div
-          className="grow flex justify-center p-3 cursor-pointer"
+          className="flex grow cursor-pointer justify-center p-3"
           onClick={() => setIsSearchModalOpen(true)}
         >
-          <Search className="w-5 h-5" />
+          <Search className="h-5 w-5" />
         </div>
-        <Link to="/list" className="grow flex justify-center p-3">
-          <House className="w-5 h-5" />
+        <Link to="/list" className="flex grow justify-center p-3">
+          <House className="h-5 w-5" />
         </Link>
-        <Link to="/notification" className="grow flex justify-center p-3">
-          <Bell className="w-5 h-5" />
+        <Link to="/notification" className="flex grow justify-center p-3">
+          <Bell className="h-5 w-5" />
         </Link>
         {user ? (
-          <Link to="/myinfo" className="grow flex justify-center p-3">
-            <User className="w-5 h-5" />
+          <Link to="/myinfo" className="flex grow justify-center p-3">
+            <User className="h-5 w-5" />
           </Link>
         ) : (
-          <Link to="/login" className="grow flex justify-center p-3">
-            <LogIn className="w-5 h-5" />
+          <Link to="/login" className="flex grow justify-center p-3">
+            <LogIn className="h-5 w-5" />
           </Link>
         )}
       </div>

@@ -2,38 +2,36 @@ import { useEffect, useState } from "react";
 import { useGalleryStore, useTagStore, useUserStore } from "../store";
 import { useSearchParams } from "react-router-dom";
 import GalleryList from "./GalleryList";
-import Pagination from "./Pagination";
 import ModalTagLike from "./ModalTagLike";
 import SearchedTagMain from "../components/SearchedTag";
+import PaginationCursor from "./PaginationCursor";
 
-export default function ListPage() {
+export default function ListPage({}) {
+  // 맨 처음 g_id와 맨 마지막 g_id를 알아야 한다.
+  // prev인지 next인지 알아야 한다.
   const { tagMap } = useTagStore();
   const [searchParams] = useSearchParams();
-  const page = searchParams.get("page") || "1";
   const title = searchParams.get("title") || "";
   const galleryId = searchParams.get("galleryId") || "";
   const tagIds = searchParams.getAll("tag") || [];
+  const direction = searchParams.get("direction") || "next";
+  const cursorId = searchParams.get("cursorId");
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortBy, setSortBy] = useState("g_id");
-  const {
-    galleryList,
-    getGalleryListAnonymous,
-    getGalleryListUser,
-    getGalleryListById,
-  } = useGalleryStore();
-  const { user } = useUserStore();
+  const { galleryList, getGalleryListCursor, getGalleryListById } =
+    useGalleryStore();
   async function getGalleryList() {
     setIsLoading(true);
+    document.getElementById("content-scroll").scrollTo({
+      top: 0,
+    });
     if (galleryId != "") await getGalleryListById(galleryId);
-    else if (user == null)
-      await getGalleryListAnonymous(Number(page), title, tagIds, sortBy);
-    else await getGalleryListUser(Number(page), title, tagIds, sortBy);
+    await getGalleryListCursor(title, tagIds, cursorId, direction);
     setIsLoading(false);
   }
   useEffect(() => {
     getGalleryList();
-  }, [page, sortBy, title, galleryId, searchParams.toString()]);
+  }, [title, galleryId, direction, searchParams.toString()]);
   useEffect(() => {
     setTags(tagIds.map((tag_id) => tagMap.get(Number(tag_id))));
   }, [tagIds.toString()]);
@@ -56,7 +54,7 @@ export default function ListPage() {
   });
 
   return (
-    <div className="flex flex-col p-1 bg-white dark:bg-black grow">
+    <div className="flex grow flex-col bg-white p-1 dark:bg-black">
       <ModalTagLike
         isOpen={isTagModalOpen}
         onClose={() => setIsTagModalOpen(false)}
@@ -64,28 +62,8 @@ export default function ListPage() {
         tag={selectedTag}
         _type={selectedType}
       />
-      <div className="flex justify-end gap-2 mb-2">
-        <button
-          className={`border border-gray-500 rounded-xl p-2 ${sortBy == "g_id" ? "bg-amber-200" : "cursor-pointer"}`}
-          onClick={() => setSortBy("g_id")}
-        >
-          최신순
-        </button>
-        <button
-          className={`border border-gray-500 rounded-xl p-2 ${sortBy == "like_count" ? "bg-amber-200" : "cursor-pointer"}`}
-          onClick={() => setSortBy("like_count")}
-        >
-          좋아요순
-        </button>
-        <button
-          className={`border border-gray-500 rounded-xl p-2 ${sortBy == "view_count" ? "bg-amber-200" : "cursor-pointer"}`}
-          onClick={() => setSortBy("view_count")}
-        >
-          조회순
-        </button>
-      </div>
       <div
-        className={`flex flex-col text-center ${galleryId.trim() || title.trim() || tagIds.length > 0 ? "border mb-4 rounded-xl border-gray-500" : ""}`}
+        className={`flex flex-col text-center ${galleryId.trim() || title.trim() || tagIds.length > 0 ? "mb-4 rounded-xl border border-gray-500" : ""}`}
       >
         {galleryId && <p>id검색: {galleryId}</p>}
         {title.trim() && <p>제목검색: {title}</p>}
@@ -114,7 +92,7 @@ export default function ListPage() {
         />
       </div>
       <div className="flex justify-center pt-5">
-        <Pagination page={page} />
+        <PaginationCursor direction={direction} cursorId={cursorId} />
       </div>
     </div>
   );

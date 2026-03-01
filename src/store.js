@@ -73,13 +73,28 @@ const useTagStore = create((set) => ({
 
 const useTagLikeStore = create((set) => ({
   tagLikeList: [],
+  tagsInfo: [],
   getTagLikeList: async () => {
     let { data, error } = await tagLikeApi.getTagLikeList();
     if (error) {
       console.error("태그 좋아요/싫어요 정보 가져오기 에러: ", error);
       toast(`태그 좋아요/싫어요 정보 가져오기 에러`);
     } else {
-      set({ tagLikeList: data });
+      // 최신 날짜 순으로 정렬
+      set({
+        tagLikeList: data.toSorted(
+          (a, b) => new Date(b.date) - new Date(a.date),
+        ),
+      });
+      console.log(data);
+    }
+  },
+  getTagsInfoByIds: async (tag_ids) => {
+    let { data, error } = await tagApi.getTagsInfoByIds(tag_ids);
+    if (error) {
+      toast(`태그 좋아요/싫어요 정보 가져오기 에러`);
+    } else {
+      set({ tagsInfo: data });
       console.log(data);
     }
   },
@@ -101,33 +116,125 @@ const useGalleryLikeStore = create((set) => ({
 
 const useGalleryStore = create((set) => ({
   galleryList: [],
-  getGalleryListAnonymous: async (page, title, tagIds, sort_by) => {
+  totalCount: 10,
+  firstGid: null,
+  lastGid: null,
+  has_more: false,
+  getGalleryListAnonymous: async (page, title, tagIds) => {
     let { data, error } = await galleryApi.getGalleryListAnonymous(
       page,
       title,
       tagIds,
-      sort_by,
     );
-    if (data) set({ galleryList: data });
+    if (data) {
+      set({ galleryList: data });
+      if (data.length > 0) set({ totalCount: data[0].total_count });
+    }
     console.log(data);
     if (error) toast("익명유저 갤러리 가져오기 오류");
   },
-  getGalleryListUser: async (page, title, tagIds, sort_by) => {
+  getGalleryListUser: async (page, title, tagIds) => {
     let { data, error } = await galleryApi.getGalleryListUser(
       page,
       title,
       tagIds,
-      sort_by,
     );
-    if (data) set({ galleryList: data });
+    if (data) {
+      set({ galleryList: data });
+      if (data.length > 0) set({ totalCount: data[0].total_count });
+    }
     console.log(data);
     if (error) toast("유저 갤러리 가져오기 오류");
+  },
+  getGalleryListCursor: async (title, tagIds, cursor_id, direction) => {
+    let { data, error } = await galleryApi.getGalleryListCursor(
+      title,
+      tagIds,
+      cursor_id,
+      direction == "next" ? "next" : "prev",
+    );
+    if (data) {
+      // 26개가 와야 더 데이터가 있는 것이다.
+      if (data.length == 26) {
+        set({ has_more: true });
+        if (direction == "next") {
+          set({ galleryList: data.slice(0, 25) });
+          set({ firstGid: data[0].g_id, lastGid: data[data.length - 2].g_id });
+        } else {
+          set({ galleryList: data.slice(1, 26) });
+          set({ firstGid: data[1].g_id, lastGid: data[data.length - 1].g_id });
+        }
+      } else if (data.length > 0) {
+        set({ has_more: false, galleryList: data });
+        set({ firstGid: data[0].g_id, lastGid: data[data.length - 1].g_id });
+      } else {
+        set({ has_more: false, galleryList: [] });
+        set({ firstGid: cursor_id, lastGid: cursor_id });
+      }
+    }
+    console.log(data);
+    if (error) toast("cursor 갤러리 가져오기 오류");
   },
   getGalleryListById: async (g_id) => {
     let { data, error } = await galleryApi.getGalleryListById(g_id);
     if (data) set({ galleryList: data });
     console.log(data);
     if (error) toast("id로 갤러리 검색 오류");
+  },
+  getGalleryListByFlag: async (cursor_id, direction, flag) => {
+    let { data, error } = await galleryApi.getGalleryListByFlag(
+      cursor_id,
+      direction == "next" ? "next" : "prev",
+      flag,
+    );
+    if (data) {
+      // 26개가 와야 더 데이터가 있는 것이다.
+      if (data.length == 26) {
+        set({ has_more: true });
+        if (direction == "next") {
+          set({ galleryList: data.slice(0, 25) });
+          set({ firstGid: data[0].g_id, lastGid: data[data.length - 2].g_id });
+        } else {
+          set({ galleryList: data.slice(1, 26) });
+          set({ firstGid: data[1].g_id, lastGid: data[data.length - 1].g_id });
+        }
+      } else if (data.length > 0) {
+        set({ has_more: false, galleryList: data });
+        set({ firstGid: data[0].g_id, lastGid: data[data.length - 1].g_id });
+      } else {
+        set({ has_more: false, galleryList: [] });
+        set({ firstGid: cursor_id, lastGid: cursor_id });
+      }
+    }
+    console.log(data);
+    if (error) toast("좋아요/싫어요 갤러리 가져오기 오류");
+  },
+  getGalleryListHasLikeTag: async (cursor_id, direction) => {
+    let { data, error } = await galleryApi.getGalleryListHasLikeTag(
+      cursor_id,
+      direction == "next" ? "next" : "prev",
+    );
+    if (data) {
+      // 26개가 와야 더 데이터가 있는 것이다.
+      if (data.length == 26) {
+        set({ has_more: true });
+        if (direction == "next") {
+          set({ galleryList: data.slice(0, 25) });
+          set({ firstGid: data[0].g_id, lastGid: data[data.length - 2].g_id });
+        } else {
+          set({ galleryList: data.slice(1, 26) });
+          set({ firstGid: data[1].g_id, lastGid: data[data.length - 1].g_id });
+        }
+      } else if (data.length > 0) {
+        set({ has_more: false, galleryList: data });
+        set({ firstGid: data[0].g_id, lastGid: data[data.length - 1].g_id });
+      } else {
+        set({ has_more: false, galleryList: [] });
+        set({ firstGid: cursor_id, lastGid: cursor_id });
+      }
+    }
+    console.log(data);
+    if (error) toast("좋아요 태그가 포함된 갤러리 가져오기 오류");
   },
 }));
 

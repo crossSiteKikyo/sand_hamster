@@ -40,7 +40,16 @@ export default function GalleryList({
   });
 
   if (isLoading) {
-    return <div className="text-center">데이터를 불러오는 중입니다...</div>;
+    return (
+      <div className="grid grid-cols-1 gap-1 lg:grid-cols-2">
+        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
+        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
+        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
+        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
+        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
+        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
+      </div>
+    );
   }
   return (
     <>
@@ -51,7 +60,7 @@ export default function GalleryList({
         gallery={selectedGallery}
       />
       {galleryList.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1">
+        <div className="grid grid-cols-1 gap-1 lg:grid-cols-2">
           {galleryList.map((g) => {
             const date = new Date(g.date).toLocaleString();
             const type = typeList[g.type_id - 1];
@@ -79,24 +88,23 @@ export default function GalleryList({
             return (
               <div
                 key={g.g_id}
-                className={`flex flex-col justify-between border rounded-sm ${
+                className={`flex flex-col justify-between rounded-sm border ${
                   galleryLikeFlag === true && "border-pink-500"
                 } ${galleryLikeFlag === false && "border-gray-500"}`}
               >
                 <div>
                   <div
-                    className={`text-lg bg-[#${type.title_bg_color}] text-white font-semibold 
-                  [text-shadow:1px_1px_0_#${type.sub_text_color},-1px_-1px_0_#${type.sub_text_color},1px_-1px_0_#${type.sub_text_color},-1px_1px_0_#${type.sub_text_color}]`}
+                    className={`text-lg bg-[#${type.title_bg_color}] font-semibold text-white [text-shadow:1px_1px_0_#${type.sub_text_color},-1px_-1px_0_#${type.sub_text_color},1px_-1px_0_#${type.sub_text_color},-1px_1px_0_#${type.sub_text_color}]`}
                   >
                     {g.title}
                   </div>
                   <div
-                    className={`text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] font-bold border-b border-[#${type.title_bg_color}]`}
+                    className={`text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] border-b font-bold border-[#${type.title_bg_color}]`}
                   >
                     {"종류: " + type.name}
                   </div>
                   <div
-                    className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] font-bold border-b border-[#${type.title_bg_color}]`}
+                    className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] border-b font-bold border-[#${type.title_bg_color}]`}
                   >
                     작가:
                     {artists.map((v) => (
@@ -111,7 +119,7 @@ export default function GalleryList({
                     ))}
                   </div>
                   <div
-                    className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] font-bold border-b border-[#${type.title_bg_color}]`}
+                    className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] border-b font-bold border-[#${type.title_bg_color}]`}
                   >
                     그룹:
                     {groups.map((v) => (
@@ -126,7 +134,7 @@ export default function GalleryList({
                     ))}
                   </div>
                   <div
-                    className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] font-bold border-b border-[#${type.title_bg_color}]`}
+                    className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] border-b font-bold border-[#${type.title_bg_color}]`}
                   >
                     시리즈:
                     {parodies.map((v) => (
@@ -142,7 +150,7 @@ export default function GalleryList({
                   </div>
                   {characters.length > 0 && (
                     <div
-                      className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] font-bold border-b border-[#${type.title_bg_color}]`}
+                      className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] border-b font-bold border-[#${type.title_bg_color}]`}
                     >
                       캐릭터:
                       {characters.map((v) => (
@@ -200,15 +208,15 @@ export default function GalleryList({
                 {/* 하단 정보 */}
                 <div>
                   <div className="flex justify-between px-1">
-                    <p className="text-gray-500 flex gap-1">
+                    <p className="flex gap-1 text-gray-500">
                       <ThumbsUp className="w-4" />
                       {g.like_count}
                     </p>
-                    <p className="text-gray-500 flex gap-1">
+                    <p className="flex gap-1 text-gray-500">
                       <Eye className="w-4" />
                       {g.view_count}
                     </p>
-                    <p className="text-gray-500 flex gap-1">
+                    <p className="flex gap-1 text-gray-500">
                       <ThumbsDown className="w-4" />
                       {g.dislike_count}
                     </p>
@@ -228,7 +236,7 @@ export default function GalleryList({
           })}
         </div>
       ) : (
-        <p className="text-lg flex justify-center">결과가 없습니다</p>
+        <p className="flex justify-center text-lg">결과가 없습니다</p>
       )}
     </>
   );

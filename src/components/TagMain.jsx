@@ -2,7 +2,7 @@ import { useLongPress } from "use-long-press";
 import { useTagLikeStore, useUserStore } from "../store";
 import { toast } from "react-toastify";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 
 export default function TagMain({
   tag,
@@ -11,7 +11,7 @@ export default function TagMain({
   setIsTagModalOpen,
   selectTypeCallback,
 }) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { user } = useUserStore();
   const { tagLikeList } = useTagLikeStore();
   const likeTagIds = tagLikeList.map((t) => {
@@ -21,7 +21,12 @@ export default function TagMain({
     if (!t.flag) return t.tag_id;
   });
   const tagSearch = () => {
-    setSearchParams({ tag: tag.tag_id });
+    navigate({
+      pathname: "/list",
+      search: `?${createSearchParams({
+        tag: tag.tag_id,
+      })}`,
+    });
   };
   const handlers = useLongPress(() => {
     if (user == null) {
@@ -45,13 +50,13 @@ export default function TagMain({
   return (
     <button
       {...handlers()}
-      className={`flex grow text-start px-1 border-r border-[#${type.title_bg_color}] cursor-pointer select-none bg-[#${type.sub_bg_color}]`}
+      className={`flex grow border-r px-1 text-start border-[#${type.title_bg_color}] cursor-pointer select-none bg-[#${type.sub_bg_color}]`}
       onClick={tagSearch}
     >
       {name}
-      {likeTagIds.includes(tag.tag_id) && <ThumbsUp className="pl-1 w-5" />}
+      {likeTagIds.includes(tag.tag_id) && <ThumbsUp className="w-5 pl-1" />}
       {dislikeTagIds.includes(tag.tag_id) && (
-        <ThumbsDown className="pl-1 w-5" />
+        <ThumbsDown className="w-5 pl-1" />
       )}
     </button>
   );

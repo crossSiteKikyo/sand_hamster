@@ -19,6 +19,9 @@ import ListPage from "./pages/ListPage";
 import Footer from "./pages/Footer";
 import { ToastContainer } from "react-toastify";
 import SignUp from "./pages/SignUp";
+import MyGallery from "./pages/MyGallery";
+import MyTag from "./pages/MyTag";
+import MyGalleryHasLikeTag from "./pages/MyGalleryHasLikeTag";
 
 function App() {
   const { isDarkMode } = useThemeStore();
@@ -66,11 +69,11 @@ function App() {
   }, [isDarkMode]);
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-950 text-gray-950 dark:text-gray-50 flex h-screen overflow-hidden">
-      <div className="max-w-7xl mx-auto flex grow">
+    <div className="flex h-screen overflow-hidden bg-gray-50 text-gray-950 dark:bg-gray-950 dark:text-gray-50">
+      <div className="mx-auto flex max-w-7xl grow">
         <ToastContainer position="bottom-center" />
         {isInitializing ? (
-          <div className="text-center w-full">
+          <div className="w-full text-center">
             <p>초기화중...</p>
             <p>{loadingInfo}</p>
           </div>
@@ -83,7 +86,7 @@ function App() {
               </>
             )}
             <div
-              className="flex flex-col grow overflow-y-auto"
+              className="flex grow flex-col overflow-y-auto"
               id="content-scroll"
             >
               <Routes>
@@ -95,6 +98,30 @@ function App() {
                 />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/notification" element={<NotificationPage />} />
+                <Route
+                  path="/mygallery"
+                  element={
+                    <UserNecessaryRoute>
+                      <MyGallery />
+                    </UserNecessaryRoute>
+                  }
+                ></Route>
+                <Route
+                  path="/mytag"
+                  element={
+                    <UserNecessaryRoute>
+                      <MyTag />
+                    </UserNecessaryRoute>
+                  }
+                ></Route>
+                <Route
+                  path="/mygalleryhasliketag"
+                  element={
+                    <UserNecessaryRoute>
+                      <MyGalleryHasLikeTag />
+                    </UserNecessaryRoute>
+                  }
+                ></Route>
                 <Route
                   path="/myinfo"
                   element={

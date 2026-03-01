@@ -75,35 +75,35 @@ export default function ModalTagLike({
       <div className="fixed inset-0 bg-black/30"></div>
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <DialogPanel
-          className={`rounded p-6 shadow-xl dark:text-white flex flex-col items-center ${colorMap[type]}`}
+          className={`flex flex-col items-center rounded p-6 shadow-xl select-none dark:text-white ${colorMap[type]}`}
         >
           <DialogTitle className="mb-8 flex flex-col items-center">
-            <p className="text-lg font-medium pb-3">
+            <p className="pb-3 text-lg font-medium">
               태그 좋아요/싫어요 상태 변경
             </p>
             <p className="text-2xl font-bold">{tag.name}</p>
           </DialogTitle>
           <div className="flex flex-col gap-2">
             <button
-              className={`bg-gray-500 rounded-md px-2 text-2xl flex items-center ${tagLikeText !== "like" ? "opacity-50 cursor-pointer" : ""}`}
+              className={`flex items-center rounded-md bg-gray-500 px-2 text-2xl ${tagLikeText !== "like" ? "cursor-pointer opacity-50" : ""}`}
               onClick={() => changeLikeStatus("like")}
             >
               좋아요 <ThumbsUp />
             </button>
             <button
-              className={`bg-gray-500 rounded-md px-2 text-2xl ${tagLikeText !== "none" ? "opacity-50 cursor-pointer" : ""}`}
+              className={`rounded-md bg-gray-500 px-2 text-2xl ${tagLikeText !== "none" ? "cursor-pointer opacity-50" : ""}`}
               onClick={() => changeLikeStatus("none")}
             >
               상태없음
             </button>
             <button
-              className={`bg-gray-500 rounded-md px-2 text-2xl flex items-center ${tagLikeText !== "dislike" ? "opacity-50 cursor-pointer" : ""}`}
+              className={`flex items-center rounded-md bg-gray-500 px-2 text-2xl ${tagLikeText !== "dislike" ? "cursor-pointer opacity-50" : ""}`}
               onClick={() => changeLikeStatus("dislike")}
             >
               싫어요 <ThumbsDown />
             </button>
           </div>
-          <div className="flex justify-end w-full pt-3">
+          <div className="flex w-full justify-end pt-3">
             <MyButton onClick={onClose}>닫기</MyButton>
           </div>
         </DialogPanel>

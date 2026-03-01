@@ -5,10 +5,12 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { useThemeStore } from "../store";
-import { Menu, Moon, Sun } from "lucide-react";
+import { useThemeStore, useUserStore } from "../store";
+import { BookHeart, Images, Menu, Moon, Sun, Tags } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export default function NavigationDrawerMenu({ children, className }) {
+export default function NavigationDrawerMenu({ className }) {
+  const { user } = useUserStore();
   const [isOpen, setIsOpen] = useState(false);
   const { isDarkMode, toggleDarkMode } = useThemeStore();
 
@@ -23,10 +25,10 @@ export default function NavigationDrawerMenu({ children, className }) {
   return (
     <>
       <div onClick={openDrawer} className={className}>
-        <Menu className="w-5 h-5" />
+        <Menu className="h-5 w-5" />
       </div>
       <Transition show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={closeDrawer}>
+        <Dialog className="relative z-50" onClose={closeDrawer}>
           <TransitionChild
             as={Fragment}
             enter="ease-out duration-100"
@@ -39,41 +41,57 @@ export default function NavigationDrawerMenu({ children, className }) {
             <div className="fixed inset-0 bg-black/30"></div>
           </TransitionChild>
 
-          <div className="fixed inset-0 overflow-hidden">
-            <div className="absolute inset-0 left-0 overflow-hidden flex">
-              <div className="fixed inset-y-0 left-0 flex">
-                <TransitionChild
-                  as={Fragment}
-                  enter="transform transition ease-in-out duration-100"
-                  enterFrom="-translate-x-full"
-                  enterTo="translate-x-0"
-                  leave="transform transition ease-in-out duration-100"
-                  leaveFrom="translate-x-0"
-                  leaveTo="-translate-x-full"
+          <div className="fixed inset-y-0 left-0">
+            <TransitionChild
+              as={Fragment}
+              enter="transform transition ease-in-out duration-100"
+              enterFrom="-translate-x-full"
+              enterTo="translate-x-0"
+              leave="transform transition ease-in-out duration-100"
+              leaveFrom="translate-x-0"
+              leaveTo="-translate-x-full"
+            >
+              <DialogPanel className="h-full overflow-y-auto border-r bg-white dark:bg-gray-900 dark:text-gray-50">
+                <img
+                  src="https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/public/sand_hamster_logo.jpg"
+                  alt="sand_hamster"
+                  className="m-1 h-9 w-9"
+                />
+                <div
+                  className="flex h-12 items-center px-3"
+                  onClick={toggleDarkMode}
                 >
-                  <DialogPanel className="bg-white dark:bg-gray-900 dark:text-gray-50 border-r h-full overflow-y-auto">
-                    <div className="flex p-1">
-                      <img
-                        src="https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/public/sand_hamster_logo.jpg"
-                        alt="sand_hamster"
-                        className="w-9 h-9 mx-auto"
-                      />
-                    </div>
-                    <div
-                      className="flex flex-col justify-center p-3 cursor-pointer"
-                      onClick={toggleDarkMode}
+                  {isDarkMode ? (
+                    <Moon className="h-5 w-5" />
+                  ) : (
+                    <Sun className="h-5 w-5" />
+                  )}
+                  <p className="pl-3">테마</p>
+                </div>
+                {user != null && (
+                  <>
+                    <Link
+                      className="flex h-12 items-center px-3"
+                      to="/mygallery"
                     >
-                      {isDarkMode ? (
-                        <Moon className="w-5 h-5 mx-auto" />
-                      ) : (
-                        <Sun className="w-5 h-5 mx-auto" />
-                      )}
-                      테마
-                    </div>
-                  </DialogPanel>
-                </TransitionChild>
-              </div>
-            </div>
+                      <Images className="h-5 w-5" />
+                      <p className="pl-3">갤러리</p>
+                    </Link>
+                    <Link className="flex h-12 items-center px-3" to="/mytag">
+                      <Tags className="h-5 w-5" />
+                      <p className="pl-3">태그</p>
+                    </Link>
+                    <Link
+                      className="flex h-12 items-center px-3"
+                      to="/mygalleryhasliketag"
+                    >
+                      <BookHeart className="h-5 w-5" />
+                      <p className="pl-3">좋아요</p>
+                    </Link>
+                  </>
+                )}
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </Dialog>
       </Transition>
