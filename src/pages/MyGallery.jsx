@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
 import GalleryList from "./GalleryList";
 import { useSearchParams } from "react-router-dom";
-import { useGalleryStore, useUserStore } from "../store";
+import { useGalleryLikeStore, useGalleryStore } from "../store";
 import ModalTagLike from "./ModalTagLike";
 import PaginationCursor from "./PaginationCursor";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
+import Pagination from "./Pagination";
 
 // 좋아요/싫어요 한 갤러리를 보여준다.
 export default function MyGallery() {
-  const { user } = useUserStore();
+  const { galleryLikeList, getGalleryLikeList } = useGalleryLikeStore();
   // 좋아요/싫어요 구분
   const [flag, setFlag] = useState(true);
+  const [maxPage, setMaxPage] = useState(1);
   const [searchParams] = useSearchParams();
-  const direction = searchParams.get("direction") || "next";
-  const cursorId = searchParams.get("cursorId");
+  const page = searchParams.get("page") || 1;
   const [isLoading, setIsLoading] = useState(true);
-  const { galleryList, getGalleryListByFlag } = useGalleryStore();
+  const { galleryList, getGalleriesByIds } = useGalleryStore();
   // 태그 모달창을 위한 변수들
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [selectedTag, setSelectedTag] = useState({
@@ -32,17 +33,22 @@ export default function MyGallery() {
     sub_bg_color: "FFCCCC",
     sub_text_color: "663333",
   });
-  async function getGalleryList() {
+  async function getGalleryList(selectedUGL) {
     setIsLoading(true);
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });
-    if (user != null) await getGalleryListByFlag(cursorId, direction, flag);
+    await getGalleriesByIds(selectedUGL.map((v) => v.g_id));
     setIsLoading(false);
   }
   useEffect(() => {
-    getGalleryList();
-  }, [flag, cursorId, direction]);
+    //galleryLikeList를 정렬하면 된다.
+    let selectedUGL = galleryLikeList.filter((v) => v.flag == flag);
+    const maxPage = Math.ceil(selectedUGL.length / 20);
+    setMaxPage(maxPage > 0 ? maxPage : 1);
+    console.log(selectedUGL.slice(20 * (page - 1), 20 * page));
+    getGalleryList(selectedUGL.slice(20 * (page - 1), 20 * page));
+  }, [page, flag, galleryLikeList]);
   return (
     <div className="flex grow flex-col bg-white p-1 dark:bg-black">
       <ModalTagLike
@@ -77,7 +83,7 @@ export default function MyGallery() {
         />
       </div>
       <div className="flex justify-center pt-5">
-        <PaginationCursor direction={direction} cursorId={cursorId} />
+        <Pagination page={page} maxPage={maxPage} />
       </div>
     </div>
   );

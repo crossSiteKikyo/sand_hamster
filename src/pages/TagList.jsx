@@ -4,12 +4,11 @@ import { useLongPress } from "use-long-press";
 
 export default function TagList({
   isLoading,
-  flag,
   setSelectedTag,
   setIsTagModalOpen,
 }) {
   const navigate = useNavigate();
-  const { tagsInfo } = useTagLikeStore();
+  const { tagLikeList, tagsInfo } = useTagLikeStore();
   const tagSearch = (tag) => {
     navigate({
       pathname: "/list",
@@ -56,13 +55,15 @@ export default function TagList({
             else if (name.startsWith("character:")) type = "character";
             else if (name.startsWith("male:")) type = "male";
             else if (name.startsWith("female:")) type = "female";
+            const userTagLike = tagLikeList.find((v) => v.tag_id == t.tag_id);
+            const userTagLikeFlag = userTagLike?.flag;
 
             return (
               <div
-                {...tagLongPressHandlers(t)}
                 key={t.tag_id}
-                className={`flex cursor-pointer flex-col rounded-sm border ${colorMap[type]} ${flag ? "border-pink-500" : "border-gray-500"}`}
+                className={`flex cursor-pointer flex-col rounded-sm border ${colorMap[type]} ${userTagLikeFlag ? "border-pink-500" : "border-gray-500"}`}
                 onClick={() => tagSearch(t)}
+                {...tagLongPressHandlers(t)}
               >
                 <p className="pl-1">{t.name}</p>
                 <div className="flex">

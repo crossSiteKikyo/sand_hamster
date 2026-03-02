@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import GalleryList from "./GalleryList";
 import { useSearchParams } from "react-router-dom";
 import { useGalleryStore, useTagLikeStore, useUserStore } from "../store";
 import ModalTagLike from "./ModalTagLike";
@@ -31,21 +30,22 @@ export default function MyTag() {
     sub_bg_color: "FFCCCC",
     sub_text_color: "663333",
   };
-  async function getTagList(selectedTags) {
+  async function getTagList(selectedUTL) {
     setIsLoading(true);
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });
-    await getTagsInfoByIds(selectedTags.map((t) => t.tag_id));
+    await getTagsInfoByIds(selectedUTL.map((v) => v.tag_id));
     setIsLoading(false);
   }
   useEffect(() => {
     //tagLikeList를 정렬하면 된다.
-    let selectedTags = tagLikeList.filter((v) => v.flag == flag);
-    setMaxPage(Math.ceil(selectedTags.length / 20));
-    console.log(selectedTags.slice(20 * (page - 1), 20 * page));
-    getTagList(selectedTags.slice(20 * (page - 1), 20 * page));
-  }, [page, flag]);
+    let selectedUTL = tagLikeList.filter((v) => v.flag == flag);
+    const maxPage = Math.ceil(selectedUTL.length / 20);
+    setMaxPage(maxPage > 0 ? maxPage : 1);
+    console.log(selectedUTL.slice(20 * (page - 1), 20 * page));
+    getTagList(selectedUTL.slice(20 * (page - 1), 20 * page));
+  }, [page, flag, tagLikeList]);
   return (
     <div className="flex grow flex-col bg-white p-1 dark:bg-black">
       <ModalTagLike
@@ -72,22 +72,12 @@ export default function MyTag() {
       <div className="grow">
         <TagList
           isLoading={isLoading}
-          flag={flag}
           setSelectedTag={setSelectedTag}
           setIsTagModalOpen={setIsTagModalOpen}
         />
-        {/* <GalleryList
-          galleryList={galleryList}
-          isLoading={isLoading}
-          setSelectedTag={setSelectedTag}
-          setIsTagModalOpen={setIsTagModalOpen}
-          setSelectedType={setSelectedType}
-          getGalleryList={getGalleryList}
-        /> */}
       </div>
       <div className="flex justify-center pt-5">
         <Pagination page={page} maxPage={maxPage} />
-        {/* <PaginationCursor direction={direction} cursorId={cursorId} /> */}
       </div>
     </div>
   );

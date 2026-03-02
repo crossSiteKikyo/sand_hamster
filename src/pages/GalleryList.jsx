@@ -64,7 +64,7 @@ export default function GalleryList({
           {galleryList.map((g) => {
             const date = new Date(g.date).toLocaleString();
             const type = typeList[g.type_id - 1];
-            const tag_ids = g.gallery_tag.map((v) => v.tag_id);
+            const tag_ids = g.tag_ids;
             const tags = tag_ids.map((tag_id) => tagMap.get(tag_id));
             const artists = tags.filter((v) => v.name.startsWith("artist:")); // 작가
             const groups = tags.filter((v) => v.name.startsWith("group:")); //그룹

@@ -9,7 +9,7 @@ import PaginationCursor from "./PaginationCursor";
 export default function MyGalleryHasLikeTag() {
   const { user } = useUserStore();
   const [searchParams] = useSearchParams();
-  const direction = searchParams.get("direction") || "next";
+  const direction = searchParams.get("direction");
   const cursorId = searchParams.get("cursorId");
   const [isLoading, setIsLoading] = useState(true);
   const { galleryList, getGalleryListHasLikeTag } = useGalleryStore();

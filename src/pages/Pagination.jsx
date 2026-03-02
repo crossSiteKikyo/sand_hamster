@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import MyButton from "../components/MyButton";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Pagination({ page, maxPage = 1 }) {
   const [searchParams] = useSearchParams();
@@ -49,17 +50,23 @@ export default function Pagination({ page, maxPage = 1 }) {
   return (
     <div className="flex w-full flex-col items-center">
       <div className="flex w-full max-w-2xl gap-1 pb-3">
-        <MyButton
-          onClick={() => pageMove(Number(page) - 3)}
-          className="grow cursor-pointer px-2"
-        >
-          &lt;
-        </MyButton>
+        {page == 1 ? (
+          <MyButton className="flex grow items-center justify-center px-2 opacity-50">
+            <ChevronLeft />
+          </MyButton>
+        ) : (
+          <MyButton
+            onClick={() => pageMove(Number(page) - 3)}
+            className="flex grow cursor-pointer items-center justify-center px-2"
+          >
+            <ChevronLeft />
+          </MyButton>
+        )}
         {pageList.map((v, idx) =>
           v == Number(page) ? (
             <MyButton
               key={idx}
-              className="grow px-2 text-xl font-light opacity-30"
+              className="grow px-2 text-xl font-light opacity-50"
             >
               {v}
             </MyButton>
@@ -73,12 +80,18 @@ export default function Pagination({ page, maxPage = 1 }) {
             </MyButton>
           ),
         )}
-        <MyButton
-          onClick={() => pageMove(Number(page) + 3)}
-          className="grow cursor-pointer px-2"
-        >
-          &gt;
-        </MyButton>
+        {page == maxPage ? (
+          <MyButton className="flex grow items-center justify-center px-2 opacity-50">
+            <ChevronRight />
+          </MyButton>
+        ) : (
+          <MyButton
+            onClick={() => pageMove(Number(page) + 3)}
+            className="flex grow cursor-pointer items-center justify-center px-2"
+          >
+            <ChevronRight />
+          </MyButton>
+        )}
       </div>
       <form onSubmit={handleSubmit}>
         <input
