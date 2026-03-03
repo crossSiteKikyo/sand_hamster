@@ -65,7 +65,12 @@ export default function TagList({
                 onClick={() => tagSearch(t)}
                 {...tagLongPressHandlers(t)}
               >
-                <p className="pl-1">{t.name}</p>
+                <div className="flex justify-between px-1">
+                  <p>{t.name}</p>
+                  <p className="text-sm text-gray-500">
+                    {new Date(userTagLike.date).toLocaleString()}
+                  </p>
+                </div>
                 <div className="flex">
                   <img
                     className="w-1/3"

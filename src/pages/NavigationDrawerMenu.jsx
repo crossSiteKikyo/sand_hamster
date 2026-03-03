@@ -75,18 +75,18 @@ export default function NavigationDrawerMenu({ className }) {
                       to="/mygallery"
                     >
                       <Images className="h-5 w-5" />
-                      <p className="pl-3">갤러리</p>
+                      <p className="pl-3">내 갤러리</p>
                     </Link>
                     <Link className="flex h-12 items-center px-3" to="/mytag">
                       <Tags className="h-5 w-5" />
-                      <p className="pl-3">태그</p>
+                      <p className="pl-3">내 태그</p>
                     </Link>
                     <Link
                       className="flex h-12 items-center px-3"
                       to="/mygalleryhasliketag"
                     >
                       <BookHeart className="h-5 w-5" />
-                      <p className="pl-3">좋아요</p>
+                      <p className="pl-3">내 좋아요</p>
                     </Link>
                   </>
                 )}

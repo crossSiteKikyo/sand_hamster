@@ -11,7 +11,7 @@ import {
   User,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useThemeStore, useUserStore } from "../store";
+import { useNotificationStore, useThemeStore, useUserStore } from "../store";
 import NavigationDrawerMenu from "./NavigationDrawerMenu";
 import { useState } from "react";
 import ModalSearch from "./ModalSearch";
@@ -19,6 +19,8 @@ import ModalSearch from "./ModalSearch";
 export default function Navigation() {
   const { isDarkMode, toggleDarkMode } = useThemeStore();
   const { user } = useUserStore();
+  const { getUnreadCount } = useNotificationStore();
+  const unreadCount = getUnreadCount();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   return (
     <>
@@ -46,9 +48,17 @@ export default function Navigation() {
             <Search className="h-5 w-5" />
             <p className="hidden pl-3 xl:block">검색</p>
           </div>
-          <Link className="flex h-12 items-center px-3" to="/notification">
+          <Link
+            className="relative flex h-12 items-center px-3"
+            to="/notification"
+          >
             <Bell className="h-5 w-5" />
-            <p className="hidden pl-3 xl:block">알림</p>
+            {unreadCount > 0 && (
+              <span className="absolute top-2 ml-2 h-4 w-4 items-center justify-center rounded-full bg-red-500 p-0 text-center text-xs">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+            <p className="hidden pl-3 xl:block">공지</p>
           </Link>
           <div className="flex h-12 items-center px-3" onClick={toggleDarkMode}>
             {isDarkMode ? (
@@ -62,18 +72,18 @@ export default function Navigation() {
             <>
               <Link className="flex h-12 items-center px-3" to="/mygallery">
                 <Images className="h-5 w-5" />
-                <p className="hidden pl-3 xl:block">갤러리</p>
+                <p className="hidden pl-3 xl:block">내 갤러리</p>
               </Link>
               <Link className="flex h-12 items-center px-3" to="/mytag">
                 <Tags className="h-5 w-5" />
-                <p className="hidden pl-3 xl:block">태그</p>
+                <p className="hidden pl-3 xl:block">내 태그</p>
               </Link>
               <Link
                 className="flex h-12 items-center px-3"
                 to="/mygalleryhasliketag"
               >
                 <BookHeart className="h-5 w-5" />
-                <p className="hidden pl-3 xl:block">좋아요</p>
+                <p className="hidden pl-3 xl:block">내 좋아요</p>
               </Link>
               <Link className="flex h-12 items-center px-3" to="/myinfo">
                 <User className="h-5 w-5" />
@@ -105,6 +115,11 @@ export default function Navigation() {
         </Link>
         <Link to="/notification" className="flex grow justify-center p-3">
           <Bell className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1 ml-4 h-4 w-4 items-center justify-center rounded-full bg-red-500 p-0 text-center text-xs">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
         </Link>
         {user ? (
           <Link to="/myinfo" className="flex grow justify-center p-3">

@@ -4,9 +4,11 @@ import { toast } from "react-toastify";
 import authApi from "./api/authApi";
 import galleryApi from "./api/galleryApi";
 import typeApi from "./api/typeApi";
+import notificationApi from "./api/notificationApi";
 import tagApi from "./api/tagApi";
 import tagLikeApi from "./api/tagLikeApi";
 import galleryLikeApi from "./api/galleryLikeApi";
+import { tagCache } from "./cacheDB";
 
 const useThemeStore = create(
   persist(
@@ -45,29 +47,71 @@ const useTypeStore = create((set) => ({
   },
 }));
 
+const useNotificationStore = create(
+  persist(
+    (set, get) => ({
+      notificationList: [],
+      readNotifications: [],
+      // 공지사항 데이터 불러오기 함수.
+      getNotificationList: async () => {
+        let { data, error } = await notificationApi.getNotificationList();
+        if (error) {
+          toast(`공지사항 정보 가져오기 에러`);
+        }
+        if (data) set({ notificationList: data });
+      },
+      addReadNotificationId: (id) =>
+        set((state) => ({
+          readNotifications: state.readNotifications.includes(id)
+            ? state.readNotifications
+            : [...state.readNotifications, id],
+        })),
+      //미읽음 개수 계산 함수(Derived State)
+      getUnreadCount: () => {
+        const { notificationList, readNotifications } = get();
+        const allIds = notificationList.map((v) => v.id);
+        return allIds.filter((id) => !readNotifications.includes(id)).length;
+      },
+    }),
+    {
+      name: "notification-storage",
+      // notificationList는 저장하지 않고, readNotifications만 저장한다.
+      partialize: (state) => ({ readNotifications: state.readNotifications }),
+    },
+  ),
+);
+
 const useTagStore = create((set) => ({
   tagMap: new Map(),
   tagList: [],
   getAllTag: async () => {
+    // 캐시에 저장된 제일 큰 tag_id값을 알아낸다.
+    const lastTag = await tagCache.getMaxId();
+    let lastTagId = lastTag == undefined ? 0 : lastTag.tag_id;
+    // lastTagId 보다 큰 tag_id를 가진 tag들만 서버에서 가져온다.
     // 태그 데이터를 더이상 가져올 수 없을 때까지 가져온다.
-    const newTagMap = new Map();
     let newTagList = [];
-    let page = 0;
     while (true) {
-      const { data, error } = await tagApi.getTagList(page);
+      const { data, error } = await tagApi.getTagList(lastTagId);
       if (error) {
         toast(`태그 가져오기 에러: ${i}번째 페이지`);
         break;
       }
       if (data && data.length > 0) {
-        data.forEach((tag) => newTagMap.set(tag.tag_id, tag));
         newTagList = [...newTagList, ...data];
-        page++;
+        // 응답받은 태그들의 가장 마지막 태그의 아이디
+        lastTagId = data[data.length - 1].tag_id;
       } else break;
+      if (data.length < 1000) break;
     }
-    console.log(newTagList);
-    console.log(newTagMap);
-    set({ tagMap: newTagMap, tagList: newTagList });
+    // 캐시에 태그정보 벌크로 추가.
+    await tagCache.bulkAdd(newTagList);
+    const newTagMap = new Map();
+    const allTagList = await tagCache.getAllTagList();
+    allTagList.forEach((tag) => newTagMap.set(tag.tag_id, tag));
+    // console.log(allTagList);
+    // console.log(newTagMap);
+    set({ tagMap: newTagMap, tagList: allTagList });
   },
 }));
 
@@ -167,34 +211,6 @@ const useGalleryStore = create((set) => ({
       console.log(data);
     }
   },
-  // getGalleryListByFlag: async (cursor_id, direction, flag) => {
-  //   let { data, error } = await galleryApi.getGalleryListByFlag(
-  //     cursor_id,
-  //     direction == "next" ? "next" : "prev",
-  //     flag,
-  //   );
-  //   if (data) {
-  //     // 21개가 와야 더 데이터가 있는 것이다.
-  //     if (data.length == pageSize + 1) {
-  //       set({ has_more: true });
-  //       if (direction == "next") {
-  //         set({ galleryList: data.slice(0, pageSize) });
-  //         set({ firstGid: data[0].g_id, lastGid: data[data.length - 2].g_id });
-  //       } else {
-  //         set({ galleryList: data.slice(1, pageSize + 1) });
-  //         set({ firstGid: data[1].g_id, lastGid: data[data.length - 1].g_id });
-  //       }
-  //     } else if (data.length > 0) {
-  //       set({ has_more: false, galleryList: data });
-  //       set({ firstGid: data[0].g_id, lastGid: data[data.length - 1].g_id });
-  //     } else {
-  //       set({ has_more: false, galleryList: [] });
-  //       set({ firstGid: cursor_id, lastGid: cursor_id });
-  //     }
-  //   }
-  //   console.log(data);
-  //   if (error) toast("좋아요/싫어요 갤러리 가져오기 오류");
-  // },
   getGalleryListHasLikeTag: async (cursor_id, direction) => {
     direction = direction == "prev" ? "prev" : "next";
     let { data, error } = await galleryApi.getGalleryListHasLikeTag(
@@ -229,6 +245,7 @@ export {
   useThemeStore,
   useUserStore,
   useTypeStore,
+  useNotificationStore,
   useTagStore,
   useTagLikeStore,
   useGalleryStore,

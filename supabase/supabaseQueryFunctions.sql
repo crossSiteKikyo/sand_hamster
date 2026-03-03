@@ -10,8 +10,8 @@ create or replace function get_galleries_by_ids(
   p_gallery_ids bigint[]
 )
 returns table (
-  g_id INT8, title TEXT, thumb1 TEXT, thumb2 TEXT, date TIMESTAMPTZ, filecount INT, 
-  type_id INT8, like_count INT, dislike_count INT, view_count INT, tag_ids BIGINT[]
+  g_id INT8, title TEXT, thumb1 TEXT, thumb2 TEXT, date TIMESTAMPTZ, 
+  filecount INT, type_id INT8, view_count INT, tag_ids BIGINT[]
 )
 language plpgsql
 as $$
@@ -19,8 +19,8 @@ begin
   return query
   -- unnest와 with ordinality를 사용하여 프론트엔드가 보내준 배열 순서를 엄격히 유지합니다.
   select 
-    g.g_id, g.title, g.thumb1, g.thumb2, g.date, g.filecount, 
-    g.type_id, g.like_count, g.dislike_count, g.view_count,
+    g.g_id, g.title, g.thumb1, g.thumb2, g.date, 
+    g.filecount, g.type_id, g.view_count,
     array(select gt.tag_id from gallery_tag gt where gt.g_id = g.g_id) as tag_ids
   from unnest(p_gallery_ids) with ordinality as input(gid, ord)
   join gallery g on g.g_id = input.gid
@@ -33,7 +33,7 @@ create or replace function get_tags_info_by_ids(
   p_tag_ids bigint[]
 )
 returns table (
-  tag_id INT8, name TEXT, like_count INT, dislike_count INT, thumbnails TEXT[]
+  tag_id INT8, name TEXT, thumbnails TEXT[]
 )
 language plpgsql
 as $$
@@ -41,8 +41,7 @@ begin
   return query
   -- unnest와 with ordinality를 사용하여 보낸 배열의 순서를 보존합니다.
   select 
-    t.tag_id, t.name, 
-    t.like_count, t.dislike_count,
+    t.tag_id, t.name,
     array(
       select g.thumb1 
       from gallery_tag gt 
@@ -64,8 +63,8 @@ create or replace function get_user_galleries_only_like_tag(
   p_direction text default 'next' -- 'next' 또는 'prev'
 )
 returns table (
-  g_id INT8, title TEXT, thumb1 TEXT, thumb2 TEXT, date TIMESTAMPTZ, filecount INT, 
-  type_id INT8, like_count INT, dislike_count INT, view_count INT, tag_ids BIGINT[]
+  g_id INT8, title TEXT, thumb1 TEXT, thumb2 TEXT, date TIMESTAMPTZ, 
+  filecount INT, type_id INT8, view_count INT, tag_ids BIGINT[]
 )
 language plpgsql
 as $$
@@ -90,8 +89,8 @@ begin
       case when p_direction = 'prev' then gt.g_id end asc
     limit 21
   )
-  select g.g_id, g.title, g.thumb1, g.thumb2, g.date, g.filecount, 
-         g.type_id, g.like_count, g.dislike_count, g.view_count,
+  select g.g_id, g.title, g.thumb1, g.thumb2, g.date, 
+         g.filecount, g.type_id, g.view_count,
          array(select gt.tag_id from gallery_tag gt where gt.g_id = g.g_id) as tag_ids
   from target_ids ti 
   join gallery g on ti.g_id = g.g_id
@@ -108,8 +107,8 @@ create or replace function search_galleries_smart_cursor(
   p_direction text default 'next' -- 'next' 또는 'prev'
 )
 returns table (
-  g_id INT8, title TEXT, thumb1 TEXT, thumb2 TEXT, date TIMESTAMPTZ, filecount INT, 
-  type_id INT8, like_count INT, dislike_count INT, view_count INT, tag_ids BIGINT[]
+  g_id INT8, title TEXT, thumb1 TEXT, thumb2 TEXT, date TIMESTAMPTZ, 
+  filecount INT, type_id INT8, view_count INT, tag_ids BIGINT[]
 )
 language plpgsql
 as $$
@@ -158,8 +157,8 @@ begin
         case when p_direction = 'prev' then g.g_id end asc
       limit 21
     )
-    select rd.g_id, rd.title, rd.thumb1, rd.thumb2, rd.date, rd.filecount, 
-           rd.type_id, rd.like_count, rd.dislike_count, rd.view_count,
+    select rd.g_id, rd.title, rd.thumb1, rd.thumb2, 
+           rd.date, rd.filecount, rd.type_id, rd.view_count,
            array(select gt.tag_id from gallery_tag gt where gt.g_id = rd.g_id) as tag_ids
     from raw_data rd
     order by rd.g_id desc; -- 항상 최신순으로 결과 반환
@@ -210,8 +209,8 @@ begin
         case when p_direction = 'prev' then g.g_id end asc
       limit 21
     )
-    select rd.g_id, rd.title, rd.thumb1, rd.thumb2, rd.date, rd.filecount, 
-           rd.type_id, rd.like_count, rd.dislike_count, rd.view_count,
+    select rd.g_id, rd.title, rd.thumb1, rd.thumb2, 
+           rd.date, rd.filecount, rd.type_id, rd.view_count,
            array(select gt.tag_id from gallery_tag gt where gt.g_id = rd.g_id) as tag_ids
     from raw_data rd
     order by rd.g_id desc;

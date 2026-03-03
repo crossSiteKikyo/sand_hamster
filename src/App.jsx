@@ -3,6 +3,7 @@ import "./App.css";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import {
   useGalleryLikeStore,
+  useNotificationStore,
   useTagLikeStore,
   useTagStore,
   useThemeStore,
@@ -30,6 +31,7 @@ function App() {
   const { getAllTag } = useTagStore();
   const { getTagLikeList } = useTagLikeStore();
   const { getGalleryLikeList } = useGalleryLikeStore();
+  const { getNotificationList } = useNotificationStore();
   const location = useLocation(); // 현재 경로를 가져옵니다.
   const isHomePage = location.pathname === "/";
   const [isInitializing, setIsInitializing] = useState(true);
@@ -43,6 +45,8 @@ function App() {
     await getTypeList();
     setLoadingInfo("태그 정보 받아오는중...");
     await getAllTag();
+    setLoadingInfo("공지사항 정보 받아오는중...");
+    await getNotificationList();
     setLoadingInfo("태그 좋아요/싫어요 정보 받아오는중...");
     await getTagLikeList();
     setLoadingInfo("갤러리 좋아요/싫어요 정보 받아오는중...");
