@@ -3,7 +3,6 @@ import GalleryList from "./GalleryList";
 import { useSearchParams } from "react-router-dom";
 import { useGalleryLikeStore, useGalleryStore } from "../store";
 import ModalTagLike from "./ModalTagLike";
-import PaginationCursor from "./PaginationCursor";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import Pagination from "./Pagination";
 
@@ -16,7 +15,7 @@ export default function MyGallery() {
   const [searchParams] = useSearchParams();
   const page = searchParams.get("page") || 1;
   const [isLoading, setIsLoading] = useState(true);
-  const { galleryList, getGalleriesByIds } = useGalleryStore();
+  const { getGalleriesByIds } = useGalleryStore();
   // 태그 모달창을 위한 변수들
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [selectedTag, setSelectedTag] = useState({
@@ -74,7 +73,6 @@ export default function MyGallery() {
       </div>
       <div className="grow">
         <GalleryList
-          galleryList={galleryList}
           isLoading={isLoading}
           setSelectedTag={setSelectedTag}
           setIsTagModalOpen={setIsTagModalOpen}

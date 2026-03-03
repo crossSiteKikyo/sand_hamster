@@ -2,17 +2,17 @@ import { useState } from "react";
 import Tag from "../components/Tag";
 import {
   useGalleryLikeStore,
+  useGalleryStore,
   useTagStore,
   useTypeStore,
   useUserStore,
 } from "../store";
 import TagMain from "../components/TagMain";
-import { Eye, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useLongPress } from "use-long-press";
 import ModalGalleryLike from "./ModalGalleryLike";
 
 export default function GalleryList({
-  galleryList,
   isLoading,
   setSelectedTag,
   setIsTagModalOpen,
@@ -23,6 +23,7 @@ export default function GalleryList({
   const { tagMap } = useTagStore();
   const { user } = useUserStore();
   const { galleryLikeList } = useGalleryLikeStore();
+  const { galleryIds, galleryMap } = useGalleryStore();
   // 갤러리 모달창을 위한 변수들
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
   const [selectedGallery, setSelectedGallery] = useState({
@@ -42,12 +43,14 @@ export default function GalleryList({
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-1 lg:grid-cols-2">
-        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
-        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
-        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
-        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
-        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
-        <div className="flex h-96 flex-col justify-between rounded-sm border"></div>
+        {[...Array(6)].map((v, i) => (
+          <div
+            key={i}
+            className="flex h-96 animate-pulse flex-col items-center justify-center rounded-sm border"
+          >
+            <Loader2 className="h-10 animate-spin" />
+          </div>
+        ))}
       </div>
     );
   }
@@ -59,9 +62,19 @@ export default function GalleryList({
         getGalleryList={getGalleryList}
         gallery={selectedGallery}
       />
-      {galleryList.length > 0 ? (
+      {galleryIds.length > 0 ? (
         <div className="grid grid-cols-1 gap-1 lg:grid-cols-2">
-          {galleryList.map((g) => {
+          {galleryIds.map((g_id) => {
+            const g = galleryMap.get(g_id);
+            if (g == undefined)
+              return (
+                <div
+                  key={g_id}
+                  className="flex h-96 animate-pulse flex-col items-center justify-center rounded-sm border"
+                >
+                  <Loader2 className="h-10 animate-spin" />
+                </div>
+              );
             const date = new Date(g.date).toLocaleString();
             const type = typeList[g.type_id - 1];
             const tag_ids = g.tag_ids;
@@ -206,30 +219,12 @@ export default function GalleryList({
                   </div>
                 </div>
                 {/* 하단 정보 */}
-                <div>
-                  <div className="flex justify-between px-1">
-                    <p className="flex gap-1 text-gray-500">
-                      <ThumbsUp className="w-4" />
-                      {g.like_count}
-                    </p>
-                    <p className="flex gap-1 text-gray-500">
-                      <Eye className="w-4" />
-                      {g.view_count}
-                    </p>
-                    <p className="flex gap-1 text-gray-500">
-                      <ThumbsDown className="w-4" />
-                      {g.dislike_count}
-                    </p>
-                  </div>
-                  <div className="flex justify-between px-1">
-                    <p className="text-gray-500">{g.g_id}</p>
-                    <p
-                      className={`text-[#${type.title_bg_color}] font-semibold`}
-                    >
-                      {date}
-                    </p>
-                    <p className="text-gray-500">{g.filecount}p</p>
-                  </div>
+                <div className="flex justify-between px-1">
+                  <p className="text-gray-500">{g.g_id}</p>
+                  <p className={`text-[#${type.title_bg_color}] font-semibold`}>
+                    {date}
+                  </p>
+                  <p className="text-gray-500">{g.filecount}p</p>
                 </div>
               </div>
             );

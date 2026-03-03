@@ -12,7 +12,7 @@ export default function MyGalleryHasLikeTag() {
   const direction = searchParams.get("direction");
   const cursorId = searchParams.get("cursorId");
   const [isLoading, setIsLoading] = useState(true);
-  const { galleryList, getGalleryListHasLikeTag } = useGalleryStore();
+  const { getGalleryListHasLikeTag } = useGalleryStore();
   // 태그 모달창을 위한 변수들
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [selectedTag, setSelectedTag] = useState({
@@ -51,7 +51,6 @@ export default function MyGalleryHasLikeTag() {
       />
       <div className="grow">
         <GalleryList
-          galleryList={galleryList}
           isLoading={isLoading}
           setSelectedTag={setSelectedTag}
           setIsTagModalOpen={setIsTagModalOpen}

@@ -18,15 +18,14 @@ export default function ListPage({}) {
   const cursorId = searchParams.get("cursorId");
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { galleryList, getGalleryListCursor, getGalleryListById } =
-    useGalleryStore();
+  const { getGalleryListCursor, getGalleryListById } = useGalleryStore();
   async function getGalleryList() {
     setIsLoading(true);
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });
     if (galleryId != "") await getGalleryListById(galleryId);
-    await getGalleryListCursor(title, tagIds, cursorId, direction);
+    else await getGalleryListCursor(title, tagIds, cursorId, direction);
     setIsLoading(false);
   }
   useEffect(() => {
@@ -83,7 +82,6 @@ export default function ListPage({}) {
       </div>
       <div className="grow">
         <GalleryList
-          galleryList={galleryList}
           isLoading={isLoading}
           setSelectedTag={setSelectedTag}
           setIsTagModalOpen={setIsTagModalOpen}

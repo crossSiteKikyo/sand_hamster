@@ -1,4 +1,24 @@
 
+-- id들로 갤러리 정보 검색 함수. view_count를 ui에서 보이지 않게 함으로서 필요 없어짐.
+create or replace function get_galleries_by_ids(
+  p_gallery_ids bigint[]
+)
+returns table (
+  g_id INT8, view_count INT
+)
+language plpgsql
+as $$
+begin
+  return query
+  -- unnest와 with ordinality를 사용하여 프론트엔드가 보내준 배열 순서를 엄격히 유지합니다.
+  select 
+    g.g_id, g.view_count
+  from unnest(p_gallery_ids) with ordinality as input(gid, ord)
+  join gallery g on g.g_id = input.gid
+  order by input.ord; -- 배열 순서대로 정렬하여 반환
+end;
+$$;
+
 -- 유저 좋아요/싫어요 갤러리 검색 함수
 -- 브라우저에서 g_id정보들을 들고있기 때문에, 이 함수가 필요 없어짐.
 create or replace function get_user_galleries_like(

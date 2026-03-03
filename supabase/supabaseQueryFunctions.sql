@@ -5,8 +5,8 @@
 -- 싫어하는 태그가 하나라도 포함된 갤러리 제외하는 것은 not Exists의 서브쿼리로 한다.
 -- 한 요청당 반환 갤러리 수는 20개
 
--- id들로 갤러리 정보 검색 함수.
-create or replace function get_galleries_by_ids(
+-- id들로 갤러리 상세 정보 검색 함수.
+create or replace function get_galleries_detail_by_ids(
   p_gallery_ids bigint[]
 )
 returns table (
@@ -62,39 +62,31 @@ create or replace function get_user_galleries_only_like_tag(
   p_cursor_id bigint default null,
   p_direction text default 'next' -- 'next' 또는 'prev'
 )
-returns table (
-  g_id INT8, title TEXT, thumb1 TEXT, thumb2 TEXT, date TIMESTAMPTZ, 
-  filecount INT, type_id INT8, view_count INT, tag_ids BIGINT[]
-)
+returns bigint[] -- 반환 타입을 bigint배열로 변경.
 language plpgsql
 as $$
 #variable_conflict use_column
 begin
-  return query
-  with target_ids as (
-    select gt.g_id
-    from gallery_tag gt
-    inner join user_tag_like utl on gt.tag_id = utl.tag_id
-    where utl.user_id = auth.uid()
-      and utl.flag = true
-      and (
-        case 
-          when p_direction = 'next' then (p_cursor_id is null or gt.g_id < p_cursor_id)
-          when p_direction = 'prev' then (gt.g_id > p_cursor_id)
-        end
-      )
-    group by gt.g_id
-    order by 
-      case when p_direction = 'next' then gt.g_id end desc,
-      case when p_direction = 'prev' then gt.g_id end asc
-    limit 21
-  )
-  select g.g_id, g.title, g.thumb1, g.thumb2, g.date, 
-         g.filecount, g.type_id, g.view_count,
-         array(select gt.tag_id from gallery_tag gt where gt.g_id = g.g_id) as tag_ids
-  from target_ids ti 
-  join gallery g on ti.g_id = g.g_id
-  order by g.g_id desc;
+  return (
+    select array(
+      select gt.g_id
+      from gallery_tag gt
+      inner join user_tag_like utl on gt.tag_id = utl.tag_id
+      where utl.user_id = auth.uid()
+        and utl.flag = true
+        and (
+          case 
+            when p_direction = 'next' then (p_cursor_id is null or gt.g_id < p_cursor_id)
+            when p_direction = 'prev' then (gt.g_id > p_cursor_id)
+          end
+        )
+      group by gt.g_id
+      order by 
+        case when p_direction = 'next' then gt.g_id end desc,
+        case when p_direction = 'prev' then gt.g_id end asc
+      limit 21
+    )
+  );
 end;
 $$;
 
@@ -106,10 +98,7 @@ create or replace function search_galleries_smart_cursor(
   p_cursor_id bigint default null,
   p_direction text default 'next' -- 'next' 또는 'prev'
 )
-returns table (
-  g_id INT8, title TEXT, thumb1 TEXT, thumb2 TEXT, date TIMESTAMPTZ, 
-  filecount INT, type_id INT8, view_count INT, tag_ids BIGINT[]
-)
+returns bigint[]
 language plpgsql
 as $$
 #variable_conflict use_column
@@ -121,99 +110,91 @@ begin
     ---------------------------------------------------------
     -- 1. 익명 사용자용 (차단 필터 없음)
     ---------------------------------------------------------
-    return query
-    with raw_data as (
-      select g.*
-      from gallery g
-      -- 태그가 있을 때만 JOIN 효율이 나도록 처리 (데이터가 많을 시 성능 핵심)
-      left join gallery_tag gt on (
-        search_tags is not null and 
-        array_length(search_tags, 1) is not null and 
-        g.g_id = gt.g_id
-      )
-      where (p_title = '' or g.title ilike '%' || p_title || '%')
-        -- [방향성 필터]
-        and (
-          case 
-            when p_direction = 'next' then (p_cursor_id is null or g.g_id < p_cursor_id)
-            when p_direction = 'prev' then (g.g_id > p_cursor_id)
-          end
+    return (
+      select array(
+        select g.g_id
+        from gallery g
+        -- 태그가 있을 때만 JOIN 효율이 나도록 처리 (데이터가 많을 시 성능 핵심)
+        left join gallery_tag gt on (
+          search_tags is not null and 
+          array_length(search_tags, 1) is not null and 
+          g.g_id = gt.g_id
         )
-        -- [태그 포함 필터] 지적해주신 빈 배열 대응 로직
-        and (
+        where (p_title = '' or g.title ilike '%' || p_title || '%')
+          -- [방향성 필터]
+          and (
+            case 
+              when p_direction = 'next' then (p_cursor_id is null or g.g_id < p_cursor_id)
+              when p_direction = 'prev' then (g.g_id > p_cursor_id)
+            end
+          )
+          -- [태그 포함 필터] 지적해주신 빈 배열 대응 로직
+          and (
+            search_tags is null or 
+            array_length(search_tags, 1) is null or 
+            gt.tag_id = any(search_tags)
+          )
+        group by g.g_id
+        -- [태그 개수 일치 필터] 지적해주신 빈 배열 대응 로직
+        having (
           search_tags is null or 
           array_length(search_tags, 1) is null or 
-          gt.tag_id = any(search_tags)
+          count(gt.tag_id) = array_length(search_tags, 1)
         )
-      group by g.g_id
-      -- [태그 개수 일치 필터] 지적해주신 빈 배열 대응 로직
-      having (
-        search_tags is null or 
-        array_length(search_tags, 1) is null or 
-        count(gt.tag_id) = array_length(search_tags, 1)
+        order by 
+          case when p_direction = 'next' then g.g_id end desc,
+          case when p_direction = 'prev' then g.g_id end asc
+        limit 21
       )
-      order by 
-        case when p_direction = 'next' then g.g_id end desc,
-        case when p_direction = 'prev' then g.g_id end asc
-      limit 21
-    )
-    select rd.g_id, rd.title, rd.thumb1, rd.thumb2, 
-           rd.date, rd.filecount, rd.type_id, rd.view_count,
-           array(select gt.tag_id from gallery_tag gt where gt.g_id = rd.g_id) as tag_ids
-    from raw_data rd
-    order by rd.g_id desc; -- 항상 최신순으로 결과 반환
+    );
 
   else
     ---------------------------------------------------------
     -- 2. 로그인 사용자용 (싫어하는 갤러리/태그 제외)
     ---------------------------------------------------------
-    return query
-    with raw_data as (
-      select g.*
-      from gallery g
-      left join gallery_tag gt on (
-        search_tags is not null and 
-        array_length(search_tags, 1) is not null and 
-        g.g_id = gt.g_id
-      )
-      where (p_title = '' or g.title ilike '%' || p_title || '%')
-        and (
-          case 
-            when p_direction = 'next' then (p_cursor_id is null or g.g_id < p_cursor_id)
-            when p_direction = 'prev' then (g.g_id > p_cursor_id)
-          end
+    return (
+      select array(
+        select g.g_id
+        from gallery g
+        left join gallery_tag gt on (
+          search_tags is not null and 
+          array_length(search_tags, 1) is not null and 
+          g.g_id = gt.g_id
         )
-        -- [유저 제외 필터]
-        and not exists (
-          select 1 from user_gallery_like ugl 
-          where ugl.g_id = g.g_id and ugl.user_id = auth.uid() and ugl.flag = false
-        )
-        and not exists (
-          select 1 from gallery_tag gt_exc
-          join user_tag_like utl on gt_exc.tag_id = utl.tag_id
-          where gt_exc.g_id = g.g_id and utl.user_id = auth.uid() and utl.flag = false
-        )
-        and (
+        where (p_title = '' or g.title ilike '%' || p_title || '%')
+          and (
+            case 
+              when p_direction = 'next' then (p_cursor_id is null or g.g_id < p_cursor_id)
+              when p_direction = 'prev' then (g.g_id > p_cursor_id)
+            end
+          )
+          -- [유저 제외 필터]
+          and not exists (
+            select 1 from user_gallery_like ugl 
+            where ugl.g_id = g.g_id and ugl.user_id = auth.uid() and ugl.flag = false
+          )
+          and not exists (
+            select 1 from gallery_tag gt_exc
+            join user_tag_like utl on gt_exc.tag_id = utl.tag_id
+            where gt_exc.g_id = g.g_id and utl.user_id = auth.uid() and utl.flag = false
+          )
+          and (
+            search_tags is null or 
+            array_length(search_tags, 1) is null or 
+            gt.tag_id = any(search_tags)
+          )
+        group by g.g_id
+        having (
           search_tags is null or 
           array_length(search_tags, 1) is null or 
-          gt.tag_id = any(search_tags)
+          count(gt.tag_id) = array_length(search_tags, 1)
         )
-      group by g.g_id
-      having (
-        search_tags is null or 
-        array_length(search_tags, 1) is null or 
-        count(gt.tag_id) = array_length(search_tags, 1)
+        order by 
+          case when p_direction = 'next' then g.g_id end desc,
+          case when p_direction = 'prev' then g.g_id end asc
+        limit 21
       )
-      order by 
-        case when p_direction = 'next' then g.g_id end desc,
-        case when p_direction = 'prev' then g.g_id end asc
-      limit 21
-    )
-    select rd.g_id, rd.title, rd.thumb1, rd.thumb2, 
-           rd.date, rd.filecount, rd.type_id, rd.view_count,
-           array(select gt.tag_id from gallery_tag gt where gt.g_id = rd.g_id) as tag_ids
-    from raw_data rd
-    order by rd.g_id desc;
+    );
   end if;
 end;
 $$;

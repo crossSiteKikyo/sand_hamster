@@ -23,6 +23,7 @@ import SignUp from "./pages/SignUp";
 import MyGallery from "./pages/MyGallery";
 import MyTag from "./pages/MyTag";
 import MyGalleryHasLikeTag from "./pages/MyGalleryHasLikeTag";
+import { galleryCache } from "./cacheDB";
 
 function App() {
   const { isDarkMode } = useThemeStore();
@@ -51,6 +52,8 @@ function App() {
     await getTagLikeList();
     setLoadingInfo("갤러리 좋아요/싫어요 정보 받아오는중...");
     await getGalleryLikeList();
+    setLoadingInfo("오래된 캐시 정리중...");
+    await galleryCache.cleanOldCache();
     setIsInitializing(false);
   };
   const afterLogin = async () => {
