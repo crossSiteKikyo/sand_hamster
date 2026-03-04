@@ -12,7 +12,8 @@ export default function ModalTagLike({
   _type,
 }) {
   const { user } = useUserStore();
-  const { tagLikeList, getTagLikeList } = useTagLikeStore();
+  const { tagLikeList, addTagLike, updateTagLike, deleteTagLike } =
+    useTagLikeStore();
   const colorMap = {
     artist: `dark:bg-[#${_type.title_bg_color}] bg-[#${_type.sub_bg_color}]`,
     group: `dark:bg-[#${_type.title_bg_color}] bg-[#${_type.sub_bg_color}]`,
@@ -48,6 +49,7 @@ export default function ModalTagLike({
           selected == "like" ? true : false,
         );
         if (error) toast("태그 정보 insert 에러");
+        else addTagLike(tag.tag_id, selected == "like" ? true : false);
       } else {
         let { error } = await tagLikeApi.updateTagLike(
           user.id,
@@ -55,9 +57,10 @@ export default function ModalTagLike({
           selected == "like" ? true : false,
         );
         if (error) toast("태그 정보 update 에러");
+        else updateTagLike(tag.tag_id, selected == "like" ? true : false);
       }
       // dislike를 클릭했다면 갤러리를 다시 로딩해야한다.
-      if (selected == "dislike") getGalleryList();
+      if (selected == "dislike" && getGalleryList) getGalleryList();
     }
     // 상태없음을 클릭했으면, delete하거나 아무것도 안함.
     else if (selected == "none") {
@@ -65,9 +68,9 @@ export default function ModalTagLike({
       if (tagLikeText != "none") {
         let { error } = await tagLikeApi.deleteTagLike(user.id, tag.tag_id);
         if (error) toast("태그 정보 delete 에러");
+        else deleteTagLike(tag.tag_id);
       }
     }
-    getTagLikeList();
     onClose();
   };
   return (

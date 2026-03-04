@@ -11,7 +11,12 @@ export default function ModalGalleryLike({
   gallery,
 }) {
   const { user } = useUserStore();
-  const { galleryLikeList, getGalleryLikeList } = useGalleryLikeStore();
+  const {
+    galleryLikeList,
+    addGalleryLike,
+    updateGalleryLike,
+    deleteGalleryLike,
+  } = useGalleryLikeStore();
   let galleryLike = galleryLikeList.find((v) => v.g_id == gallery.g_id);
   let galleryLikeText = "none";
   if (galleryLike !== undefined) {
@@ -31,6 +36,7 @@ export default function ModalGalleryLike({
           selected == "like" ? true : false,
         );
         if (error) toast("갤러리 좋아요/싫어요 정보 insert 에러");
+        else addGalleryLike(gallery.g_id, selected == "like" ? true : false);
       } else {
         let { error } = await galleryLikeApi.updateGalleryLike(
           user.id,
@@ -38,9 +44,10 @@ export default function ModalGalleryLike({
           selected == "like" ? true : false,
         );
         if (error) toast("갤러리 좋아요/싫어요 정보 update 에러");
+        else updateGalleryLike(gallery.g_id, selected == "like" ? true : false);
       }
       // dislike를 클릭했다면 갤러리를 다시 로딩해야한다.
-      if (selected == "dislike") getGalleryList();
+      if (selected == "dislike" && getGalleryList) getGalleryList();
     }
     // 상태없음을 클릭했으면, delete하거나 아무것도 안함.
     else if (selected == "none") {
@@ -51,9 +58,9 @@ export default function ModalGalleryLike({
           gallery.g_id,
         );
         if (error) toast("갤러리 좋아요/싫어요 정보 delete 에러");
+        else deleteGalleryLike(gallery.g_id);
       }
     }
-    getGalleryLikeList();
     onClose();
   };
   return (

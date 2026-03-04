@@ -51,9 +51,9 @@ export default function MyTag() {
       <ModalTagLike
         isOpen={isTagModalOpen}
         onClose={() => setIsTagModalOpen(false)}
-        getGalleryList={getTagList}
         tag={selectedTag}
         _type={selectedType}
+        // 재로딩은 이 컴포넌트에서 하기 때문에 getGalleryList를 넘기면 안됨.
       />
       <div className="mb-2 flex justify-end gap-2">
         <button

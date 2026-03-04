@@ -8,7 +8,7 @@ import Pagination from "./Pagination";
 
 // 좋아요/싫어요 한 갤러리를 보여준다.
 export default function MyGallery() {
-  const { galleryLikeList, getGalleryLikeList } = useGalleryLikeStore();
+  const { galleryLikeList } = useGalleryLikeStore();
   // 좋아요/싫어요 구분
   const [flag, setFlag] = useState(true);
   const [maxPage, setMaxPage] = useState(1);
@@ -53,9 +53,9 @@ export default function MyGallery() {
       <ModalTagLike
         isOpen={isTagModalOpen}
         onClose={() => setIsTagModalOpen(false)}
-        getGalleryList={getGalleryList}
         tag={selectedTag}
         _type={selectedType}
+        // 재로딩은 이 컴포넌트에서 하기 때문에 getGalleryList를 넘기면 안됨.
       />
       <div className="mb-2 flex justify-end gap-2">
         <button
@@ -77,7 +77,7 @@ export default function MyGallery() {
           setSelectedTag={setSelectedTag}
           setIsTagModalOpen={setIsTagModalOpen}
           setSelectedType={setSelectedType}
-          getGalleryList={getGalleryList}
+          // 재로딩은 이 컴포넌트에서 하기 때문에 getGalleryList를 넘기면 안됨.
         />
       </div>
       <div className="flex justify-center pt-5">

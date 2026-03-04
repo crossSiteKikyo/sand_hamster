@@ -115,7 +115,7 @@ const useTagStore = create((set) => ({
   },
 }));
 
-const useTagLikeStore = create((set) => ({
+const useTagLikeStore = create((set, get) => ({
   tagLikeList: [],
   tagsInfo: [],
   getTagLikeList: async () => {
@@ -142,9 +142,32 @@ const useTagLikeStore = create((set) => ({
       console.log(data);
     }
   },
+  addTagLike: (tag_id, flag) => {
+    let newTagLikeList = [...get().tagLikeList];
+    newTagLikeList.push({ tag_id, flag, date: Date.now() });
+    set({
+      tagLikeList: newTagLikeList.toSorted(
+        (a, b) => new Date(b.date) - new Date(a.date),
+      ),
+    });
+  },
+  updateTagLike: (tag_id, flag) => {
+    let newTagLikeList = [...get().tagLikeList];
+    for (let i = 0; i < newTagLikeList.length; i++) {
+      if (newTagLikeList[i].tag_id == tag_id) {
+        newTagLikeList[i].flag = flag;
+        newTagLikeList[i].date = Date.now();
+        break;
+      }
+    }
+    set({ tagLikeList: newTagLikeList });
+  },
+  deleteTagLike: (tag_id) => {
+    set({ tagLikeList: get().tagLikeList.filter((v) => v.tag_id != tag_id) });
+  },
 }));
 
-const useGalleryLikeStore = create((set) => ({
+const useGalleryLikeStore = create((set, get) => ({
   galleryLikeList: [],
   getGalleryLikeList: async () => {
     let { data, error } = await galleryLikeApi.getGalleryLikeList();
@@ -156,6 +179,31 @@ const useGalleryLikeStore = create((set) => ({
       set({ galleryLikeList: data.toSorted((a, b) => b.g_id - a.g_id) });
       console.log(data);
     }
+  },
+  addGalleryLike: (g_id, flag) => {
+    let newGalleryLikeList = [...get().galleryLikeList];
+    newGalleryLikeList.push({ g_id, flag });
+    set({
+      galleryLikeList: newGalleryLikeList.toSorted((a, b) => b.g_id - a.g_id),
+    });
+    console.log(newGalleryLikeList.toSorted((a, b) => b.g_id - a.g_id));
+  },
+  updateGalleryLike: (g_id, flag) => {
+    let newGalleryLikeList = [...get().galleryLikeList];
+    for (let i = 0; i < newGalleryLikeList.length; i++) {
+      if (newGalleryLikeList[i].g_id == g_id) {
+        newGalleryLikeList[i].flag = flag;
+        break;
+      }
+    }
+    set({ galleryLikeList: newGalleryLikeList });
+    console.log(newGalleryLikeList);
+  },
+  deleteGalleryLike: (g_id) => {
+    set({
+      galleryLikeList: get().galleryLikeList.filter((v) => v.g_id != g_id),
+    });
+    console.log(get().galleryLikeList.filter((v) => v.g_id != g_id));
   },
 }));
 
@@ -186,7 +234,7 @@ const useGalleryStore = create((set, get) => ({
   // 너무 오래된 데이터 청소를 위해 last_accessed_at칼럼을 등록한다.
   setInfoAndCacheNewInfos: async (g_ids) => {
     const result = await galleryCache.bulkGet(g_ids);
-    console.log(result);
+    // console.log(result);
     const newGalleryMap = new Map();
     // 없는 g_id, 있는 g_id들을 추려냄.
     const missing_ids = [];
