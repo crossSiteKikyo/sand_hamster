@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useGalleryStore, useTagLikeStore, useUserStore } from "../store";
+import { useTagInfoStore, useTagLikeStore } from "../store";
 import ModalTagLike from "./ModalTagLike";
 import Pagination from "./Pagination";
 import TagList from "./TagList";
@@ -8,7 +8,8 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 
 // 좋아요/싫어요 한 태그들을 보여준다.
 export default function MyTag() {
-  const { tagLikeList, getTagsInfoByIds } = useTagLikeStore();
+  const { tagLikeList } = useTagLikeStore();
+  const { getTagsInfoByIds } = useTagInfoStore();
   // 좋아요/싫어요 구분
   const [flag, setFlag] = useState(true);
   const [maxPage, setMaxPage] = useState(1);

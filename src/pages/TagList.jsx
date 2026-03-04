@@ -1,6 +1,7 @@
 import { createSearchParams, useNavigate } from "react-router-dom";
-import { useTagLikeStore } from "../store";
+import { useTagInfoStore, useTagLikeStore } from "../store";
 import { useLongPress } from "use-long-press";
+import { Loader2 } from "lucide-react";
 
 export default function TagList({
   isLoading,
@@ -8,7 +9,8 @@ export default function TagList({
   setIsTagModalOpen,
 }) {
   const navigate = useNavigate();
-  const { tagLikeList, tagsInfo } = useTagLikeStore();
+  const { tagLikeList } = useTagLikeStore();
+  const { tagIds, tagInfoMap } = useTagInfoStore();
   const tagSearch = (tag) => {
     navigate({
       pathname: "/list",
@@ -24,20 +26,32 @@ export default function TagList({
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-1 lg:grid-cols-2">
-        <div className="flex h-48 flex-col justify-between rounded-sm border"></div>
-        <div className="flex h-48 flex-col justify-between rounded-sm border"></div>
-        <div className="flex h-48 flex-col justify-between rounded-sm border"></div>
-        <div className="flex h-48 flex-col justify-between rounded-sm border"></div>
-        <div className="flex h-48 flex-col justify-between rounded-sm border"></div>
-        <div className="flex h-48 flex-col justify-between rounded-sm border"></div>
+        {[...Array(6)].map((v, i) => (
+          <div
+            key={i}
+            className="flex h-48 animate-pulse flex-col items-center justify-center rounded-sm border"
+          >
+            <Loader2 className="h-10 animate-spin" />
+          </div>
+        ))}
       </div>
     );
   }
   return (
     <>
-      {tagsInfo.length > 0 ? (
+      {tagIds.length > 0 ? (
         <div className="grid grid-cols-1 gap-1 lg:grid-cols-2">
-          {tagsInfo.map((t) => {
+          {tagIds.map((tag_id) => {
+            const t = tagInfoMap.get(tag_id);
+            if (t == undefined)
+              return (
+                <div
+                  key={tag_id}
+                  className="flex h-48 animate-pulse flex-col items-center justify-center rounded-sm border"
+                >
+                  <Loader2 className="h-10 animate-spin" />
+                </div>
+              );
             const colorMap = {
               artist: "bg-[#FFCCCC] dark:bg-[#CC9999]",
               group: "bg-[#FFCCCC] dark:bg-[#CC9999]",
