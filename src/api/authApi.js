@@ -5,6 +5,8 @@ const authApi = {
   logIn: (email, password) =>
     supabase.auth.signInWithPassword({ email, password }),
   getUser: () => supabase.auth.getUser(),
+  getProfile: (user_id) =>
+    supabase.from("profiles").select("*").eq("user_id", user_id),
   signOut: () => supabase.auth.signOut(),
   deleteAccount: () => supabase.rpc("delete_user"),
 };

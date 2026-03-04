@@ -11,7 +11,7 @@ import {
   Trophy,
   User,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useNotificationStore, useThemeStore, useUserStore } from "../store";
 import NavigationDrawerMenu from "./NavigationDrawerMenu";
 import { useState } from "react";
@@ -23,6 +23,8 @@ export default function Navigation() {
   const { getUnreadCount } = useNotificationStore();
   const unreadCount = getUnreadCount();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const { pathname } = useLocation(); // 현재 경로를 가져옵니다.
+  const isActive = (path) => pathname === path;
   return (
     <>
       {/* 검색 모달창 */}
@@ -38,9 +40,12 @@ export default function Navigation() {
           className="m-1 h-9 w-9"
         />
         <div>
-          <Link className="flex h-12 items-center px-3" to="/list">
+          <Link
+            className={`flex h-12 items-center px-3 ${isActive("/list") ? "border-y border-l" : ""}`}
+            to="/list"
+          >
             <House className="h-5 w-5" />
-            <p className="hidden pl-3 xl:block">홈</p>
+            <p className={`hidden pl-3 xl:block`}>홈</p>
           </Link>
           <div
             className="flex h-12 cursor-pointer items-center px-3"
@@ -49,12 +54,15 @@ export default function Navigation() {
             <Search className="h-5 w-5" />
             <p className="hidden pl-3 xl:block">검색</p>
           </div>
-          <Link className="flex h-12 items-center px-3" to="/rank">
+          <Link
+            className={`flex h-12 items-center px-3 ${isActive("/rank") ? "border-y border-l" : ""}`}
+            to="/rank"
+          >
             <Trophy className="h-5 w-5" />
             <p className="hidden pl-3 xl:block">랭킹</p>
           </Link>
           <Link
-            className="relative flex h-12 items-center px-3"
+            className={`relative flex h-12 items-center px-3 ${isActive("/notification") ? "border-y border-l" : ""}`}
             to="/notification"
           >
             <Bell className="h-5 w-5" />
@@ -75,29 +83,41 @@ export default function Navigation() {
           </div>
           {user ? (
             <>
-              <Link className="flex h-12 items-center px-3" to="/mygallery">
+              <Link
+                className={`flex h-12 items-center px-3 ${isActive("/mygallery") ? "border-y border-l" : ""}`}
+                to="/mygallery"
+              >
                 <Images className="h-5 w-5" />
                 <p className="hidden pl-3 xl:block">내 갤러리</p>
               </Link>
-              <Link className="flex h-12 items-center px-3" to="/mytag">
+              <Link
+                className={`flex h-12 items-center px-3 ${isActive("/mytag") ? "border-y border-l" : ""}`}
+                to="/mytag"
+              >
                 <Tags className="h-5 w-5" />
                 <p className="hidden pl-3 xl:block">내 태그</p>
               </Link>
               <Link
-                className="flex h-12 items-center px-3"
+                className={`flex h-12 items-center px-3 ${isActive("/mygalleryhasliketag") ? "border-y border-l" : ""}`}
                 to="/mygalleryhasliketag"
               >
                 <BookHeart className="h-5 w-5" />
                 <p className="hidden pl-3 xl:block">내 좋아요</p>
               </Link>
-              <Link className="flex h-12 items-center px-3" to="/myinfo">
+              <Link
+                className={`flex h-12 items-center px-3 ${isActive("/myinfo") ? "border-y border-l" : ""}`}
+                to="/myinfo"
+              >
                 <User className="h-5 w-5" />
                 <p className="hidden pl-3 xl:block">계정</p>
               </Link>
             </>
           ) : (
             <>
-              <Link className="flex h-12 items-center px-3" to="/login">
+              <Link
+                className={`flex h-12 items-center px-3 ${isActive("/login") ? "border-y border-l" : ""}`}
+                to="/login"
+              >
                 <LogIn className="h-5 w-5" />
                 <p className="hidden pl-3 xl:block">로그인</p>
               </Link>
@@ -116,10 +136,13 @@ export default function Navigation() {
           <Search className="h-5 w-5" />
         </div>
         <Link to="/list" className="flex grow justify-center p-3">
-          <House className="h-5 w-5" />
+          <House className="h-5 w-5" strokeWidth={isActive("/list") ? 3 : 2} />
         </Link>
         <Link to="/notification" className="flex grow justify-center p-3">
-          <Bell className="h-5 w-5" />
+          <Bell
+            className="h-5 w-5"
+            strokeWidth={isActive("/notification") ? 3 : 2}
+          />
           {unreadCount > 0 && (
             <span className="absolute top-1 ml-4 h-4 w-4 items-center justify-center rounded-full bg-red-500 p-0 text-center text-xs">
               {unreadCount > 9 ? "9+" : unreadCount}
@@ -128,11 +151,17 @@ export default function Navigation() {
         </Link>
         {user ? (
           <Link to="/myinfo" className="flex grow justify-center p-3">
-            <User className="h-5 w-5" />
+            <User
+              className="h-5 w-5"
+              strokeWidth={isActive("/myinfo") ? 3 : 2}
+            />
           </Link>
         ) : (
           <Link to="/login" className="flex grow justify-center p-3">
-            <LogIn className="h-5 w-5" />
+            <LogIn
+              className="h-5 w-5"
+              strokeWidth={isActive("/login") ? 3 : 2}
+            />
           </Link>
         )}
       </div>

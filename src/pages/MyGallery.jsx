@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import GalleryList from "./GalleryList";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGalleryLikeStore, useGalleryStore } from "../store";
 import ModalTagLike from "./ModalTagLike";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
@@ -8,12 +8,12 @@ import Pagination from "./Pagination";
 
 // 좋아요/싫어요 한 갤러리를 보여준다.
 export default function MyGallery() {
+  const navigate = useNavigate();
   const { galleryLikeList } = useGalleryLikeStore();
-  // 좋아요/싫어요 구분
-  const [flag, setFlag] = useState(true);
   const [maxPage, setMaxPage] = useState(1);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("page") || 1;
+  const flag = searchParams.get("flag") == "false" ? true : false;
   const [isLoading, setIsLoading] = useState(true);
   const { getGalleriesByIds } = useGalleryStore();
   // 태그 모달창을 위한 변수들
@@ -40,6 +40,15 @@ export default function MyGallery() {
     await getGalleriesByIds(selectedUGL.map((v) => v.g_id));
     setIsLoading(false);
   }
+  const pageMove = (flag) => {
+    // 현재 url에서 path를 추출한다.
+    const pathname = window.location.pathname;
+    // 새로운 객체 생성
+    const newParams = new URLSearchParams();
+    newParams.set("page", 1);
+    newParams.set("flag", flag);
+    navigate(`${pathname}?${newParams.toString()}`);
+  };
   useEffect(() => {
     //galleryLikeList를 정렬하면 된다.
     let selectedUGL = galleryLikeList.filter((v) => v.flag == flag);
@@ -60,13 +69,13 @@ export default function MyGallery() {
       <div className="mb-2 flex justify-end gap-2">
         <button
           className={`flex gap-1 rounded-xl border border-pink-500 p-2 ${flag ? "bg-pink-300 dark:bg-pink-700" : "cursor-pointer"}`}
-          onClick={() => setFlag(true)}
+          onClick={() => pageMove(flag)}
         >
           좋아요 <ThumbsUp className="w-5" />
         </button>
         <button
           className={`flex gap-1 rounded-xl border border-gray-500 p-2 ${!flag ? "bg-gray-200 dark:bg-gray-700" : "cursor-pointer"}`}
-          onClick={() => setFlag(false)}
+          onClick={() => pageMove(flag)}
         >
           싫어요 <ThumbsDown className="w-5" />
         </button>

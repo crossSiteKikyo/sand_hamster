@@ -144,6 +144,26 @@ CREATE TRIGGER update_user_tag_like_date
     EXECUTE PROCEDURE update_date_column();
 
 -- user_gallery_like 테이블에 insert할 때, profiles의 gallery_like_limit 개수를 넘지 못하게 한다
-
+WITH CHECK (
+  (
+    SELECT count(*) 
+    FROM public.user_gallery_like 
+    WHERE user_id = auth.uid()
+  ) < (
+    SELECT gallery_like_limit 
+    FROM public.profiles 
+    WHERE user_id = auth.uid()
+  )
+);
 -- user_tag_like 테이블에 insert할 때, profiles의 tag_like_limit 개수를 넘지 못하게 한다
-
+WITH CHECK (
+  (
+    SELECT count(*) 
+    FROM public.user_tag_like 
+    WHERE user_id = auth.uid()
+  ) < (
+    SELECT tag_like_limit 
+    FROM public.profiles 
+    WHERE user_id = auth.uid()
+  )
+);

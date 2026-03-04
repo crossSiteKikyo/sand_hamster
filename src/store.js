@@ -17,22 +17,43 @@ const useThemeStore = create(
       isDarkMode: false,
       toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
     }),
-    { name: "isDarkMode" },
+    { name: "sand_hamster_isDarkMode" },
+  ),
+);
+
+const useSignUpLimitStore = create(
+  persist(
+    (set) => ({
+      lastTime: 1772638885602,
+      setLastTime: () => set(() => ({ lastTime: Date.now() })),
+    }),
+    { name: "sand_hamster_last_signup" },
   ),
 );
 
 const useUserStore = create((set) => ({
   user: null,
+  tag_like_limit: 0,
+  gallery_like_limit: 0,
   deleteUser: () => set({ user: null }),
   getUser: async () => {
     const {
       data: { user },
       error,
     } = await authApi.getUser();
-    if (user) set({ user: user });
+    if (user) {
+      set({ user: user });
+      const { data, error } = await authApi.getProfile(user.id);
+      if (error) toast("유저 프로필 정보 가져오기 에러");
+      if (data) {
+        set({
+          tag_like_limit: data[0].tag_like_limit,
+          gallery_like_limit: data[0].gallery_like_limit,
+        });
+      }
+    }
     if (error) {
       set({ user: null });
-      // toast("유저 정보 가져오기 에러");
     }
   },
 }));
@@ -384,6 +405,7 @@ const useRankStore = create((set, get) => ({
 
 export {
   useThemeStore,
+  useSignUpLimitStore,
   useUserStore,
   useTypeStore,
   useNotificationStore,
