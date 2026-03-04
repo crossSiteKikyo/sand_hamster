@@ -6,7 +6,7 @@ import {
 } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { useThemeStore, useUserStore } from "../store";
-import { BookHeart, Images, Menu, Moon, Sun, Tags } from "lucide-react";
+import { BookHeart, Images, Menu, Moon, Sun, Tags, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function NavigationDrawerMenu({ className }) {
@@ -68,6 +68,10 @@ export default function NavigationDrawerMenu({ className }) {
                   )}
                   <p className="pl-3">테마</p>
                 </div>
+                <Link className="flex h-12 items-center px-3" to="/rank">
+                  <Trophy className="h-5 w-5" />
+                  <p className="pl-3">랭킹</p>
+                </Link>
                 {user != null && (
                   <>
                     <Link

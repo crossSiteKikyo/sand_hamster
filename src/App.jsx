@@ -23,6 +23,7 @@ import SignUp from "./pages/SignUp";
 import MyGallery from "./pages/MyGallery";
 import MyTag from "./pages/MyTag";
 import MyGalleryHasLikeTag from "./pages/MyGalleryHasLikeTag";
+import RankPage from "./pages/RankPage";
 import { galleryCache } from "./cacheDB";
 
 function App() {
@@ -77,7 +78,7 @@ function App() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 text-gray-950 dark:bg-gray-950 dark:text-gray-50">
-      <div className="mx-auto flex max-w-7xl grow">
+      <div className="mx-auto flex max-w-400 grow">
         <ToastContainer position="bottom-center" />
         {isInitializing ? (
           <div className="w-full text-center">
@@ -105,6 +106,7 @@ function App() {
                 />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/notification" element={<NotificationPage />} />
+                <Route path="/rank" element={<RankPage />} />
                 <Route
                   path="/mygallery"
                   element={

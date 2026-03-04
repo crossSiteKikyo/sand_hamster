@@ -1,7 +1,7 @@
 -- 비공개 스키마 생성 (유저가 rpc로 실행하지 못한다)
 CREATE SCHEMA IF NOT EXISTS private;
 
--- 랭킹 집계 함수. 일단 20개씩 했다.
+-- 랭킹 집계 함수.
 CREATE OR REPLACE FUNCTION private.update_rankings()
 RETURNS void AS $$
 BEGIN
@@ -14,15 +14,15 @@ BEGIN
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'gallery_view', 'weekly', array(
-    SELECT g_id FROM public.gallery WHERE date >= now() - INTERVAL '7 days' ORDER BY view_count DESC LIMIT 20
+    SELECT g_id FROM public.gallery WHERE date >= now() - INTERVAL '7 days' ORDER BY view_count DESC LIMIT 40
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'gallery_view', 'monthly', array(
-    SELECT g_id FROM public.gallery WHERE date >= now() - INTERVAL '30 days' ORDER BY view_count DESC LIMIT 20
+    SELECT g_id FROM public.gallery WHERE date >= now() - INTERVAL '30 days' ORDER BY view_count DESC LIMIT 60
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'gallery_view', 'all_time', array(
-    SELECT g_id FROM public.gallery ORDER BY view_count DESC LIMIT 20
+    SELECT g_id FROM public.gallery ORDER BY view_count DESC LIMIT 100
   );
   -- 2. 갤러리 좋아요 순 (user_gallery_like 발생일 기준)
   INSERT INTO public.ranking (rank_type, period, ids)
@@ -31,15 +31,15 @@ BEGIN
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'gallery_like', 'weekly', array(
-    SELECT g_id FROM public.user_gallery_like WHERE flag = true AND created_at >= now() - INTERVAL '7 days' GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 20
+    SELECT g_id FROM public.user_gallery_like WHERE flag = true AND created_at >= now() - INTERVAL '7 days' GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 40
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'gallery_like', 'monthly', array(
-    SELECT g_id FROM public.user_gallery_like WHERE flag = true AND created_at >= now() - INTERVAL '30 days' GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 20
+    SELECT g_id FROM public.user_gallery_like WHERE flag = true AND created_at >= now() - INTERVAL '30 days' GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 60
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'gallery_like', 'all_time', array(
-    SELECT g_id FROM public.user_gallery_like WHERE flag = true GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 20
+    SELECT g_id FROM public.user_gallery_like WHERE flag = true GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 100
   );
   -- 3. 태그 좋아요 순 (user_tag_like 발생일 기준)
   INSERT INTO public.ranking (rank_type, period, ids)
@@ -48,15 +48,15 @@ BEGIN
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'tag_like', 'weekly', array(
-    SELECT tag_id FROM public.user_tag_like WHERE flag = true AND date >= now() - INTERVAL '7 days' GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 20
+    SELECT tag_id FROM public.user_tag_like WHERE flag = true AND date >= now() - INTERVAL '7 days' GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 40
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'tag_like', 'monthly', array(
-    SELECT tag_id FROM public.user_tag_like WHERE flag = true AND date >= now() - INTERVAL '30 days' GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 20
+    SELECT tag_id FROM public.user_tag_like WHERE flag = true AND date >= now() - INTERVAL '30 days' GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 60
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'tag_like', 'all_time', array(
-    SELECT tag_id FROM public.user_tag_like WHERE flag = true GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 20
+    SELECT tag_id FROM public.user_tag_like WHERE flag = true GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 100
   );
 END;
 $$ LANGUAGE plpgsql;

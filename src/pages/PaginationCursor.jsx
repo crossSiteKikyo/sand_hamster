@@ -22,6 +22,7 @@ export default function PaginationCursor({ direction, cursorId }) {
     else newParams.set("direction", direction);
     if (cursorId == null) newParams.delete("cursorId");
     else newParams.set("cursorId", cursorId);
+    newParams.delete("galleryId");
     // searchParams의 direction, cursorId 빼고 모든 params는 보존한다. direction, cursorId 만 값을 바꾼다.
     navigate(`${pathname}?${newParams.toString()}`);
   };

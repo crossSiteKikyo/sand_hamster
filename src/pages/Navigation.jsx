@@ -8,6 +8,7 @@ import {
   Search,
   Sun,
   Tags,
+  Trophy,
   User,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -48,6 +49,10 @@ export default function Navigation() {
             <Search className="h-5 w-5" />
             <p className="hidden pl-3 xl:block">검색</p>
           </div>
+          <Link className="flex h-12 items-center px-3" to="/rank">
+            <Trophy className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">랭킹</p>
+          </Link>
           <Link
             className="relative flex h-12 items-center px-3"
             to="/notification"

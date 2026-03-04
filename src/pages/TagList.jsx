@@ -75,15 +75,17 @@ export default function TagList({
             return (
               <div
                 key={t.tag_id}
-                className={`flex cursor-pointer flex-col rounded-sm border ${colorMap[type]} ${userTagLikeFlag ? "border-pink-500" : "border-gray-500"}`}
+                className={`flex cursor-pointer flex-col rounded-sm border ${colorMap[type]} ${userTagLikeFlag === true ? "border-pink-500" : ""} ${userTagLikeFlag === false ? "border-gray-500" : ""}`}
                 onClick={() => tagSearch(t)}
                 {...tagLongPressHandlers(t)}
               >
                 <div className="flex justify-between px-1">
                   <p>{t.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {new Date(userTagLike.date).toLocaleString()}
-                  </p>
+                  {userTagLike != undefined && (
+                    <p className="text-sm text-gray-500">
+                      {new Date(userTagLike.date).toLocaleString()}
+                    </p>
+                  )}
                 </div>
                 <div className="flex">
                   <img
