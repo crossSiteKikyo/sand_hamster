@@ -10,6 +10,7 @@ const useTypeStore = create((set) => ({
       toast(`타입 정보 가져오기 에러`);
     }
     if (data) set({ typeList: data });
+    console.log(data);
   },
 }));
 

@@ -51,7 +51,11 @@ export default function TagMain({
   return (
     <button
       {...handlers()}
-      className={`flex grow border-r px-1 text-start border-[#${type.title_bg_color}] cursor-pointer select-none bg-[#${type.sub_bg_color}]`}
+      className={`flex grow cursor-pointer border-r px-1 text-start select-none`}
+      style={{
+        backgroundColor: `#${type.sub_bg_color}`,
+        borderColor: `#${type.title_bg_color}`,
+      }}
       onClick={tagSearch}
     >
       {name}

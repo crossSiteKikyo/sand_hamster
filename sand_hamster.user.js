@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         sand_hamster
-// @version      0.0.5
+// @version      0.0.6
 // @author       crossSiteKikyo
 // @icon         https://github.com/crossSiteKikyo/sand_hamster/blob/main/public/sand_hamster_logo.jpg?raw=true
 // @grant        GM_registerMenuCommand
@@ -10,7 +10,6 @@
 // @downloadURL  https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/sand_hamster.user.js
 // @require      https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js
 // @require      https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
-// @require      https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4
 // @run-at       document-end
 // ==/UserScript==
 
@@ -55,17 +54,10 @@
       script1.crossOrigin = "anonymous";
       script1.src = `${GitHack_base}assets/index.js`;
       document.head.appendChild(script1);
-      // tailwind js 주입
-      const script2 = document.createElement("script");
-      script2.type = "module";
-      script2.crossOrigin = "anonymous";
-      script2.src = `https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4`;
-      document.head.appendChild(script2);
     },
   };
   // 1초뒤 자동으로 로딩
   autoLoad();
-  // HtmlManager.changeHtml();
   // ui 추가
   GM_registerMenuCommand("모래 햄스터 로딩", HtmlManager.changeHtml);
 })();

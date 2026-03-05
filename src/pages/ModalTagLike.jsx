@@ -16,19 +16,21 @@ export default function ModalTagLike({
   const { tagLikeList, addTagLike, updateTagLike, deleteTagLike } =
     useTagLikeStore();
   const colorMap = {
-    artist: `dark:bg-[#${_type.title_bg_color}] bg-[#${_type.sub_bg_color}]`,
-    group: `dark:bg-[#${_type.title_bg_color}] bg-[#${_type.sub_bg_color}]`,
-    parody: `dark:bg-[#${_type.title_bg_color}] bg-[#${_type.sub_bg_color}]`,
-    character: `dark:bg-[#${_type.title_bg_color}] bg-[#${_type.sub_bg_color}]`,
+    doujinshi: `dark:bg-[#CC9999] bg-[#FFCCCC]`,
+    manga: `dark:bg-[#CC99CC] bg-[#FFCCFF]`,
+    artistcg: `dark:bg-[#99CCCC] bg-[#CCFFFF]`,
+    gamecg: `dark:bg-[#9999CC] bg-[#CCCCFF]`,
+    imageset: `dark:bg-[#$999999] bg-[#CCCCCC]`,
     male: "bg-blue-300 dark:bg-blue-600",
     female: "bg-pink-300 dark:bg-pink-600",
     other: "bg-gray-300 dark:bg-gray-700",
   };
+  // colorMap을 사용하기 위한 변수이다.
   let type = "other";
-  if (tag.name.startsWith("artist:")) type = "artist";
-  else if (tag.name.startsWith("group:")) type = "group";
-  else if (tag.name.startsWith("parody:")) type = "parody";
-  else if (tag.name.startsWith("character:")) type = "character";
+  if (tag.name.startsWith("artist:")) type = _type.name;
+  else if (tag.name.startsWith("group:")) type = _type.name;
+  else if (tag.name.startsWith("parody:")) type = _type.name;
+  else if (tag.name.startsWith("character:")) type = _type.name;
   else if (tag.name.startsWith("male:")) type = "male";
   else if (tag.name.startsWith("female:")) type = "female";
   let tagLike = tagLikeList.find((v) => v.tag_id == tag.tag_id);

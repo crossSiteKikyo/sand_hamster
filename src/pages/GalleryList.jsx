@@ -10,6 +10,7 @@ import useUserStore from "../store/useUserStore";
 import useGalleryLikeStore from "../store/useGalleryLikeStore";
 import useGalleryStore from "../store/useGalleryStore";
 import useHitomiStore from "../store/useHitomiStore";
+import { toast } from "react-toastify";
 
 export default function GalleryList({
   isLoading,
@@ -118,17 +119,31 @@ export default function GalleryList({
               >
                 <div>
                   <div
-                    className={`text-lg bg-[#${type.title_bg_color}] font-semibold text-white [text-shadow:1px_1px_0_#${type.sub_text_color},-1px_-1px_0_#${type.sub_text_color},1px_-1px_0_#${type.sub_text_color},-1px_1px_0_#${type.sub_text_color}]`}
+                    className={`text-lg font-semibold text-white`}
+                    style={{
+                      backgroundColor: `#${type.title_bg_color}`,
+                      textShadow: `1px 1px 0 #${type.sub_text_color},-1px -1px 0 #${type.sub_text_color},1px -1px 0 #${type.sub_text_color},-1px 1px 0 #${type.sub_text_color}`,
+                    }}
                   >
                     {g.title}
                   </div>
                   <div
-                    className={`text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] border-b font-bold border-[#${type.title_bg_color}]`}
+                    className={`border-b text-base font-bold`}
+                    style={{
+                      backgroundColor: `#${type.sub_bg_color}`,
+                      color: `#${type.sub_text_color}`,
+                      borderColor: `#${type.title_bg_color}`,
+                    }}
                   >
                     {"종류: " + type.name}
                   </div>
                   <div
-                    className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] border-b font-bold border-[#${type.title_bg_color}]`}
+                    className={`flex flex-wrap border-b text-base font-bold`}
+                    style={{
+                      backgroundColor: `#${type.sub_bg_color}`,
+                      color: `#${type.sub_text_color}`,
+                      borderColor: `#${type.title_bg_color}`,
+                    }}
                   >
                     작가:
                     {artists.map((v) => (
@@ -143,7 +158,12 @@ export default function GalleryList({
                     ))}
                   </div>
                   <div
-                    className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] border-b font-bold border-[#${type.title_bg_color}]`}
+                    className={`flex flex-wrap border-b text-base font-bold`}
+                    style={{
+                      backgroundColor: `#${type.sub_bg_color}`,
+                      color: `#${type.sub_text_color}`,
+                      borderColor: `#${type.title_bg_color}`,
+                    }}
                   >
                     그룹:
                     {groups.map((v) => (
@@ -158,7 +178,12 @@ export default function GalleryList({
                     ))}
                   </div>
                   <div
-                    className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] border-b font-bold border-[#${type.title_bg_color}]`}
+                    className={`flex flex-wrap border-b text-base font-bold`}
+                    style={{
+                      backgroundColor: `#${type.sub_bg_color}`,
+                      color: `#${type.sub_text_color}`,
+                      borderColor: `#${type.title_bg_color}`,
+                    }}
                   >
                     시리즈:
                     {parodies.map((v) => (
@@ -174,7 +199,12 @@ export default function GalleryList({
                   </div>
                   {characters.length > 0 && (
                     <div
-                      className={`flex flex-wrap text-base bg-[#${type.sub_bg_color}] text-[#${type.sub_text_color}] border-b font-bold border-[#${type.title_bg_color}]`}
+                      className={`flex flex-wrap border-b text-base font-bold`}
+                      style={{
+                        backgroundColor: `#${type.sub_bg_color}`,
+                        color: `#${type.sub_text_color}`,
+                        borderColor: `#${type.title_bg_color}`,
+                      }}
                     >
                       캐릭터:
                       {characters.map((v) => (
@@ -234,9 +264,7 @@ export default function GalleryList({
                 {/* 하단 정보 */}
                 <div className="flex justify-between px-1">
                   <p className="text-gray-500">{g.g_id}</p>
-                  <p className={`text-[#${type.title_bg_color}] font-semibold`}>
-                    {date}
-                  </p>
+                  <p>{date}</p>
                   <p className="text-gray-500">{g.filecount}p</p>
                 </div>
               </div>
