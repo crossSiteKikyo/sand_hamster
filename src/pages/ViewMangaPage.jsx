@@ -4,20 +4,14 @@ import useHitomiStore from "../store/useHitomiStore";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Virtual } from "swiper/modules";
 import "swiper/css";
-import { Fullscreen } from "lucide-react";
 import ModalAutoSlide from "./ModalAutoSlide";
 import galleryApi from "../api/galleryApi";
+import ViewMangaPageNav from "./ViewMangaPageNav";
+import { CircleX } from "lucide-react";
 
 export default function ViewMangaPage() {
-  const [isHorizontal, setIsHorizontal] = useState(true); // 좌우로 페이지를 넘길지 상하로 넘길지.
   const [swiper, setSwiper] = useState(null);
   const [page, setPage] = useState(0);
-  const [showUI, setShowUI] = useState(false); // 상하 UI 노출 여부
-
-  // 페이지 이동 함수 (인자 0을 줘서 즉시이동)
-  const goPrev = () => swiper?.slidePrev(0);
-  const goNext = () => swiper?.slideNext(0);
-  const toggleUI = () => setShowUI(!showUI);
 
   // 자동넘기기를 위한 변수들
   const [isOpen, setIsOpen] = useState(false);
@@ -25,15 +19,6 @@ export default function ViewMangaPage() {
   const stopAutoSlide = () => {
     clearInterval(intervalID);
     setIntervalID(undefined);
-  };
-
-  // 전체화면 토글
-  const toggleFullscreen = () => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      document.documentElement.requestFullscreen();
-    }
   };
 
   // 키보드 핸들러 함수. 키보드로 페이지를 움직일 수 있다.
@@ -65,24 +50,13 @@ export default function ViewMangaPage() {
     };
   }, [handleKeyDown]);
 
-  const {
-    b,
-    o1,
-    o2,
-    numSet,
-    imgHashList,
-    title,
-    getGalleryInfo,
-    getImageDecodeInfo,
-  } = useHitomiStore();
+  const { b, o1, o2, numSet, imgHashList, getGalleryInfo, getImageDecodeInfo } =
+    useHitomiStore();
   const [searchParams] = useSearchParams();
   const g_id = searchParams.get("g_id");
-  const [isLoading, setIsLoading] = useState(false);
   const getImgHashList = async () => {
-    setIsLoading(true);
-    getImageDecodeInfo();
+    await getImageDecodeInfo();
     await getGalleryInfo(g_id);
-    setIsLoading(false);
   };
   useEffect(() => {
     // 처음 한번 갤러리 이미지들 정보를 알아낸다.
@@ -106,13 +80,71 @@ export default function ViewMangaPage() {
       sessionStorage.setItem("viewed_galleries", JSON.stringify(viewed));
     }
   };
-  const hashToImageUrl = (hash) => {
+  const hashToImageUrl = (info) => {
+    // info는 {hash, hasavif}로 되어있다.
+    const hash = info.hash;
+    const extension = info.hasavif ? "avif" : "webp";
     const num = parseInt(
       `${hash[hash.length - 1]}${hash[hash.length - 3]}${hash[hash.length - 2]}`,
       16,
     );
     const subDomainNum = numSet.has(num) ? Number(o2) + 1 : Number(o1) + 1;
-    return `https://w${subDomainNum}.gold-usergeneratedcontent.net/${b}${num}/${hash}.webp`;
+    return `https://w${subDomainNum}.gold-usergeneratedcontent.net/${b}${num}/${hash}.${extension}`;
+  };
+  const RetryImage = ({ src, alt, className }) => {
+    const [imgSrc, setImgSrc] = useState(src);
+    const [retryCount, setRetryCount] = useState(0);
+    const MAX_RETRIES = 10; // 최대 재시도 횟수
+    const [isFail, setIsFail] = useState(false);
+
+    // src 프롭이 변경되면 상태 초기화
+    useEffect(() => {
+      setImgSrc(src);
+      setRetryCount(0);
+    }, [src]);
+
+    const handleError = async () => {
+      if (retryCount < MAX_RETRIES) {
+        // 1. 실제로 503 에러인지 fetch로 확인 (HEAD 요청으로 가볍게 체크)
+        try {
+          const response = await fetch(src, {
+            method: "HEAD",
+            cache: "no-cache",
+          });
+          if (response.status === 503 || response.status === 500) {
+            console.warn(
+              `[${response.status}] 에러 발생. ${retryCount + 1}회차 재시도 중...`,
+            );
+            // 2. 약간의 지연 시간을 두고 재시도
+            setTimeout(() => {
+              setRetryCount((prev) => prev + 1);
+              // URL 뒤에 타임스탬프를 붙여 브라우저 캐시를 무시하고 새로 요청
+              setImgSrc(`${src}?t=${Date.now()}`);
+            }, 100);
+          }
+        } catch (err) {
+          setIsFail(true);
+          console.error("이미지 상태 확인 실패:", err);
+        }
+      }
+    };
+    return (
+      <>
+        {isFail ? (
+          <div className="flex h-full w-full flex-col items-center justify-center">
+            <CircleX className="h-16 w-16" />
+            이미지 로딩 실패
+          </div>
+        ) : (
+          <img
+            src={imgSrc}
+            alt={alt}
+            className={className}
+            onError={handleError}
+          />
+        )}
+      </>
+    );
   };
   return (
     <div className="fixed inset-0 flex items-center justify-center">
@@ -132,7 +164,7 @@ export default function ViewMangaPage() {
       >
         {imgHashList.map((hash, idx) => (
           <SwiperSlide key={idx} virtualIndex={idx}>
-            <img
+            <RetryImage
               src={hashToImageUrl(hash)}
               className="h-full w-full object-contain"
               alt={`page-${idx}`}
@@ -140,73 +172,13 @@ export default function ViewMangaPage() {
           </SwiperSlide>
         ))}
       </Swiper>
-      {/* [Layer 1] 투명 클릭 영역 (3등분) */}
-      {isHorizontal ? (
-        <div className="absolute inset-0 z-10 flex">
-          <div className="h-full w-1/3 cursor-pointer" onClick={goPrev} />
-          <div className="h-full w-1/3 cursor-pointer" onClick={toggleUI} />
-          <div className="h-full w-1/3 cursor-pointer" onClick={goNext} />
-        </div>
-      ) : (
-        <div className="absolute inset-0 z-10">
-          <div className="h-1/3 w-full cursor-pointer" onClick={goPrev} />
-          <div className="h-1/3 w-full cursor-pointer" onClick={toggleUI} />
-          <div className="h-1/3 w-full cursor-pointer" onClick={goNext} />
-        </div>
-      )}
-
-      {/* [Layer 2] 상하 내비게이션 UI (HUD) */}
-      {showUI && (
-        <div className="pointer-events-none absolute inset-0 z-20">
-          {/* 상단바 */}
-          <div className="pointer-events-auto absolute top-0 left-0 flex w-full items-center gap-1 border-b border-gray-500 bg-white/80 dark:bg-black/80">
-            <div className="p-3" onClick={toggleFullscreen}>
-              <Fullscreen className="w-6 shrink-0" />
-            </div>
-            <p className="">{title}</p>
-          </div>
-          {/* 하단바 */}
-          <div className="pointer-events-auto absolute bottom-0 left-0 w-full border-t border-gray-500 bg-white/80 p-3 dark:bg-black/80">
-            <div className="flex flex-col gap-2">
-              {/* 페이지 이동 슬라이더 */}
-              <input
-                type="range"
-                min="0"
-                max={imgHashList.length - 1}
-                value={page}
-                onChange={(e) => swiper?.slideTo(parseInt(e.target.value))}
-                className="appearance-none rounded-lg border border-gray-500"
-              />
-              <div className="flex justify-center text-sm">
-                {page + 1} / {imgHashList.length}
-              </div>
-              <div className="flex justify-center gap-2">
-                <button
-                  className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
-                  onClick={() => setIsHorizontal(!isHorizontal)}
-                >
-                  {isHorizontal ? "좌우 넘기기" : "상하 넘기기"}
-                </button>
-                {intervalID ? (
-                  <button
-                    className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
-                    onClick={stopAutoSlide}
-                  >
-                    넘기기 중지
-                  </button>
-                ) : (
-                  <button
-                    className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
-                    onClick={() => setIsOpen(true)}
-                  >
-                    자동 넘기기
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ViewMangaPageNav
+        swiper={swiper}
+        page={page}
+        setIsOpen={setIsOpen}
+        stopAutoSlide={stopAutoSlide}
+        intervalID={intervalID}
+      />
     </div>
   );
 }

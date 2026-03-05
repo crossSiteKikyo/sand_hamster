@@ -54,7 +54,7 @@ export default function RankPage() {
   };
   async function getGalleryList(g_ids) {
     setIsLoading(true);
-    getImageDecodeInfo();
+    await getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });
@@ -66,6 +66,7 @@ export default function RankPage() {
   }, [rankGalleryIds]);
   async function getTagList(tag_ids) {
     setIsLoading(true);
+    await getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });

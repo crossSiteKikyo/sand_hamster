@@ -34,7 +34,7 @@ export default function MyGalleryHasLikeTag() {
   });
   async function getGalleryList() {
     setIsLoading(true);
-    getImageDecodeInfo();
+    await getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });

@@ -22,7 +22,7 @@ export default function ListPage({}) {
   const { getImageDecodeInfo } = useHitomiStore();
   async function getGalleryList() {
     setIsLoading(true);
-    getImageDecodeInfo();
+    await getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });

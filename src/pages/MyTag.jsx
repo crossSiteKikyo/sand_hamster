@@ -36,7 +36,7 @@ export default function MyTag() {
   };
   async function getTagList(selectedUTL) {
     setIsLoading(true);
-    getImageDecodeInfo();
+    await getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });

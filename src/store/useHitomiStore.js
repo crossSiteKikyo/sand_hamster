@@ -40,7 +40,11 @@ const useHitomiStore = create((set) => ({
     const body = (await response.text()).replace("var galleryinfo = ", "");
     const galleryInfo = JSON.parse(body);
     const files = galleryInfo.files;
-    set({ imgHashList: files.map((f) => f.hash), title: galleryInfo.title });
+    console.log(files.map((f) => ({ hash: f.hash, hasavif: f.hasavif })));
+    set({
+      imgHashList: files.map((f) => ({ hash: f.hash, hasavif: f.hasavif })), // avif로 요청 가능하면 avif로 한다.
+      title: galleryInfo.title,
+    });
   },
 }));
 

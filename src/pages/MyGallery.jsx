@@ -37,7 +37,7 @@ export default function MyGallery() {
   });
   async function getGalleryList(selectedUGL) {
     setIsLoading(true);
-    getImageDecodeInfo();
+    await getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });
