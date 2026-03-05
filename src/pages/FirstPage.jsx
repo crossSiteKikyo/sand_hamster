@@ -16,7 +16,7 @@ export default function FirstPage() {
   return (
     <div className="flex grow flex-col items-center justify-center bg-white p-10 dark:bg-black">
       <img
-        src="https://i.namu.wiki/i/vuilaXbYQcXXbOzw5dx25apTIvdsIovqWkwyYg9MeR3SAbQWJOVTm6jWu7E_09gKKCtaRpvNGiAFGn_hS9wHHCE7xNjUrQXDpYlnIwjLB9Xi5JCt9yLE2jaMFlRR5s7jz35Y0DF9g5-4TxisCA7cPg.svg"
+        src="https://upload.wikimedia.org/wikipedia/commons/7/76/19%EC%A3%BC%EC%9D%98_%EB%B0%94%EB%9E%8C.jpg"
         className="w-20"
       />
       <div className="m-2 flex flex-col text-center text-xl font-extrabold">

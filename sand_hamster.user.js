@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         sand_hamster
-// @version      0.0.4
+// @version      0.0.5
 // @author       crossSiteKikyo
 // @icon         https://github.com/crossSiteKikyo/sand_hamster/blob/main/public/sand_hamster_logo.jpg?raw=true
 // @grant        GM_registerMenuCommand
 // @match        https://hitomi.la
 // @match        https://hitomi.la/*
-// @updateURL    https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/test.user.js
-// @downloadURL  https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/test.user.js
+// @updateURL    https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/sand_hamster.user.js
+// @downloadURL  https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/sand_hamster.user.js
 // @require      https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js
 // @require      https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 // @require      https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4
@@ -56,11 +56,11 @@
       script1.src = `${GitHack_base}assets/index.js`;
       document.head.appendChild(script1);
       // tailwind js 주입
-      // const script2 = document.createElement("script");
-      // script2.type = "module";
-      // script2.crossOrigin = "anonymous";
-      // script2.src = `https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4`;
-      // document.head.appendChild(script2);
+      const script2 = document.createElement("script");
+      script2.type = "module";
+      script2.crossOrigin = "anonymous";
+      script2.src = `https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4`;
+      document.head.appendChild(script2);
     },
   };
   // 1초뒤 자동으로 로딩
