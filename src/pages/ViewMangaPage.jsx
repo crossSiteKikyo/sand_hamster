@@ -6,6 +6,7 @@ import { Virtual } from "swiper/modules";
 import "swiper/css";
 import { Fullscreen } from "lucide-react";
 import ModalAutoSlide from "./ModalAutoSlide";
+import galleryApi from "../api/galleryApi";
 
 export default function ViewMangaPage() {
   const [isHorizontal, setIsHorizontal] = useState(true); // 좌우로 페이지를 넘길지 상하로 넘길지.
@@ -64,20 +65,47 @@ export default function ViewMangaPage() {
     };
   }, [handleKeyDown]);
 
-  const { b, o1, o2, numSet, imgHashList, title, getGalleryInfo } =
-    useHitomiStore();
+  const {
+    b,
+    o1,
+    o2,
+    numSet,
+    imgHashList,
+    title,
+    getGalleryInfo,
+    getImageDecodeInfo,
+  } = useHitomiStore();
   const [searchParams] = useSearchParams();
   const g_id = searchParams.get("g_id");
   const [isLoading, setIsLoading] = useState(false);
   const getImgHashList = async () => {
     setIsLoading(true);
+    getImageDecodeInfo();
     await getGalleryInfo(g_id);
     setIsLoading(false);
   };
   useEffect(() => {
     // 처음 한번 갤러리 이미지들 정보를 알아낸다.
-    if (Number.isInteger(Number(g_id))) getImgHashList();
+    if (Number.isInteger(Number(g_id))) {
+      getImgHashList();
+      incrementGalleryViewCount(g_id);
+    }
   }, [g_id]);
+  const incrementGalleryViewCount = async (g_id) => {
+    // 1. 세션 스토리지에서 이미 본 목록 가져오기
+    const viewed = JSON.parse(
+      sessionStorage.getItem("viewed_galleries") || "[]",
+    );
+    // 2. 이미 목록에 있다면 서버 호출 없이 종료
+    if (viewed.includes(g_id)) return;
+    // 3. 서버에 조회수 증가 요청
+    const { error } = await galleryApi.incrementGalleryViewCount(g_id);
+    if (!error) {
+      // 4. 성공 시 세션 스토리지에 추가
+      viewed.push(g_id);
+      sessionStorage.setItem("viewed_galleries", JSON.stringify(viewed));
+    }
+  };
   const hashToImageUrl = (hash) => {
     const num = parseInt(
       `${hash[hash.length - 1]}${hash[hash.length - 3]}${hash[hash.length - 2]}`,

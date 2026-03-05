@@ -7,6 +7,7 @@ import TagList from "./TagList";
 import useGalleryStore from "../store/useGalleryStore";
 import useRankStore from "../store/useRankStore";
 import useTagInfoStore from "../store/useTagInfoStore";
+import useHitomiStore from "../store/useHitomiStore";
 
 export default function RankPage() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function RankPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { getGalleriesByIds } = useGalleryStore();
   const { getTagsInfoByIds } = useTagInfoStore();
+  const { getImageDecodeInfo } = useHitomiStore();
   const page = searchParams.get("page") || 1;
   // 기간 구분
   const period = searchParams.get("period") || "weekly";
@@ -52,6 +54,7 @@ export default function RankPage() {
   };
   async function getGalleryList(g_ids) {
     setIsLoading(true);
+    getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });

@@ -61,6 +61,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- 갤러리 조회수 1 증가시키는 함수
+create or replace function increment_gallery_view_count(p_g_id int8)
+returns void
+language plpgsql
+security definer -- 함수 생성자(관리자) 권한으로 실행 (RLS 우회)
+as $$
+begin
+  update gallery
+  set view_count = view_count + 1
+  where g_id = p_g_id;
+end;
+$$;
 
 -- gallery와 gallery_tag를 트랜잭션으로 insert - 크롤링에 사용되는 함수
 -- private로 만드려고 했지만, supabase.rpc는 public스키마만 호출 가능하기 때문에 내부로직 추가.

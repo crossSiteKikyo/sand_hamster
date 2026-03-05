@@ -9,8 +9,6 @@ import useGalleryStore from "../store/useGalleryStore";
 import useHitomiStore from "../store/useHitomiStore";
 
 export default function ListPage({}) {
-  // 맨 처음 g_id와 맨 마지막 g_id를 알아야 한다.
-  // prev인지 next인지 알아야 한다.
   const { tagMap } = useTagStore();
   const [searchParams] = useSearchParams();
   const title = searchParams.get("title") || "";

@@ -6,6 +6,7 @@ import TagList from "./TagList";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import useTagInfoStore from "../store/useTagInfoStore";
 import useTagLikeStore from "../store/useTagLikeStore";
+import useHitomiStore from "../store/useHitomiStore";
 
 // 좋아요/싫어요 한 태그들을 보여준다.
 export default function MyTag() {
@@ -17,6 +18,7 @@ export default function MyTag() {
   const page = searchParams.get("page") || 1;
   const flag = searchParams.get("flag") == "false" ? false : true;
   const [isLoading, setIsLoading] = useState(true);
+  const { getImageDecodeInfo } = useHitomiStore();
   // 태그 모달창을 위한 변수들
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [selectedTag, setSelectedTag] = useState({
@@ -34,6 +36,7 @@ export default function MyTag() {
   };
   async function getTagList(selectedUTL) {
     setIsLoading(true);
+    getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });

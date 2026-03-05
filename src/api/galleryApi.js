@@ -27,6 +27,8 @@ const galleryApi = {
       p_direction: direction,
     });
   },
+  incrementGalleryViewCount: (g_id) =>
+    supabase.rpc("increment_gallery_view_count", { p_g_id: g_id }),
 };
 
 export default galleryApi;
