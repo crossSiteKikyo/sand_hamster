@@ -83,13 +83,14 @@ export default function ViewMangaPage() {
   const hashToImageUrl = (info) => {
     // info는 {hash, hasavif}로 되어있다.
     const hash = info.hash;
-    const extension = info.hasavif ? "avif" : "webp";
     const num = parseInt(
       `${hash[hash.length - 1]}${hash[hash.length - 3]}${hash[hash.length - 2]}`,
       16,
     );
     const subDomainNum = numSet.has(num) ? Number(o2) + 1 : Number(o1) + 1;
-    return `https://w${subDomainNum}.gold-usergeneratedcontent.net/${b}${num}/${hash}.${extension}`;
+    const webpUrl = `https://w${subDomainNum}.gold-usergeneratedcontent.net/${b}${num}/${hash}.webp`;
+    const avifUrl = `https://a${subDomainNum}.gold-usergeneratedcontent.net/${b}${num}/${hash}.avif`;
+    return info.hasavif ? avifUrl : webpUrl;
   };
   const RetryImage = ({ src, alt, className }) => {
     const [imgSrc, setImgSrc] = useState(src);
