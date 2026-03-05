@@ -1,9 +1,10 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import MyButton from "../components/MyButton";
-import { useGalleryLikeStore, useUserStore } from "../store";
 import { toast } from "react-toastify";
 import galleryLikeApi from "../api/galleryLikeApi";
+import useUserStore from "../store/useUserStore";
+import useGalleryLikeStore from "../store/useGalleryLikeStore";
 export default function ModalGalleryLike({
   isOpen,
   onClose,

@@ -1,8 +1,9 @@
 import { useLongPress } from "use-long-press";
-import { useTagLikeStore, useUserStore } from "../store";
 import { toast } from "react-toastify";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { createSearchParams, useNavigate } from "react-router-dom";
+import useTagLikeStore from "../store/useTagLikeStore";
+import useUserStore from "../store/useUserStore";
 
 export default function Tag({ tag, type, setSelectedTag, setIsTagModalOpen }) {
   const navigate = useNavigate();

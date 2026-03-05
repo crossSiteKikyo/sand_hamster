@@ -1,6 +1,6 @@
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { useEffect, useState } from "react";
-import { useTagStore, useTypeStore } from "../store";
+import useTagStore from "../store/useTagStore";
 import { Search, X } from "lucide-react";
 import SearchRecommendList from "./SearchRecommendList";
 import { createSearchParams, useNavigate } from "react-router-dom";

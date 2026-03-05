@@ -5,9 +5,10 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { useThemeStore, useUserStore } from "../store";
 import { BookHeart, Images, Menu, Moon, Sun, Tags, Trophy } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import useThemeStore from "../store/useThemeStore";
+import useUserStore from "../store/useUserStore";
 
 export default function NavigationDrawerMenu({ className }) {
   const { user } = useUserStore();

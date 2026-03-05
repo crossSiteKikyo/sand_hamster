@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import GalleryList from "./GalleryList";
 import { useSearchParams } from "react-router-dom";
-import { useGalleryStore, useUserStore } from "../store";
 import ModalTagLike from "./ModalTagLike";
 import PaginationCursor from "./PaginationCursor";
+import useUserStore from "../store/useUserStore";
+import useGalleryStore from "../store/useGalleryStore";
 
 // 좋아요한 태그를 하나라도 포함하는 갤러리를 보여준다.
 export default function MyGalleryHasLikeTag() {

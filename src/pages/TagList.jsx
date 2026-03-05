@@ -1,7 +1,9 @@
 import { createSearchParams, useNavigate } from "react-router-dom";
-import { useTagInfoStore, useTagLikeStore } from "../store";
 import { useLongPress } from "use-long-press";
 import { Loader2 } from "lucide-react";
+import useTagInfoStore from "../store/useTagInfoStore";
+import useTagLikeStore from "../store/useTagLikeStore";
+import useHitomiStore from "../store/useHitomiStore";
 
 export default function TagList({
   isLoading,
@@ -11,6 +13,7 @@ export default function TagList({
   const navigate = useNavigate();
   const { tagLikeList } = useTagLikeStore();
   const { tagIds, tagInfoMap } = useTagInfoStore();
+  const { thumbChar1, thumbChar2, numSet } = useHitomiStore();
   const tagSearch = (tag) => {
     navigate({
       pathname: "/list",
@@ -23,6 +26,18 @@ export default function TagList({
     setSelectedTag(tag);
     setIsTagModalOpen(true);
   });
+  const decodeHitomiThumbnailUrl = (url) => {
+    if (url == undefined) return "";
+    // https://tn.hitomi.la로 시작하는 url만 decode해야한다.
+    if (!url.startsWith("https://tn.hitomi.la")) return url;
+    const hash = url.match(/[0-9a-z]{40,}/)[0];
+    const num = parseInt(
+      `${hash[hash.length - 1]}${hash[hash.length - 3]}${hash[hash.length - 2]}`,
+      16,
+    );
+    const ch = numSet.has(num) ? thumbChar2 : thumbChar1;
+    return url.replace("tn.hitomi.la", `${ch}tn.gold-usergeneratedcontent.net`);
+  };
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-1 lg:grid-cols-2">
@@ -87,19 +102,28 @@ export default function TagList({
                     </p>
                   )}
                 </div>
-                <div className="flex">
-                  <img
-                    className="w-1/3"
-                    src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F14062F0B4B2C93D66D"
-                  />
-                  <img
-                    className="w-1/3"
-                    src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F14062F0B4B2C93D66D"
-                  />
-                  <img
-                    className="w-1/3"
-                    src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F14062F0B4B2C93D66D"
-                  />
+                <div className="flex min-h-36">
+                  {t.thumbnails[0] && (
+                    <img
+                      className="w-1/3"
+                      alt="첫번째 썸네일"
+                      src={decodeHitomiThumbnailUrl(t.thumbnails[0])}
+                    />
+                  )}
+                  {t.thumbnails[1] && (
+                    <img
+                      className="w-1/3"
+                      alt="두번째 썸네일"
+                      src={decodeHitomiThumbnailUrl(t.thumbnails[1])}
+                    />
+                  )}
+                  {t.thumbnails[2] && (
+                    <img
+                      className="w-1/3"
+                      alt="세번째 썸네일"
+                      src={decodeHitomiThumbnailUrl(t.thumbnails[2])}
+                    />
+                  )}
                 </div>
               </div>
             );

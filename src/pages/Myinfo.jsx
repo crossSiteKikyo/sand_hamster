@@ -1,15 +1,13 @@
 import { useState } from "react";
 import authApi from "../api/authApi";
-import {
-  useGalleryLikeStore,
-  useTagLikeStore,
-  useTagStore,
-  useUserStore,
-} from "../store";
 import { ChevronDown, ChevronUp, FileDown, FileUp, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import galleryLikeApi from "../api/galleryLikeApi";
 import tagLikeApi from "../api/tagLikeApi";
+import useTagStore from "../store/useTagStore";
+import useUserStore from "../store/useUserStore";
+import useGalleryLikeStore from "../store/useGalleryLikeStore";
+import useTagLikeStore from "../store/useTagLikeStore";
 
 export default function Myinfo({ afterLogin }) {
   const { user, tag_like_limit, gallery_like_limit } = useUserStore();

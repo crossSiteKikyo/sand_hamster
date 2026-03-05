@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useGalleryStore, useTagStore, useUserStore } from "../store";
 import { useSearchParams } from "react-router-dom";
 import GalleryList from "./GalleryList";
 import ModalTagLike from "./ModalTagLike";
 import SearchedTagMain from "../components/SearchedTag";
 import PaginationCursor from "./PaginationCursor";
+import useTagStore from "../store/useTagStore";
+import useGalleryStore from "../store/useGalleryStore";
+import useHitomiStore from "../store/useHitomiStore";
 
 export default function ListPage({}) {
   // 맨 처음 g_id와 맨 마지막 g_id를 알아야 한다.
@@ -19,8 +21,10 @@ export default function ListPage({}) {
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { getGalleryListCursor, getGalleryListById } = useGalleryStore();
+  const { getImageDecodeInfo } = useHitomiStore();
   async function getGalleryList() {
     setIsLoading(true);
+    getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });

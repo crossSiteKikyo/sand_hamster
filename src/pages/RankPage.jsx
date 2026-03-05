@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useGalleryStore, useRankStore, useTagInfoStore } from "../store";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Pagination from "./Pagination";
 import ModalTagLike from "./ModalTagLike";
 import GalleryList from "./GalleryList";
 import TagList from "./TagList";
+import useGalleryStore from "../store/useGalleryStore";
+import useRankStore from "../store/useRankStore";
+import useTagInfoStore from "../store/useTagInfoStore";
 
 export default function RankPage() {
   const navigate = useNavigate();

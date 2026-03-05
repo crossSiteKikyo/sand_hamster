@@ -1,7 +1,8 @@
 import { useLongPress } from "use-long-press";
-import { useTagLikeStore, useUserStore } from "../store";
 import { toast } from "react-toastify";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
+import useTagLikeStore from "../store/useTagLikeStore";
+import useUserStore from "../store/useUserStore";
 
 export default function SearchedTagMain({
   tag,
@@ -44,12 +45,12 @@ export default function SearchedTagMain({
   return (
     <button
       {...handlers()}
-      className={`flex px-1 rounded-md cursor-pointer select-none ${colorMap[type]}`}
+      className={`flex cursor-pointer rounded-md px-1 select-none ${colorMap[type]}`}
     >
       {name}
-      {likeTagIds.includes(tag.tag_id) && <ThumbsUp className="pl-1 w-5" />}
+      {likeTagIds.includes(tag.tag_id) && <ThumbsUp className="w-5 pl-1" />}
       {dislikeTagIds.includes(tag.tag_id) && (
-        <ThumbsDown className="pl-1 w-5" />
+        <ThumbsDown className="w-5 pl-1" />
       )}
     </button>
   );

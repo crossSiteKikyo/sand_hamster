@@ -1,7 +1,7 @@
 import authApi from "../api/authApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useSignUpLimitStore } from "../store";
+import useSignUpLimitStore from "../store/useSignUpLimitStore";
 
 export default function SignUp() {
   const navigate = useNavigate();

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import GalleryList from "./GalleryList";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useGalleryLikeStore, useGalleryStore } from "../store";
 import ModalTagLike from "./ModalTagLike";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import Pagination from "./Pagination";
+import useGalleryLikeStore from "../store/useGalleryLikeStore";
+import useGalleryStore from "../store/useGalleryStore";
 
 // 좋아요/싫어요 한 갤러리를 보여준다.
 export default function MyGallery() {
@@ -13,7 +14,7 @@ export default function MyGallery() {
   const [maxPage, setMaxPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("page") || 1;
-  const flag = searchParams.get("flag") == "false" ? true : false;
+  const flag = searchParams.get("flag") == "false" ? false : true;
   const [isLoading, setIsLoading] = useState(true);
   const { getGalleriesByIds } = useGalleryStore();
   // 태그 모달창을 위한 변수들
@@ -69,13 +70,13 @@ export default function MyGallery() {
       <div className="mb-2 flex justify-end gap-2">
         <button
           className={`flex gap-1 rounded-xl border border-pink-500 p-2 ${flag ? "bg-pink-300 dark:bg-pink-700" : "cursor-pointer"}`}
-          onClick={() => pageMove(flag)}
+          onClick={() => pageMove(true)}
         >
           좋아요 <ThumbsUp className="w-5" />
         </button>
         <button
           className={`flex gap-1 rounded-xl border border-gray-500 p-2 ${!flag ? "bg-gray-200 dark:bg-gray-700" : "cursor-pointer"}`}
-          onClick={() => pageMove(flag)}
+          onClick={() => pageMove(false)}
         >
           싫어요 <ThumbsDown className="w-5" />
         </button>

@@ -1,16 +1,15 @@
 import { useState } from "react";
 import Tag from "../components/Tag";
-import {
-  useGalleryLikeStore,
-  useGalleryStore,
-  useTagStore,
-  useTypeStore,
-  useUserStore,
-} from "../store";
 import TagMain from "../components/TagMain";
 import { Loader2 } from "lucide-react";
 import { useLongPress } from "use-long-press";
 import ModalGalleryLike from "./ModalGalleryLike";
+import useTypeStore from "../store/useTypeStore";
+import useTagStore from "../store/useTagStore";
+import useUserStore from "../store/useUserStore";
+import useGalleryLikeStore from "../store/useGalleryLikeStore";
+import useGalleryStore from "../store/useGalleryStore";
+import useHitomiStore from "../store/useHitomiStore";
 
 export default function GalleryList({
   isLoading,
@@ -24,6 +23,7 @@ export default function GalleryList({
   const { user } = useUserStore();
   const { galleryLikeList } = useGalleryLikeStore();
   const { galleryIds, galleryMap } = useGalleryStore();
+  const { thumbChar1, thumbChar2, numSet } = useHitomiStore();
   // 갤러리 모달창을 위한 변수들
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
   const [selectedGallery, setSelectedGallery] = useState({
@@ -39,6 +39,17 @@ export default function GalleryList({
       console.log(gallery);
     }
   });
+  const decodeHitomiThumbnailUrl = (url) => {
+    // https://tn.hitomi.la로 시작하는 url만 decode해야한다.
+    if (!url.startsWith("https://tn.hitomi.la")) return url;
+    const hash = url.match(/[0-9a-z]{40,}/)[0];
+    const num = parseInt(
+      `${hash[hash.length - 1]}${hash[hash.length - 3]}${hash[hash.length - 2]}`,
+      16,
+    );
+    const ch = numSet.has(num) ? thumbChar2 : thumbChar1;
+    return url.replace("tn.hitomi.la", `${ch}tn.gold-usergeneratedcontent.net`);
+  };
 
   if (isLoading) {
     return (
@@ -180,12 +191,14 @@ export default function GalleryList({
                   )}
                   <div {...galleryLongPressHandlers(g)} className="flex">
                     <img
-                      className="w-1/2"
-                      src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F14062F0B4B2C93D66D"
+                      className="min-h-44 w-1/2"
+                      src={decodeHitomiThumbnailUrl(g.thumb1)}
+                      alt="첫번째 썸네일"
                     />
                     <img
                       className="w-1/2"
-                      src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F14062F0B4B2C93D66D"
+                      src={decodeHitomiThumbnailUrl(g.thumb2)}
+                      alt="두번째 썸네일"
                     />
                   </div>
                   <div className="flex flex-wrap gap-1 p-1">

@@ -6,7 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useGalleryStore } from "../store";
+import useGalleryStore from "../store/useGalleryStore";
 
 export default function PaginationCursor({ direction, cursorId }) {
   const { firstGid, lastGid, has_more } = useGalleryStore();

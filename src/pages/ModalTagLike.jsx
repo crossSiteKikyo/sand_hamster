@@ -1,9 +1,10 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import MyButton from "../components/MyButton";
-import { useTagLikeStore, useUserStore } from "../store";
 import { toast } from "react-toastify";
 import tagLikeApi from "../api/tagLikeApi";
+import useTagLikeStore from "../store/useTagLikeStore";
+import useUserStore from "../store/useUserStore";
 export default function ModalTagLike({
   isOpen,
   onClose,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNotificationStore } from "../store";
+import useNotificationStore from "../store/useNotificationStore";
 
 export default function NotificationPage() {
   const [selectedId, setSelectedId] = useState(null);

@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import {
-  useGalleryLikeStore,
-  useNotificationStore,
-  useTagLikeStore,
-  useTagStore,
-  useThemeStore,
-  useTypeStore,
-  useUserStore,
-} from "./store";
 import Navigation from "./pages/Navigation";
 import FloatingActionButton from "./pages/FloatingActionButton";
 import NotificationPage from "./pages/NotificationPage";
@@ -25,6 +16,13 @@ import MyTag from "./pages/MyTag";
 import MyGalleryHasLikeTag from "./pages/MyGalleryHasLikeTag";
 import RankPage from "./pages/RankPage";
 import { galleryCache } from "./cacheDB";
+import useThemeStore from "./store/useThemeStore";
+import useUserStore from "./store/useUserStore";
+import useTypeStore from "./store/useTypeStore";
+import useTagStore from "./store/useTagStore";
+import useTagLikeStore from "./store/useTagLikeStore";
+import useGalleryLikeStore from "./store/useGalleryLikeStore";
+import useNotificationStore from "./store/useNotificationStore";
 
 function App() {
   const { isDarkMode } = useThemeStore();

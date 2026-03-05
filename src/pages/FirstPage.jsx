@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function FirstPage() {
   const navigate = useNavigate();
@@ -9,7 +9,6 @@ export default function FirstPage() {
   };
   useEffect(() => {
     const agree = localStorage.getItem("sand_hamster_agree");
-    console.log(agree);
     if (agree == "true") {
       navigate("/list");
     }
