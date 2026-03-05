@@ -23,6 +23,7 @@ import useTagStore from "./store/useTagStore";
 import useTagLikeStore from "./store/useTagLikeStore";
 import useGalleryLikeStore from "./store/useGalleryLikeStore";
 import useNotificationStore from "./store/useNotificationStore";
+import ViewMangaPage from "./pages/ViewMangaPage";
 
 function App() {
   const { isDarkMode } = useThemeStore();
@@ -32,8 +33,9 @@ function App() {
   const { getTagLikeList } = useTagLikeStore();
   const { getGalleryLikeList } = useGalleryLikeStore();
   const { getNotificationList } = useNotificationStore();
-  const location = useLocation(); // 현재 경로를 가져옵니다.
-  const isHomePage = location.pathname === "/";
+  const { pathname } = useLocation(); // 현재 경로를 가져옵니다.
+  const isHomePage = pathname === "/";
+  const isViewMangaPage = pathname === "/viewManga";
   const [isInitializing, setIsInitializing] = useState(true);
   const [loadingInfo, setLoadingInfo] = useState("유저정보 받아오는중...");
 
@@ -85,7 +87,7 @@ function App() {
           </div>
         ) : (
           <>
-            {!isHomePage && (
+            {!(isHomePage || isViewMangaPage) && (
               <>
                 <Navigation />
                 <FloatingActionButton />
@@ -98,13 +100,14 @@ function App() {
               <Routes>
                 <Route path="/" element={<FirstPage />} />
                 <Route path="/list" element={<ListPage />}></Route>
+                <Route path="/rank" element={<RankPage />} />
+                <Route path="/notification" element={<NotificationPage />} />
+                <Route path="/viewManga" element={<ViewMangaPage />} />
                 <Route
                   path="/login"
                   element={<Login afterLogin={afterLogin} />}
                 />
                 <Route path="/signup" element={<SignUp />} />
-                <Route path="/notification" element={<NotificationPage />} />
-                <Route path="/rank" element={<RankPage />} />
                 <Route
                   path="/mygallery"
                   element={
@@ -138,7 +141,7 @@ function App() {
                   }
                 ></Route>
               </Routes>
-              {!isHomePage && <Footer />}
+              {!(isHomePage || isViewMangaPage) && <Footer />}
             </div>
           </>
         )}

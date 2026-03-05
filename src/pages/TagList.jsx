@@ -4,6 +4,8 @@ import { Loader2 } from "lucide-react";
 import useTagInfoStore from "../store/useTagInfoStore";
 import useTagLikeStore from "../store/useTagLikeStore";
 import useHitomiStore from "../store/useHitomiStore";
+import useUserStore from "../store/useUserStore";
+import { toast } from "react-toastify";
 
 export default function TagList({
   isLoading,
@@ -11,6 +13,7 @@ export default function TagList({
   setIsTagModalOpen,
 }) {
   const navigate = useNavigate();
+  const { user } = useUserStore();
   const { tagLikeList } = useTagLikeStore();
   const { tagIds, tagInfoMap } = useTagInfoStore();
   const { thumbChar1, thumbChar2, numSet } = useHitomiStore();
@@ -23,8 +26,12 @@ export default function TagList({
     });
   };
   const tagLongPressHandlers = useLongPress((e, { context: tag }) => {
-    setSelectedTag(tag);
-    setIsTagModalOpen(true);
+    if (user == null) {
+      toast("태그 좋아요/싫어요 기능을 이용하시려면 로그인해 주세요");
+    } else {
+      setSelectedTag(tag);
+      setIsTagModalOpen(true);
+    }
   });
   const decodeHitomiThumbnailUrl = (url) => {
     if (url == undefined) return "";
@@ -102,24 +109,24 @@ export default function TagList({
                     </p>
                   )}
                 </div>
-                <div className="flex min-h-36">
+                <div className="flex min-h-36 items-center select-none">
                   {t.thumbnails[0] && (
                     <img
-                      className="w-1/3"
+                      className="h-auto w-1/3"
                       alt="첫번째 썸네일"
                       src={decodeHitomiThumbnailUrl(t.thumbnails[0])}
                     />
                   )}
                   {t.thumbnails[1] && (
                     <img
-                      className="w-1/3"
+                      className="h-auto w-1/3"
                       alt="두번째 썸네일"
                       src={decodeHitomiThumbnailUrl(t.thumbnails[1])}
                     />
                   )}
                   {t.thumbnails[2] && (
                     <img
-                      className="w-1/3"
+                      className="h-auto w-1/3"
                       alt="세번째 썸네일"
                       src={decodeHitomiThumbnailUrl(t.thumbnails[2])}
                     />

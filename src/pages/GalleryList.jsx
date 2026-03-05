@@ -11,6 +11,7 @@ import useGalleryLikeStore from "../store/useGalleryLikeStore";
 import useGalleryStore from "../store/useGalleryStore";
 import useHitomiStore from "../store/useHitomiStore";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function GalleryList({
   isLoading,
@@ -19,6 +20,7 @@ export default function GalleryList({
   setSelectedType,
   getGalleryList,
 }) {
+  const navigate = useNavigate();
   const { typeList } = useTypeStore();
   const { tagMap } = useTagStore();
   const { user } = useUserStore();
@@ -219,14 +221,18 @@ export default function GalleryList({
                       ))}
                     </div>
                   )}
-                  <div {...galleryLongPressHandlers(g)} className="flex">
+                  <div
+                    {...galleryLongPressHandlers(g)}
+                    className="flex min-h-40 items-center select-none"
+                    onClick={() => navigate(`/viewManga?g_id=${g.g_id}`)}
+                  >
                     <img
-                      className="min-h-44 w-1/2"
+                      className="h-auto w-1/2"
                       src={decodeHitomiThumbnailUrl(g.thumb1)}
                       alt="첫번째 썸네일"
                     />
                     <img
-                      className="w-1/2"
+                      className="h-auto w-1/2"
                       src={decodeHitomiThumbnailUrl(g.thumb2)}
                       alt="두번째 썸네일"
                     />
