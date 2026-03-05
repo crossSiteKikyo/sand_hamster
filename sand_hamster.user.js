@@ -10,6 +10,7 @@
 // @downloadURL  https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/test.user.js
 // @require      https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js
 // @require      https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
+// @require      https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4
 // @run-at       document-end
 // ==/UserScript==
 
@@ -55,11 +56,11 @@
       script1.src = `${GitHack_base}assets/index.js`;
       document.head.appendChild(script1);
       // tailwind js 주입
-      const script2 = document.createElement("script");
-      script2.type = "module";
-      script2.crossOrigin = "anonymous";
-      script2.src = `https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4`;
-      document.head.appendChild(script2);
+      // const script2 = document.createElement("script");
+      // script2.type = "module";
+      // script2.crossOrigin = "anonymous";
+      // script2.src = `https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4`;
+      // document.head.appendChild(script2);
     },
   };
   // 1초뒤 자동으로 로딩
