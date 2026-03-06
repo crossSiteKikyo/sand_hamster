@@ -1,5 +1,8 @@
 ---------- 고민거리들 ----------
 
+23.03.06 
+chromuim브라우저들은 img태그를 http1.1로 통신하는 것 같다. 이를위해 anonymous추가. 그리고 유저스크립트는 firefox의 cors우회기능 추가.
+
 26.03.03
 egress때문에 캐싱을 하니 데이터 신선도 문제가 새로 생겼다. 과감하게 like_count, dislike_count는 없애고, view_count는 ui에서 제외한다. 나중에 인기순위 집계만 잘 하면 될 것.
 

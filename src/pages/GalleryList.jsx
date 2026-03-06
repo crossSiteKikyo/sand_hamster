@@ -238,11 +238,13 @@ export default function GalleryList({
                       className="h-auto w-1/2"
                       src={decodeHitomiThumbnailUrl(g.thumb1)}
                       alt="첫번째 썸네일"
+                      crossOrigin="anonymous" // 👈 이 속성이 HTTP/2 협상을 유도할 수 있습니다.
                     />
                     <img
                       className="h-auto w-1/2"
                       src={decodeHitomiThumbnailUrl(g.thumb2)}
                       alt="두번째 썸네일"
+                      crossOrigin="anonymous" // 👈 이 속성이 HTTP/2 협상을 유도할 수 있습니다.
                     />
                   </div>
                   <div className="flex flex-wrap gap-1 p-1">

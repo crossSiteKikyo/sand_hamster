@@ -48,12 +48,30 @@
       link2.crossOrigin = "anonymous";
       link2.href = `${GitHack_base}assets/index.css`;
       document.head.appendChild(link2);
-      // index.js 주입 (type="module" 설정 필수)
-      const script1 = document.createElement("script");
-      script1.type = "module";
-      script1.crossOrigin = "anonymous";
-      script1.src = `${GitHack_base}assets/index.js`;
-      document.head.appendChild(script1);
+      // // index.js 주입 (type="module" 설정 필수). firefox에서는 cors 정책에 막힌다.
+      // const script1 = document.createElement("script");
+      // script1.type = "module";
+      // script1.crossOrigin = "anonymous";
+      // script1.src = `${GitHack_base}assets/index.js`;
+      // document.head.appendChild(script1);
+      // 3. JS 주입 (Firefox CORS 우회를 위한 Blob 방식)
+      try {
+        const jsResponse = await fetch(`${GitHack_base}assets/index.js`);
+        const jsCode = await jsResponse.text();
+        // 코드를 Blob으로 변환하여 로컬 URL 생성
+        const blob = new Blob([jsCode], { type: "application/javascript" });
+        const blobUrl = URL.createObjectURL(blob);
+
+        const script = document.createElement("script");
+        script.type = "module";
+        script.src = blobUrl; // 외부 URL이 아닌 생성된 로컬 Blob URL 사용
+        document.head.appendChild(script);
+
+        console.log("Firefox에서 Blob을 통해 스크립트 주입 성공");
+      } catch (err) {
+        console.error("스크립트 주입 실패:", err);
+        alert("스크립트 주입 실패");
+      }
     },
   };
   // 1초뒤 자동으로 로딩

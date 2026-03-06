@@ -152,6 +152,7 @@ export default function ViewMangaPage() {
             alt={alt}
             className={className}
             onError={handleError}
+            crossOrigin="anonymous" // 👈 이 속성이 HTTP/2 협상을 유도할 수 있습니다.
           />
         )}
       </>
