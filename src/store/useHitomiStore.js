@@ -67,7 +67,6 @@ const useHitomiStore = create((set, get) => ({
         img.src = avifData;
       }
     });
-    console.log(isSupported);
     set({ isAvifSupported: isSupported });
   },
 }));

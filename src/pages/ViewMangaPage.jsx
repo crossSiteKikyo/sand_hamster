@@ -137,7 +137,7 @@ export default function ViewMangaPage() {
           setIsFail(true);
           console.error("이미지 상태 확인 실패:", err);
         }
-      }
+      } else setIsFail(true);
     };
     return (
       <>
@@ -157,6 +157,7 @@ export default function ViewMangaPage() {
       </>
     );
   };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center">
       <ModalAutoSlide

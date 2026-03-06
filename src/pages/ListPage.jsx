@@ -14,7 +14,7 @@ export default function ListPage({}) {
   const title = searchParams.get("title") || "";
   const galleryId = searchParams.get("galleryId") || "";
   const tagIds = searchParams.getAll("tag") || [];
-  const direction = searchParams.get("direction");
+  const direction = searchParams.get("direction") || "next";
   const cursorId = searchParams.get("cursorId");
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

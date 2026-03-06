@@ -38,26 +38,23 @@ export default function PaginationCursor({ direction, cursorId }) {
   return (
     <div className="flex w-full flex-col items-center">
       <div className="flex w-full max-w-2xl gap-1 pb-3">
-        {direction == null && cursorId == null ? (
-          <MyButton className="flex grow items-center justify-center opacity-50">
-            <ChevronFirst />
-          </MyButton>
-        ) : (
-          <MyButton
-            className="flex grow cursor-pointer items-center justify-center"
-            onClick={() => pageMove(null, null)}
-          >
-            <ChevronFirst />
-          </MyButton>
-        )}
         {(direction == "prev" && !has_more) || cursorId == null ? (
           <>
+            <MyButton className="flex grow items-center justify-center opacity-50">
+              <ChevronFirst />
+            </MyButton>
             <MyButton className="flex grow items-center justify-center opacity-50">
               <ChevronLeft />
             </MyButton>
           </>
         ) : (
           <>
+            <MyButton
+              className="flex grow cursor-pointer items-center justify-center"
+              onClick={() => pageMove(null, null)}
+            >
+              <ChevronFirst />
+            </MyButton>
             <MyButton
               className="flex grow cursor-pointer items-center justify-center"
               onClick={() => pageMove("prev", firstGid)}
