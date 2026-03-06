@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useHitomiStore from "../store/useHitomiStore";
 import { Fullscreen } from "lucide-react";
 
@@ -61,13 +61,13 @@ export default function ViewMangaPageNav({
     <>
       {/* [Layer 1] 투명 클릭 영역 (3등분) */}
       {isHorizontal ? (
-        <div className="absolute inset-0 z-10 flex">
+        <div className="absolute inset-0 z-10 flex select-none">
           <div className="h-full w-1/3 cursor-pointer" onClick={goPrev} />
           <div className="h-full w-1/3 cursor-pointer" onClick={toggleUI} />
           <div className="h-full w-1/3 cursor-pointer" onClick={goNext} />
         </div>
       ) : (
-        <div className="absolute inset-0 z-10">
+        <div className="absolute inset-0 z-10 select-none">
           <div className="h-1/3 w-full cursor-pointer" onClick={goPrev} />
           <div className="h-1/3 w-full cursor-pointer" onClick={toggleUI} />
           <div className="h-1/3 w-full cursor-pointer" onClick={goNext} />
