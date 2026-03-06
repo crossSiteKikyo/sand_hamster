@@ -26,7 +26,7 @@ export default function GalleryList({
   const { user } = useUserStore();
   const { galleryLikeList } = useGalleryLikeStore();
   const { galleryIds, galleryMap } = useGalleryStore();
-  const { thumbChar1, thumbChar2, numSet } = useHitomiStore();
+  const { thumbChar1, thumbChar2, numSet, isAvifSupported } = useHitomiStore();
   // 갤러리 모달창을 위한 변수들
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
   const [selectedGallery, setSelectedGallery] = useState({
@@ -43,15 +43,23 @@ export default function GalleryList({
     }
   });
   const decodeHitomiThumbnailUrl = (url) => {
-    // https://tn.hitomi.la로 시작하는 url만 decode해야한다.
-    if (!url.startsWith("https://tn.hitomi.la")) return url;
+    // 브라우저사 avif지원하면 avifurl로 반환. 썸네일은 모두 avif지원하겠지? 크롤링을 webp로만 해서 오류가 날지도 모르겠다.
+    // https://tn.hitomi.la로 시작하는 url만 decode한다.
+    if (!url.startsWith("https://tn.hitomi.la"))
+      return isAvifSupported ? url.replaceAll("webp", "avif") : url;
+
     const hash = url.match(/[0-9a-z]{40,}/)[0];
     const num = parseInt(
       `${hash[hash.length - 1]}${hash[hash.length - 3]}${hash[hash.length - 2]}`,
       16,
     );
     const ch = numSet.has(num) ? thumbChar2 : thumbChar1;
-    return url.replace("tn.hitomi.la", `${ch}tn.gold-usergeneratedcontent.net`);
+    const webpUrl = url.replace(
+      "tn.hitomi.la",
+      `${ch}tn.gold-usergeneratedcontent.net`,
+    );
+    const avifUrl = webpUrl.replaceAll("webp", "avif");
+    return isAvifSupported ? avifUrl : webpUrl;
   };
 
   if (isLoading) {

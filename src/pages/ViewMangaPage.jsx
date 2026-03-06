@@ -50,8 +50,16 @@ export default function ViewMangaPage() {
     };
   }, [handleKeyDown]);
 
-  const { b, o1, o2, numSet, imgHashList, getGalleryInfo, getImageDecodeInfo } =
-    useHitomiStore();
+  const {
+    b,
+    o1,
+    o2,
+    numSet,
+    imgHashList,
+    getGalleryInfo,
+    getImageDecodeInfo,
+    isAvifSupported,
+  } = useHitomiStore();
   const [searchParams] = useSearchParams();
   const g_id = searchParams.get("g_id");
   const getImgHashList = async () => {
@@ -88,14 +96,16 @@ export default function ViewMangaPage() {
       16,
     );
     const subDomainNum = numSet.has(num) ? Number(o2) + 1 : Number(o1) + 1;
-    const webpUrl = `https://w${subDomainNum}.gold-usergeneratedcontent.net/${b}${num}/${hash}.webp`;
     const avifUrl = `https://a${subDomainNum}.gold-usergeneratedcontent.net/${b}${num}/${hash}.avif`;
-    return info.hasavif ? avifUrl : webpUrl;
+    const webpUrl = `https://w${subDomainNum}.gold-usergeneratedcontent.net/${b}${num}/${hash}.webp`;
+    // avif이미지가 존재하고, 브라우저가 avif포맷을 지원하면 avifurl을 준다.
+    if (info.hasavif && isAvifSupported) return avifUrl;
+    else return webpUrl;
   };
   const RetryImage = ({ src, alt, className }) => {
     const [imgSrc, setImgSrc] = useState(src);
     const [retryCount, setRetryCount] = useState(0);
-    const MAX_RETRIES = 10; // 최대 재시도 횟수
+    const MAX_RETRIES = 12345; // 최대 재시도 횟수
     const [isFail, setIsFail] = useState(false);
 
     // src 프롭이 변경되면 상태 초기화
@@ -112,7 +122,7 @@ export default function ViewMangaPage() {
             method: "HEAD",
             cache: "no-cache",
           });
-          if (response.status === 503 || response.status === 500) {
+          if (response.status === 503) {
             console.warn(
               `[${response.status}] 에러 발생. ${retryCount + 1}회차 재시도 중...`,
             );

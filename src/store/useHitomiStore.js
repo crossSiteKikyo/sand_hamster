@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { toast } from "react-toastify";
 import hitomiApi from "../api/hitomiApi";
 
-const useHitomiStore = create((set) => ({
+const useHitomiStore = create((set, get) => ({
   b: "1772697601/",
   o1: "0",
   o2: "1",
@@ -11,6 +11,7 @@ const useHitomiStore = create((set) => ({
   numSet: new Set(),
   imgHashList: [],
   title: "제목",
+  isAvifSupported: false, // 브라우저가 avif포맷을 지원하는지 안하는지.
   getImageDecodeInfo: async () => {
     const response = await hitomiApi.getGgjs();
     if (!response.ok) {
@@ -45,6 +46,29 @@ const useHitomiStore = create((set) => ({
       imgHashList: files.map((f) => ({ hash: f.hash, hasavif: f.hasavif })), // avif로 요청 가능하면 avif로 한다.
       title: galleryInfo.title,
     });
+  },
+  checkAvifSupport: async () => {
+    // 예시 AVIF 파일의 Base64 데이터입니다. gemini가 만들어준 데이터는 오류가 있어 따로 만들었다.
+    const avifData =
+      "data:image/avif;base64,AAAAHGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZgAAAXBtZXRhAAAAAAAAACFoZGxyAAAAAAAAAABwaWN0AAAAAAAAAAAAAAAAAAAAAA5waXRtAAAAAAABAAAANGlsb2MAAAAAREAAAgABAAAAAAGUAAEAAAAAAAAAGAACAAAAAAGsAAEAAAAAAAAAFQAAADhpaW5mAAAAAAACAAAAFWluZmUCAAAAAAEAAGF2MDEAAAAAFWluZmUCAAAAAAIAAGF2MDEAAAAAr2lwcnAAAACKaXBjbwAAAAxhdjFDgQAMAAAAABRpc3BlAAAAAAAAAAgAAAAIAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQAcAAAAAA5waXhpAAAAAAEIAAAAOGF1eEMAAAAAdXJuOm1wZWc6bXBlZ0I6Y2ljcDpzeXN0ZW1zOmF1eGlsaWFyeTphbHBoYQAAAAAdaXBtYQAAAAAAAAACAAEDgQIDAAIEhAIFhgAAABppcmVmAAAAAAAAAA5hdXhsAAIAAQABAAAANW1kYXQSAAoIGAi/YICGg0IyChgAAABAALATS9gSAAoFGAi/YVAyChgAAAEAAiEbo2A=";
+    const isSupported = await new Promise((resolve) => {
+      const img = new Image();
+      // 1. 최신 브라우저를 위한 decode() API 확인
+      if (img.decode) {
+        img.src = avifData;
+        img
+          .decode()
+          .then(() => resolve(true))
+          .catch(() => resolve(false));
+      } else {
+        // 2. 구형 브라우저를 위한 fallback
+        img.onload = () => resolve(img.width > 0 && img.height > 0);
+        img.onerror = () => resolve(false);
+        img.src = avifData;
+      }
+    });
+    console.log(isSupported);
+    set({ isAvifSupported: isSupported });
   },
 }));
 
