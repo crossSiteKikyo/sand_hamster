@@ -13,6 +13,8 @@ export default function ViewMangaPage() {
   const [swiper, setSwiper] = useState(null);
   const [page, setPage] = useState(0);
 
+  const [isHorizontal, setIsHorizontal] = useState(true); // 좌우로 페이지를 넘길지 상하로 넘길지.
+
   // 자동넘기기를 위한 변수들
   const [isOpen, setIsOpen] = useState(false);
   const [intervalID, setIntervalID] = useState(undefined); // 자동넘기기할 때 사용하는 interval 아이디
@@ -34,7 +36,7 @@ export default function ViewMangaPage() {
   const [searchParams] = useSearchParams();
   const g_id = searchParams.get("g_id");
   const getImgHashList = async () => {
-    await getImageDecodeInfo();
+    // await getImageDecodeInfo(); 메인에서 60초마다 하니 이제 안해도 되지 않을까?
     await getGalleryInfo(g_id);
   };
   useEffect(() => {
@@ -113,7 +115,10 @@ export default function ViewMangaPage() {
     return (
       <>
         {isFail ? (
-          <div className="flex h-full w-full flex-col items-center justify-center">
+          <div
+            className="flex h-full w-full flex-col items-center justify-center"
+            // onClick={() => swiper?.slideNext(0)}
+          >
             <CircleX className="h-16 w-16" />
             이미지 로딩 실패
           </div>
@@ -124,6 +129,7 @@ export default function ViewMangaPage() {
             className={className}
             onError={handleError}
             crossOrigin="anonymous" // 👈 이 속성이 HTTP/2 협상을 유도할 수 있습니다.
+            // onClick={() => swiper?.slideNext(0)}
           />
         )}
       </>
@@ -145,6 +151,7 @@ export default function ViewMangaPage() {
         onSlideChange={(s) => setPage(s.activeIndex)}
         virtual={{ addSlidesBefore: 5, addSlidesAfter: 10 }} //앞뒤 미리 로드
         className="h-full w-full"
+        direction={isHorizontal ? `horizontal` : `vertical`}
       >
         {imgHashList.map((hash, idx) => (
           <SwiperSlide key={idx} virtualIndex={idx}>
@@ -162,6 +169,8 @@ export default function ViewMangaPage() {
         setIsOpen={setIsOpen}
         stopAutoSlide={stopAutoSlide}
         intervalID={intervalID}
+        isHorizontal={isHorizontal}
+        setIsHorizontal={setIsHorizontal}
       />
     </div>
   );

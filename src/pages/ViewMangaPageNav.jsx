@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import useHitomiStore from "../store/useHitomiStore";
-import { Fullscreen } from "lucide-react";
+import { Fullscreen, X } from "lucide-react";
 
 export default function ViewMangaPageNav({
   swiper,
@@ -8,10 +8,11 @@ export default function ViewMangaPageNav({
   stopAutoSlide,
   setIsOpen,
   intervalID,
+  isHorizontal,
+  setIsHorizontal,
 }) {
   const { imgHashList, title } = useHitomiStore();
 
-  const [isHorizontal, setIsHorizontal] = useState(true); // 좌우로 페이지를 넘길지 상하로 넘길지.
   const [showUI, setShowUI] = useState(false); // 상하 UI 노출 여부
   const toggleUI = () => setShowUI(!showUI);
 
@@ -73,16 +74,25 @@ export default function ViewMangaPageNav({
           <div className="h-1/3 w-full cursor-pointer" onClick={goNext} />
         </div>
       )}
+      {/* <div
+        className="absolute bottom-0 left-0 z-10 h-1/6 w-full select-none"
+        onClick={toggleUI}
+      ></div> */}
 
       {/* [Layer 2] 상하 내비게이션 UI (HUD) */}
       {showUI && (
         <div className="pointer-events-none absolute inset-0 z-20">
           {/* 상단바 */}
-          <div className="pointer-events-auto absolute top-0 left-0 flex w-full items-center gap-1 border-b border-gray-500 bg-white/80 dark:bg-black/80">
-            <div className="p-3" onClick={toggleFullscreen}>
-              <Fullscreen className="w-6 shrink-0" />
+          <div className="pointer-events-auto absolute top-0 left-0 flex w-full items-center justify-between gap-1 border-b border-gray-500 bg-white/80 dark:bg-black/80">
+            <div className="flex items-center">
+              <div className="p-3" onClick={toggleFullscreen}>
+                <Fullscreen className="w-6 shrink-0" />
+              </div>
+              <p className="">{title}</p>
             </div>
-            <p className="">{title}</p>
+            <div className="p-3" onClick={toggleUI}>
+              <X className="w-6 shrink-0" />
+            </div>
           </div>
           {/* 하단바 */}
           <div className="pointer-events-auto absolute bottom-0 left-0 w-full border-t border-gray-500 bg-white/80 p-3 dark:bg-black/80">
