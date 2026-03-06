@@ -6,7 +6,6 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 import Pagination from "./Pagination";
 import useGalleryLikeStore from "../store/useGalleryLikeStore";
 import useGalleryStore from "../store/useGalleryStore";
-import useHitomiStore from "../store/useHitomiStore";
 
 // 좋아요/싫어요 한 갤러리를 보여준다.
 export default function MyGallery() {
@@ -18,7 +17,6 @@ export default function MyGallery() {
   const flag = searchParams.get("flag") == "false" ? false : true;
   const [isLoading, setIsLoading] = useState(true);
   const { getGalleriesByIds } = useGalleryStore();
-  const { getImageDecodeInfo } = useHitomiStore();
   // 태그 모달창을 위한 변수들
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [selectedTag, setSelectedTag] = useState({
@@ -37,7 +35,6 @@ export default function MyGallery() {
   });
   async function getGalleryList(selectedUGL) {
     setIsLoading(true);
-    await getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });

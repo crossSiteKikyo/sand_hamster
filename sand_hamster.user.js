@@ -56,7 +56,10 @@
       // document.head.appendChild(script1);
       // 3. JS 주입 (Firefox CORS 우회를 위한 Blob 방식)
       try {
-        const jsResponse = await fetch(`${GitHack_base}assets/index.js`);
+        // const jsResponse = await fetch(`${GitHack_base}assets/index.js`);
+        const jsResponse = await fetch(
+          `https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/dist/assets/index.js`,
+        );
         const jsCode = await jsResponse.text();
         // 코드를 Blob으로 변환하여 로컬 URL 생성
         const blob = new Blob([jsCode], { type: "application/javascript" });

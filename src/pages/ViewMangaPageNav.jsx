@@ -28,6 +28,35 @@ export default function ViewMangaPageNav({
     }
   };
 
+  // 키보드 핸들러 함수. 키보드로 페이지를 움직일 수 있다.
+  const handleKeyDown = useCallback((e) => {
+    switch (e.key) {
+      case "ArrowLeft":
+      case "ArrowUp":
+      case "a":
+      case "A":
+      case "w":
+      case "W":
+        goPrev();
+        break;
+      case "ArrowRight":
+      case "ArrowDown":
+      case "d":
+      case "D":
+      case "s":
+      case "S":
+        goNext();
+        break;
+    }
+  });
+  // 이벤트 리스너 등록 및 해제
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
   return (
     <>
       {/* [Layer 1] 투명 클릭 영역 (3등분) */}

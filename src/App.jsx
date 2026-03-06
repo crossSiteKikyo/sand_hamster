@@ -34,7 +34,7 @@ function App() {
   const { getTagLikeList } = useTagLikeStore();
   const { getGalleryLikeList } = useGalleryLikeStore();
   const { getNotificationList } = useNotificationStore();
-  const { checkAvifSupport } = useHitomiStore();
+  const { getImageDecodeInfo, checkAvifSupport } = useHitomiStore();
   const { pathname } = useLocation(); // 현재 경로를 가져옵니다.
   const isHomePage = pathname === "/";
   const isViewMangaPage = pathname === "/viewManga";
@@ -58,6 +58,7 @@ function App() {
     setLoadingInfo("오래된 캐시 정리중...");
     await galleryCache.cleanOldCache();
     setLoadingInfo("브라우저 avif포맷 지원여부 검사중...");
+    await getImageDecodeInfo();
     await checkAvifSupport();
     setIsInitializing(false);
   };

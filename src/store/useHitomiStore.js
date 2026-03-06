@@ -2,6 +2,14 @@ import { create } from "zustand";
 import { toast } from "react-toastify";
 import hitomiApi from "../api/hitomiApi";
 
+function Sleep(ms) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      resolve();
+    }, ms);
+  });
+}
+
 const useHitomiStore = create((set, get) => ({
   b: "1772697601/",
   o1: "0",
@@ -31,6 +39,8 @@ const useHitomiStore = create((set, get) => ({
       body.match(/(?<=case )\d+(?=:)/gi).map((v) => Number(v)),
     );
     set({ b, o1, o2, thumbChar1, thumbChar2, numSet });
+    // 너무 자주요청하면 느려지기 때문에 1분에 1번씩만 주기적으로 요청한다.
+    setTimeout(get().getImageDecodeInfo, 1000 * 60);
   },
   getGalleryInfo: async (g_id) => {
     const response = await hitomiApi.getGalleryInfo(g_id);

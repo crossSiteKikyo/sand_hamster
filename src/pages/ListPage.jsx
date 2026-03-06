@@ -6,7 +6,6 @@ import SearchedTagMain from "../components/SearchedTag";
 import PaginationCursor from "./PaginationCursor";
 import useTagStore from "../store/useTagStore";
 import useGalleryStore from "../store/useGalleryStore";
-import useHitomiStore from "../store/useHitomiStore";
 
 export default function ListPage({}) {
   const { tagMap } = useTagStore();
@@ -19,10 +18,8 @@ export default function ListPage({}) {
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { getGalleryListCursor, getGalleryListById } = useGalleryStore();
-  const { getImageDecodeInfo } = useHitomiStore();
   async function getGalleryList() {
     setIsLoading(true);
-    await getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });

@@ -21,35 +21,6 @@ export default function ViewMangaPage() {
     setIntervalID(undefined);
   };
 
-  // 키보드 핸들러 함수. 키보드로 페이지를 움직일 수 있다.
-  const handleKeyDown = useCallback((e) => {
-    switch (e.key) {
-      case "ArrowLeft":
-      case "ArrowUp":
-      case "a":
-      case "A":
-      case "w":
-      case "W":
-        goPrev();
-        break;
-      case "ArrowRight":
-      case "ArrowDown":
-      case "d":
-      case "D":
-      case "s":
-      case "S":
-        goNext();
-        break;
-    }
-  });
-  // 이벤트 리스너 등록 및 해제
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [handleKeyDown]);
-
   const {
     b,
     o1,
@@ -149,7 +120,7 @@ export default function ViewMangaPage() {
         ) : (
           <img
             src={imgSrc}
-            alt={alt}
+            alt={`${alt} 오류: 재시도 횟수:${retryCount}`}
             className={className}
             onError={handleError}
             crossOrigin="anonymous" // 👈 이 속성이 HTTP/2 협상을 유도할 수 있습니다.

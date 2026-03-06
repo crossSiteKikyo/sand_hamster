@@ -5,7 +5,6 @@ import ModalTagLike from "./ModalTagLike";
 import PaginationCursor from "./PaginationCursor";
 import useUserStore from "../store/useUserStore";
 import useGalleryStore from "../store/useGalleryStore";
-import useHitomiStore from "../store/useHitomiStore";
 
 // 좋아요한 태그를 하나라도 포함하는 갤러리를 보여준다.
 export default function MyGalleryHasLikeTag() {
@@ -15,7 +14,6 @@ export default function MyGalleryHasLikeTag() {
   const cursorId = searchParams.get("cursorId");
   const [isLoading, setIsLoading] = useState(true);
   const { getGalleryListHasLikeTag } = useGalleryStore();
-  const { getImageDecodeInfo } = useHitomiStore();
   // 태그 모달창을 위한 변수들
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [selectedTag, setSelectedTag] = useState({
@@ -34,7 +32,6 @@ export default function MyGalleryHasLikeTag() {
   });
   async function getGalleryList() {
     setIsLoading(true);
-    await getImageDecodeInfo();
     document.getElementById("content-scroll").scrollTo({
       top: 0,
     });
