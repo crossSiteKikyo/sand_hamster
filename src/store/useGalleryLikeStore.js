@@ -4,8 +4,13 @@ import galleryLikeApi from "../api/galleryLikeApi";
 
 const useGalleryLikeStore = create((set, get) => ({
   galleryLikeList: [],
-  getGalleryLikeList: async () => {
-    let { data, error } = await galleryLikeApi.getGalleryLikeList();
+  getGalleryLikeList: async (userId) => {
+    // 로그인 안한 사람은 갤러리 좋아요 리스트가 없음
+    if (userId == undefined) {
+      set({ galleryLikeList: [] });
+      return;
+    }
+    let { data, error } = await galleryLikeApi.getGalleryLikeList(userId);
     if (error) {
       console.error("갤러리 좋아요/싫어요 정보 가져오기 에러: ", error);
       toast(`갤러리 좋아요/싫어요 정보 가져오기 에러`);

@@ -1,8 +1,11 @@
 import supabase from "./supabaseClient";
 
 const tagLikeApi = {
-  getTagLikeList: () =>
-    supabase.from("user_tag_like").select("tag_id, flag, date"),
+  getTagLikeList: (userId) =>
+    supabase
+      .from("user_tag_like")
+      .select("tag_id, flag, date")
+      .eq("user_id", userId),
   insertTagLike: (user_id, tag_id, flag) =>
     supabase.from("user_tag_like").insert([{ user_id, tag_id, flag }]),
   updateTagLike: (user_id, tag_id, flag) =>

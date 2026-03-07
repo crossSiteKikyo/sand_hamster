@@ -22,6 +22,7 @@ const useUserStore = create((set) => ({
           gallery_like_limit: data[0].gallery_like_limit,
         });
       }
+      return user.id;
     }
     if (error) {
       set({ user: null });

@@ -1,8 +1,11 @@
 import supabase from "./supabaseClient";
 
 const galleryLikeApi = {
-  getGalleryLikeList: () =>
-    supabase.from("user_gallery_like").select("g_id, flag"),
+  getGalleryLikeList: (userId) =>
+    supabase
+      .from("user_gallery_like")
+      .select("g_id, flag")
+      .eq("user_id", userId),
   insertGalleryLike: (user_id, g_id, flag) =>
     supabase.from("user_gallery_like").insert([{ user_id, g_id, flag }]),
   updateGalleryLike: (user_id, g_id, flag) =>

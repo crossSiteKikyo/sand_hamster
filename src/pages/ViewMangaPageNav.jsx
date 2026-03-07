@@ -34,7 +34,7 @@ export default function ViewMangaPageNav({
         toast("마지막 페이지입니다", { autoClose: 500 });
       else swiper?.slideTo(currentIndex + 2);
     } else {
-      console.log(currentIndex, imgHashList.length);
+      // console.log(currentIndex, imgHashList.length);
       if (currentIndex == imgHashList.length - 1)
         toast("마지막 페이지입니다", { autoClose: 500 });
       else swiper?.slideNext(0);

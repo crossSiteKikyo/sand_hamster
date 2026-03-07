@@ -44,7 +44,7 @@ function App() {
   const init = async () => {
     setIsInitializing(true);
     setLoadingInfo("유저정보 받아오는중...");
-    await getUser();
+    const userId = await getUser();
     setLoadingInfo("타입 정보 받아오는중...");
     await getTypeList();
     setLoadingInfo("태그 정보 받아오는중...");
@@ -52,9 +52,9 @@ function App() {
     setLoadingInfo("공지사항 정보 받아오는중...");
     await getNotificationList();
     setLoadingInfo("태그 좋아요/싫어요 정보 받아오는중...");
-    await getTagLikeList();
+    await getTagLikeList(userId);
     setLoadingInfo("갤러리 좋아요/싫어요 정보 받아오는중...");
-    await getGalleryLikeList();
+    await getGalleryLikeList(userId);
     setLoadingInfo("오래된 캐시 정리중...");
     await galleryCache.cleanOldCache();
     setLoadingInfo("브라우저 avif포맷 지원여부 검사중...");
@@ -65,11 +65,11 @@ function App() {
   const afterLogin = async () => {
     setIsInitializing(true);
     setLoadingInfo("유저정보 받아오는중...");
-    await getUser();
+    const userId = await getUser();
     setLoadingInfo("태그 좋아요/싫어요 정보 받아오는중...");
-    await getTagLikeList();
+    await getTagLikeList(userId);
     setLoadingInfo("갤러리 좋아요/싫어요 정보 받아오는중...");
-    await getGalleryLikeList();
+    await getGalleryLikeList(userId);
     setIsInitializing(false);
   };
   useEffect(() => {

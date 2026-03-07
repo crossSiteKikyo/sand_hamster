@@ -4,8 +4,13 @@ import tagLikeApi from "../api/tagLikeApi";
 
 const useTagLikeStore = create((set, get) => ({
   tagLikeList: [],
-  getTagLikeList: async () => {
-    let { data, error } = await tagLikeApi.getTagLikeList();
+  getTagLikeList: async (userId) => {
+    // 로그인 안한 사람은 태그가 좋아요 리스트가 없음
+    if (userId == undefined) {
+      set({ tagLikeList: [] });
+      return;
+    }
+    let { data, error } = await tagLikeApi.getTagLikeList(userId);
     if (error) {
       console.error("태그 좋아요/싫어요 정보 가져오기 에러: ", error);
       toast(`태그 좋아요/싫어요 정보 가져오기 에러`);
