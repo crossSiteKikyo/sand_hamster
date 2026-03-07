@@ -19,13 +19,21 @@ const tagCache = {
 
 const galleryCache = {
   get: (g_id) => db.gallery.get(g_id),
+  // bultGet은 순서를 보장한다.
   bulkGet: (g_ids) => db.gallery.bulkGet(g_ids),
   bulkAdd: (galleryList) => db.gallery.bulkAdd(galleryList),
-  updateLastAccessedAt: (g_ids) =>
-    db.gallery
-      .where("g_id")
-      .anyOf(g_ids)
-      .modify({ last_accessed_at: Date.now() }),
+  // updateLastAccessedAt: (g_ids) =>
+  //   db.gallery
+  //     .where("g_id")
+  //     .anyOf(g_ids)
+  //     .modify({ last_accessed_at: Date.now() }),
+  updateViewCountAndLastAccessedAt: (data) =>
+    db.gallery.bulkUpdate(
+      data.map((d) => ({
+        key: d.g_id,
+        changes: { view_count: d.view_count, last_accessed_at: Date.now() },
+      })),
+    ),
   cleanOldCache: async () => {
     const threeMonthsAgo = Date.now() - 1000 * 60 * 60 * 24 * 30 * 3;
     return db.gallery.where("last_accessed_at").below(threeMonthsAgo).delete();

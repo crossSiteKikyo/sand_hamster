@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     let insertgids = [];
     const hitomiHeaders = {
       Referer: "https://hitomi.la/",
-      //'Range': 'bytes=0-3999' // 1000개를 가져온다. 아니 그냥 다 가져온다. 삭제된 갤러리 검사에 방해된다.
+      Range: "bytes=0-3999", // 1000개를 가져온다. 아니 그냥 다 가져온다. 삭제된 갤러리 검사에 방해된다. 삭제된 갤러리 검사는 따로 한다.
     };
     // 한국어 갤러리 id들을 fetch
     const nozomiResponse = await fetch(
@@ -60,24 +60,6 @@ Deno.serve(async (req) => {
     const dataView = new DataView(uint8Array.buffer);
     for (let i = 0; i < uint8Array.length; i += 4) {
       gIdList.push(dataView.getInt32(i, false)); // true는 Little Endian 기준
-    }
-    // DB에서 현재 저장된 ID 500개 가져오기 내림차순으로 큰값부터 가져온다. 삭제된 갤러리 있는지 보는 것이다.
-    const { data: dbGalleries } = await supabase
-      .from("gallery")
-      .select("g_id")
-      .order("g_id", { ascending: false })
-      .limit(500);
-    const allDbIds = dbGalleries?.map((g) => Number(g.g_id)) || [];
-    // 삭제된 갤러리 정리 (DB에는 있는데 응답에는 없는 것)
-    const idsToDelete = allDbIds.filter((g_id) => !gIdList.includes(g_id));
-    if (idsToDelete.length > 0) {
-      const { error: deleteError } = await supabase
-        .from("gallery")
-        .delete()
-        .in("g_id", idsToDelete);
-      if (deleteError) {
-        console.error("삭제 중 오류 발생:", deleteError.message);
-      }
     }
     // DB에서 가장 큰 g_id 딱 하나만 가져오기
     const { data: maxIdData, error: maxError } = await supabase
@@ -200,7 +182,7 @@ Deno.serve(async (req) => {
         }
       }
       return new Response(
-        JSON.stringify({ serverMaxId, lastMaxId, idsToDelete, insertgids }),
+        JSON.stringify({ serverMaxId, lastMaxId, insertgids }),
         {
           status: 200,
         },
@@ -211,7 +193,6 @@ Deno.serve(async (req) => {
           msg: "새로 크롤링할 것이 없습니다",
           serverMaxId,
           lastMaxId,
-          idsToDelete,
         }),
         {
           status: 200,

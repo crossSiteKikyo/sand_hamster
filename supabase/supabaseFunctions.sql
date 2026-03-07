@@ -1,6 +1,85 @@
 -- 비공개 스키마 생성 (유저가 rpc로 실행하지 못한다)
 CREATE SCHEMA IF NOT EXISTS private;
 
+-- 서버와 태그 이름을 비교할 때 사용되는 함수. 작가가 나중에 추가되는 등의 상황에 이용.
+CREATE OR REPLACE FUNCTION get_galleries_with_tag_names(p_limit INT DEFAULT 100, p_offset INT DEFAULT 0)
+RETURNS TABLE (
+  g_id INT8,
+  tag_names TEXT[]
+) 
+LANGUAGE plpgsql
+AS $$
+#variable_conflict use_column
+BEGIN
+  -- 보안 체크: 호출자가 service_role이 아니면 즉시 에러 발생
+  IF auth.role() <> 'service_role' THEN
+    RAISE EXCEPTION '권한이 없습니다.';
+  END IF;
+
+  RETURN QUERY
+  SELECT 
+    g.g_id, 
+    -- 태그가 없는 경우를 대비해 coalesce로 빈 배열 처리. order by t.name으로 미리 정렬한다.
+    COALESCE(array_agg(t.name ORDER BY t.name), '{}'::TEXT[]) AS tag_names
+  FROM (
+    SELECT g_id FROM gallery ORDER BY g_id DESC LIMIT p_limit OFFSET p_offset
+  ) g_list -- 100개를 먼저 뽑아서 조인하는 것이 성능상 훨씬 유리합니다.
+  JOIN gallery g ON g.g_id = g_list.g_id
+  LEFT JOIN gallery_tag gt ON g.g_id = gt.g_id
+  LEFT JOIN tag t ON gt.tag_id = t.tag_id
+  GROUP BY g.g_id
+  ORDER BY g.g_id DESC;
+END;
+$$;
+
+-- 새로운 태그가 있거나 없어진 태그가 있다면 반영하는 함수.
+CREATE OR REPLACE FUNCTION sync_gallery_tags(
+  p_g_id INT8,
+  p_new_tag_names TEXT[]
+) RETURNS VOID AS $$
+DECLARE
+  v_tag_ids INT8[];
+  v_deleted_count INT;
+  v_inserted_count INT;
+BEGIN
+  -- 보안 체크: 호출자가 service_role이 아니면 즉시 에러 발생
+  IF auth.role() <> 'service_role' THEN
+    RAISE EXCEPTION '권한이 없습니다.';
+  END IF;
+
+  -- 1. 새로운 태그 이름들이 tag 테이블에 없다면 먼저 삽입 (Upsert)
+  INSERT INTO tag (name)
+  SELECT unnest(p_new_tag_names)
+  ON CONFLICT (name) DO NOTHING;
+
+  -- 2. 새로운 태그 이름들에 해당하는 tag_id 리스트 확보
+  SELECT array_agg(tag_id) INTO v_tag_ids
+  FROM tag
+  WHERE name = ANY(p_new_tag_names);
+
+  -- 3. [삭제] 기존에 있었지만 새로운 리스트에는 없는 태그 관계 제거
+  DELETE FROM gallery_tag
+  WHERE g_id = p_g_id
+    AND tag_id NOT IN (SELECT unnest(v_tag_ids));
+  GET DIAGNOSTICS v_deleted_count = ROW_COUNT;
+
+  -- 4. [추가] 새로운 리스트에는 있지만 기존에는 없던 태그 관계 삽입
+  INSERT INTO gallery_tag (g_id, tag_id)
+  SELECT p_g_id, t_id
+  FROM unnest(v_tag_ids) AS t_id
+  WHERE NOT EXISTS (
+    SELECT 1 FROM gallery_tag
+    WHERE g_id = p_g_id AND tag_id = t_id
+  );
+  GET DIAGNOSTICS v_inserted_count = ROW_COUNT;
+
+  -- 5. 변경사항이 있으면 gallery 테이블의 시간 갱신
+  IF v_deleted_count > 0 OR v_inserted_count > 0 THEN
+    UPDATE gallery SET ver = ver + 1 WHERE g_id = p_g_id;
+  END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- 랭킹 집계 함수.
 CREATE OR REPLACE FUNCTION private.update_rankings()
 RETURNS void AS $$

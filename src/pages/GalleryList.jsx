@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Tag from "../components/Tag";
 import TagMain from "../components/TagMain";
-import { Loader2 } from "lucide-react";
+import { Eye, Loader2 } from "lucide-react";
 import { useLongPress } from "use-long-press";
 import ModalGalleryLike from "./ModalGalleryLike";
 import useTypeStore from "../store/useTypeStore";
@@ -278,10 +278,15 @@ export default function GalleryList({
                   </div>
                 </div>
                 {/* 하단 정보 */}
-                <div className="flex justify-between px-1">
-                  <p className="text-gray-500">{g.g_id}</p>
-                  <p>{date}</p>
-                  <p className="text-gray-500">{g.filecount}p</p>
+                <div>
+                  <div className="flex gap-1 px-1 text-gray-500">
+                    <Eye className="w-4" /> {g.view_count}
+                  </div>
+                  <div className="flex justify-between px-1">
+                    <p className="text-gray-500">{g.g_id}</p>
+                    <p>{date}</p>
+                    <p className="text-gray-500">{g.filecount}p</p>
+                  </div>
                 </div>
               </div>
             );
