@@ -8,13 +8,15 @@ import ModalAutoSlide from "./ModalAutoSlide";
 import galleryApi from "../api/galleryApi";
 import ViewMangaPageNav from "./ViewMangaPageNav";
 import { CircleX } from "lucide-react";
+import useViewerStore from "../store/useViewerStore";
 
 export default function ViewMangaPage() {
   const [swiper, setSwiper] = useState(null);
   const [page, setPage] = useState(0);
 
   const [isHorizontal, setIsHorizontal] = useState(true); // 좌우로 페이지를 넘길지 상하로 넘길지.
-  const [isTwoView, setIsTwoView] = useState(false); // 두쪽보기를 할지.
+  // const [isTwoView, setIsTwoView] = useState(false); // 두쪽보기를 할지.
+  const { isTwoView, setIsTwoView } = useViewerStore();
 
   // 자동넘기기를 위한 변수들
   const [isOpen, setIsOpen] = useState(false);
@@ -125,7 +127,7 @@ export default function ViewMangaPage() {
           </div>
         ) : (
           // <img
-          //   src="https://search4.kakaocdn.net/argon/656x0_80_wr/6XFL3DvP6XG"
+          //   src="https://search1.kakaocdn.net/argon/656x0_80_wr/IjUKcvNdD8c"
           //   className={className}
           // />
           <img
@@ -154,23 +156,23 @@ export default function ViewMangaPage() {
         onSwiper={setSwiper}
         speed={0} // 모든 전환 애니메이션 속도를 0으로 설정 (즉시 전환)
         onSlideChange={(s) => setPage(s.activeIndex)}
-        virtual={{ addSlidesBefore: 5, addSlidesAfter: 10 }} //앞뒤 미리 로드
+        virtual={{ addSlidesBefore: 2, addSlidesAfter: 8 }} //앞뒤 미리 로드
         className="h-full w-full"
         direction={isHorizontal ? `horizontal` : `vertical`}
       >
         {imgHashList.map((hash, idx) => (
           <SwiperSlide key={idx} virtualIndex={idx}>
             {isTwoView ? (
-              <div className="flex h-full justify-center object-contain">
+              <div className="flex h-full w-full">
                 <RetryImage
                   src={hashToImageUrl(hash)}
-                  className=""
+                  className="w-1/2 object-contain object-right"
                   alt={`page-${idx}`}
                 />
                 {imgHashList[idx + 1] && (
                   <RetryImage
                     src={hashToImageUrl(imgHashList[idx + 1])}
-                    className=""
+                    className="w-1/2 object-contain object-left"
                     alt={`page-${idx + 1}`}
                   />
                 )}
@@ -193,8 +195,6 @@ export default function ViewMangaPage() {
         intervalID={intervalID}
         isHorizontal={isHorizontal}
         setIsHorizontal={setIsHorizontal}
-        isTwoView={isTwoView}
-        setIsTwoView={setIsTwoView}
       />
     </div>
   );

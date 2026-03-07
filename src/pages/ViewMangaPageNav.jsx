@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import useHitomiStore from "../store/useHitomiStore";
 import { Fullscreen, X } from "lucide-react";
 import { toast } from "react-toastify";
+import useViewerStore from "../store/useViewerStore";
 
 export default function ViewMangaPageNav({
   swiper,
@@ -11,10 +12,9 @@ export default function ViewMangaPageNav({
   intervalID,
   isHorizontal,
   setIsHorizontal,
-  isTwoView,
-  setIsTwoView,
 }) {
   const { imgHashList, title } = useHitomiStore();
+  const { isTwoView, setIsTwoView } = useViewerStore();
 
   const [showUI, setShowUI] = useState(false); // 상하 UI 노출 여부
   const toggleUI = () => setShowUI(!showUI);
