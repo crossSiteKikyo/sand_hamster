@@ -2,6 +2,7 @@
 // @name         sand_hamster
 // @version      0.0.7
 // @author       crossSiteKikyo
+// @description  히토미 웹 뷰어 sand_hamster
 // @icon         https://github.com/crossSiteKikyo/sand_hamster/blob/main/public/sand_hamster_logo.jpg?raw=true
 // @grant        GM_registerMenuCommand
 // @match        https://hitomi.la
