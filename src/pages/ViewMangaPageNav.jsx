@@ -10,6 +10,8 @@ export default function ViewMangaPageNav({
   intervalID,
   isHorizontal,
   setIsHorizontal,
+  isTwoView,
+  setIsTwoView,
 }) {
   const { imgHashList, title } = useHitomiStore();
 
@@ -17,8 +19,14 @@ export default function ViewMangaPageNav({
   const toggleUI = () => setShowUI(!showUI);
 
   // 페이지 이동 함수 (인자 0을 줘서 즉시이동)
-  const goPrev = () => swiper?.slidePrev(0);
-  const goNext = () => swiper?.slideNext(0);
+  const goPrev = () => {
+    swiper?.slidePrev(0);
+    if (isTwoView) swiper?.slidePrev(0);
+  };
+  const goNext = () => {
+    swiper?.slideNext(0);
+    if (isTwoView) swiper?.slideNext(0);
+  };
 
   // 전체화면 토글
   const toggleFullscreen = () => {
@@ -106,9 +114,11 @@ export default function ViewMangaPageNav({
                 onChange={(e) => swiper?.slideTo(parseInt(e.target.value))}
                 className="appearance-none rounded-lg border border-gray-500"
               />
+              {/* 페이지 번호 */}
               <div className="flex justify-center text-sm">
                 {page + 1} / {imgHashList.length}
               </div>
+              {/* 하단 버튼들 */}
               <div className="flex justify-center gap-2">
                 <button
                   className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
@@ -129,6 +139,21 @@ export default function ViewMangaPageNav({
                     onClick={() => setIsOpen(true)}
                   >
                     자동 넘기기
+                  </button>
+                )}
+                {isTwoView ? (
+                  <button
+                    className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
+                    onClick={() => setIsTwoView(false)}
+                  >
+                    두쪽 보기
+                  </button>
+                ) : (
+                  <button
+                    className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
+                    onClick={() => setIsTwoView(true)}
+                  >
+                    한쪽 보기
                   </button>
                 )}
               </div>

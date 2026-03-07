@@ -14,6 +14,7 @@ export default function ViewMangaPage() {
   const [page, setPage] = useState(0);
 
   const [isHorizontal, setIsHorizontal] = useState(true); // 좌우로 페이지를 넘길지 상하로 넘길지.
+  const [isTwoView, setIsTwoView] = useState(false); // 두쪽보기를 할지.
 
   // 자동넘기기를 위한 변수들
   const [isOpen, setIsOpen] = useState(false);
@@ -123,6 +124,10 @@ export default function ViewMangaPage() {
             이미지 로딩 실패
           </div>
         ) : (
+          // <img
+          //   src="https://search4.kakaocdn.net/argon/656x0_80_wr/6XFL3DvP6XG"
+          //   className={className}
+          // />
           <img
             src={imgSrc}
             alt={`${alt} 오류: 재시도 횟수:${retryCount}`}
@@ -155,11 +160,28 @@ export default function ViewMangaPage() {
       >
         {imgHashList.map((hash, idx) => (
           <SwiperSlide key={idx} virtualIndex={idx}>
-            <RetryImage
-              src={hashToImageUrl(hash)}
-              className="h-full w-full object-contain"
-              alt={`page-${idx}`}
-            />
+            {isTwoView ? (
+              <div className="flex h-full justify-center object-contain">
+                <RetryImage
+                  src={hashToImageUrl(hash)}
+                  className=""
+                  alt={`page-${idx}`}
+                />
+                {imgHashList[idx + 1] && (
+                  <RetryImage
+                    src={hashToImageUrl(imgHashList[idx + 1])}
+                    className=""
+                    alt={`page-${idx + 1}`}
+                  />
+                )}
+              </div>
+            ) : (
+              <RetryImage
+                src={hashToImageUrl(hash)}
+                className="h-full w-full object-contain"
+                alt={`page-${idx}`}
+              />
+            )}
           </SwiperSlide>
         ))}
       </Swiper>
@@ -171,6 +193,8 @@ export default function ViewMangaPage() {
         intervalID={intervalID}
         isHorizontal={isHorizontal}
         setIsHorizontal={setIsHorizontal}
+        isTwoView={isTwoView}
+        setIsTwoView={setIsTwoView}
       />
     </div>
   );
