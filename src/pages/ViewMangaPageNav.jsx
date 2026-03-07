@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import useHitomiStore from "../store/useHitomiStore";
 import { Fullscreen, X } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function ViewMangaPageNav({
   swiper,
@@ -19,13 +20,25 @@ export default function ViewMangaPageNav({
   const toggleUI = () => setShowUI(!showUI);
 
   // 페이지 이동 함수 (인자 0을 줘서 즉시이동)
+  // 두쪽보기라면
   const goPrev = () => {
+    if (isTwoView) {
+      swiper?.slidePrev(0);
+    }
     swiper?.slidePrev(0);
-    if (isTwoView) swiper?.slidePrev(0);
   };
   const goNext = () => {
-    swiper?.slideNext(0);
-    if (isTwoView) swiper?.slideNext(0);
+    const currentIndex = swiper.activeIndex;
+    if (isTwoView) {
+      if (currentIndex >= imgHashList.length - 2)
+        toast("마지막 페이지입니다", { autoClose: 500 });
+      else swiper?.slideTo(currentIndex + 2);
+    } else {
+      console.log(currentIndex, imgHashList.length);
+      if (currentIndex == imgHashList.length - 1)
+        toast("마지막 페이지입니다", { autoClose: 500 });
+      else swiper?.slideNext(0);
+    }
   };
 
   // 전체화면 토글
