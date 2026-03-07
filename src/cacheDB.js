@@ -22,6 +22,7 @@ const galleryCache = {
   // bultGet은 순서를 보장한다.
   bulkGet: (g_ids) => db.gallery.bulkGet(g_ids),
   bulkAdd: (galleryList) => db.gallery.bulkAdd(galleryList),
+  bulkPut: (galleryList) => db.gallery.bulkPut(galleryList),
   // updateLastAccessedAt: (g_ids) =>
   //   db.gallery
   //     .where("g_id")

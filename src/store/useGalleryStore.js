@@ -16,7 +16,7 @@ const useGalleryStore = create((set, get) => ({
     if (data) {
       // await를 해야할까? 어차피 비동기니까 더 빨리 반환할거라면 await를 안하는게 맞다.
       // 너무 오래된 데이터 청소를 위해 last_accessed_at칼럼을 등록한다.
-      galleryCache.bulkAdd(
+      galleryCache.bulkPut(
         data.map((v) => ({ ...v, last_accessed_at: Date.now() })),
       );
     }
