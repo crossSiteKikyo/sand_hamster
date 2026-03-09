@@ -1,3 +1,106 @@
+-- 최종 cursor로 검색 함수
+-- limit(20개)보다 1개 더 가져온다. 이함수만 prev일 때, 거꾸로 가져온다.
+-- 03.09일 기준 함수이다. 나중에 참고를 위해 남겨둠.
+create or replace function search_galleries_summary_cursor(
+  p_title text,
+  search_tags bigint[],
+  p_cursor_id bigint default null,
+  p_direction text default 'next' -- 'next' 또는 'prev'
+)
+returns table (
+  g_id INT8, view_count INT, ver INT2
+)
+language plpgsql
+as $$
+#variable_conflict use_column
+begin
+  -- [분기] 로그인 여부에 따라 로직을 완전히 분리 (PostgreSQL 실행 계획 최적화)
+  if auth.uid() is null then
+    ---------------------------------------------------------
+    -- 1. 익명 사용자용 (차단 필터 없음)
+    ---------------------------------------------------------
+    return query
+      select g.g_id, g.view_count, ver
+      from gallery g
+      -- 태그가 있을 때만 JOIN 효율이 나도록 처리 (데이터가 많을 시 성능 핵심)
+      left join gallery_tag gt on (
+        search_tags is not null and 
+        array_length(search_tags, 1) is not null and 
+        g.g_id = gt.g_id
+      )
+      where (p_title = '' or g.title ilike '%' || p_title || '%')
+        -- [방향성 필터]
+        and (
+          case 
+            when p_direction = 'next' then (p_cursor_id is null or g.g_id < p_cursor_id)
+            when p_direction = 'prev' then (g.g_id > p_cursor_id)
+          end
+        )
+        -- [태그 포함 필터] 지적해주신 빈 배열 대응 로직
+        and (
+          search_tags is null or 
+          array_length(search_tags, 1) is null or 
+          gt.tag_id = any(search_tags)
+        )
+      group by g.g_id
+      -- [태그 개수 일치 필터] 지적해주신 빈 배열 대응 로직
+      having (
+        search_tags is null or 
+        array_length(search_tags, 1) is null or 
+        count(gt.tag_id) = array_length(search_tags, 1)
+      )
+      order by 
+        case when p_direction = 'next' then g.g_id end desc,
+        case when p_direction = 'prev' then g.g_id end asc
+      limit 21;
+
+  else
+    ---------------------------------------------------------
+    -- 2. 로그인 사용자용 (싫어하는 갤러리/태그 제외)
+    ---------------------------------------------------------
+    return query
+      select g.g_id, g.view_count, ver
+      from gallery g
+      left join gallery_tag gt on (
+        search_tags is not null and 
+        array_length(search_tags, 1) is not null and 
+        g.g_id = gt.g_id
+      )
+      where (p_title = '' or g.title ilike '%' || p_title || '%')
+        and (
+          case 
+            when p_direction = 'next' then (p_cursor_id is null or g.g_id < p_cursor_id)
+            when p_direction = 'prev' then (g.g_id > p_cursor_id)
+          end
+        )
+        -- [유저 제외 필터]
+        and not exists (
+          select 1 from user_gallery_like ugl 
+          where ugl.g_id = g.g_id and ugl.user_id = auth.uid() and ugl.flag = false
+        )
+        and not exists (
+          select 1 from gallery_tag gt_exc
+          join user_tag_like utl on gt_exc.tag_id = utl.tag_id
+          where gt_exc.g_id = g.g_id and utl.user_id = auth.uid() and utl.flag = false
+        )
+        and (
+          search_tags is null or 
+          array_length(search_tags, 1) is null or 
+          gt.tag_id = any(search_tags)
+        )
+      group by g.g_id
+      having (
+        search_tags is null or 
+        array_length(search_tags, 1) is null or 
+        count(gt.tag_id) = array_length(search_tags, 1)
+      )
+      order by 
+        case when p_direction = 'next' then g.g_id end desc,
+        case when p_direction = 'prev' then g.g_id end asc
+      limit 21;
+  end if;
+end;
+$$;
 
 -- id들로 갤러리 정보 검색 함수. view_count를 ui에서 보이지 않게 함으로서 필요 없어짐.
 create or replace function get_galleries_by_ids(

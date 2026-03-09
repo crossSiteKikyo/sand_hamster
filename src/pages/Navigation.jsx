@@ -1,6 +1,7 @@
 import {
   Bell,
   BookHeart,
+  EyeOff,
   House,
   Images,
   LogIn,
@@ -64,6 +65,13 @@ export default function Navigation() {
             <p className="hidden pl-3 xl:block">랭킹</p>
           </Link>
           <Link
+            className={`flex h-12 items-center px-3 ${isActive("/blockGallery") ? "border-y border-l" : ""}`}
+            to="/blockGallery"
+          >
+            <EyeOff className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">갤러리 차단</p>
+          </Link>
+          {/* <Link
             className={`relative flex h-12 items-center px-3 ${isActive("/notification") ? "border-y border-l" : ""}`}
             to="/notification"
           >
@@ -74,7 +82,7 @@ export default function Navigation() {
               </span>
             )}
             <p className="hidden pl-3 xl:block">공지</p>
-          </Link>
+          </Link> */}
           <div className="flex h-12 items-center px-3" onClick={toggleDarkMode}>
             {isDarkMode ? (
               <Moon className="h-5 w-5" />
@@ -83,29 +91,29 @@ export default function Navigation() {
             )}
             <p className="hidden pl-3 xl:block">테마</p>
           </div>
+          <Link
+            className={`flex h-12 items-center px-3 ${isActive("/mygallery") ? "border-y border-l" : ""}`}
+            to="/mygallery"
+          >
+            <Images className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">내 갤러리</p>
+          </Link>
+          <Link
+            className={`flex h-12 items-center px-3 ${isActive("/mytag") ? "border-y border-l" : ""}`}
+            to="/mytag"
+          >
+            <Tags className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">내 태그</p>
+          </Link>
+          <Link
+            className={`flex h-12 items-center px-3 ${isActive("/mygalleryhasliketag") ? "border-y border-l" : ""}`}
+            to="/mygalleryhasliketag"
+          >
+            <BookHeart className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">내 좋아요</p>
+          </Link>
           {user ? (
             <>
-              <Link
-                className={`flex h-12 items-center px-3 ${isActive("/mygallery") ? "border-y border-l" : ""}`}
-                to="/mygallery"
-              >
-                <Images className="h-5 w-5" />
-                <p className="hidden pl-3 xl:block">내 갤러리</p>
-              </Link>
-              <Link
-                className={`flex h-12 items-center px-3 ${isActive("/mytag") ? "border-y border-l" : ""}`}
-                to="/mytag"
-              >
-                <Tags className="h-5 w-5" />
-                <p className="hidden pl-3 xl:block">내 태그</p>
-              </Link>
-              <Link
-                className={`flex h-12 items-center px-3 ${isActive("/mygalleryhasliketag") ? "border-y border-l" : ""}`}
-                to="/mygalleryhasliketag"
-              >
-                <BookHeart className="h-5 w-5" />
-                <p className="hidden pl-3 xl:block">내 좋아요</p>
-              </Link>
               <Link
                 className={`flex h-12 items-center px-3 ${isActive("/myinfo") ? "border-y border-l" : ""}`}
                 to="/myinfo"

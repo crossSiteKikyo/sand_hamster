@@ -2,16 +2,14 @@ import { useState } from "react";
 import Tag from "../components/Tag";
 import TagMain from "../components/TagMain";
 import { Eye, Loader2 } from "lucide-react";
-import { useLongPress } from "use-long-press";
 import ModalGalleryLike from "./ModalGalleryLike";
 import useTypeStore from "../store/useTypeStore";
 import useTagStore from "../store/useTagStore";
-import useUserStore from "../store/useUserStore";
 import useGalleryLikeStore from "../store/useGalleryLikeStore";
 import useGalleryStore from "../store/useGalleryStore";
 import useHitomiStore from "../store/useHitomiStore";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import useSettingStore from "../store/useSettingStore";
 
 export default function GalleryList({
   isLoading,
@@ -23,9 +21,9 @@ export default function GalleryList({
   const navigate = useNavigate();
   const { typeList } = useTypeStore();
   const { tagMap } = useTagStore();
-  const { user } = useUserStore();
-  const { galleryLikeList } = useGalleryLikeStore();
+  const { galleryLikeList, hiddenGalleryIds } = useGalleryLikeStore();
   const { galleryIds, galleryMap } = useGalleryStore();
+  const { isHiddenGalleryHidden } = useSettingStore();
   const { thumbChar1, thumbChar2, numSet, isAvifSupported } = useHitomiStore();
   // 갤러리 모달창을 위한 변수들
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
@@ -33,15 +31,10 @@ export default function GalleryList({
     g_id: 3811499,
     title: "someTitle",
   });
-  const galleryLongPressHandlers = useLongPress((e, { context: gallery }) => {
-    if (user == null) {
-      toast("갤러리 좋아요/싫어요 기능을 이용하시려면 로그인 해주세요");
-    } else {
-      setSelectedGallery(gallery);
-      setIsGalleryModalOpen(true);
-      console.log(gallery);
-    }
-  });
+  const galleryPressHandlers = (gallery) => {
+    setSelectedGallery(gallery);
+    setIsGalleryModalOpen(true);
+  };
   const decodeHitomiThumbnailUrl = (url) => {
     // 브라우저사 avif지원하면 avifurl로 반환. 썸네일은 모두 avif지원하겠지? 크롤링을 webp로만 해서 오류가 날지도 모르겠다.
     // https://tn.hitomi.la로 시작하는 url만 decode한다.
@@ -118,14 +111,17 @@ export default function GalleryList({
                 !v.name.startsWith("male:") &&
                 !v.name.startsWith("female:"),
             ); //나머지
-            const galleryLike = galleryLikeList.find((v) => v.g_id == g.g_id);
-            const galleryLikeFlag = galleryLike?.flag;
+            let status = "none";
+            if (hiddenGalleryIds.has(g.g_id)) status = "dislike";
+            else if (galleryLikeList.find((v) => v.g_id == g.g_id))
+              status = "like";
+            if (isHiddenGalleryHidden && status == "dislike") return <></>;
             return (
               <div
                 key={g.g_id}
                 className={`flex flex-col justify-between rounded-sm border ${
-                  galleryLikeFlag === true && "border-pink-500"
-                } ${galleryLikeFlag === false && "border-gray-500"}`}
+                  status === "like" && "border-pink-500"
+                }`}
               >
                 <div>
                   <div
@@ -229,23 +225,29 @@ export default function GalleryList({
                       ))}
                     </div>
                   )}
-                  <div
-                    {...galleryLongPressHandlers(g)}
-                    className="flex min-h-40 items-center select-none"
-                    onClick={() => navigate(`/viewManga?g_id=${g.g_id}`)}
-                  >
+                  <div className="relative flex min-h-40 items-center select-none">
                     <img
                       className="h-auto w-1/2"
                       src={decodeHitomiThumbnailUrl(g.thumb1)}
                       alt="첫번째 썸네일"
-                      crossOrigin="anonymous" // 👈 이 속성이 HTTP/2 협상을 유도할 수 있습니다.
+                      onClick={() => navigate(`/viewManga?g_id=${g.g_id}`)}
+                      // crossOrigin="anonymous" // 👈 이 속성이 HTTP/2 협상을 유도할 수 있습니다.
                     />
                     <img
                       className="h-auto w-1/2"
                       src={decodeHitomiThumbnailUrl(g.thumb2)}
                       alt="두번째 썸네일"
-                      crossOrigin="anonymous" // 👈 이 속성이 HTTP/2 협상을 유도할 수 있습니다.
+                      onClick={() => navigate(`/viewManga?g_id=${g.g_id}`)}
+                      // crossOrigin="anonymous" // 👈 이 속성이 HTTP/2 협상을 유도할 수 있습니다.
                     />
+                    {status == "dislike" && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-white">
+                        싫어요 갤러리 검열
+                      </div>
+                    )}
+                    <button className="absolute right-0 bottom-0 m-1 rounded-sm bg-gray-100 px-1 text-sm dark:bg-gray-900">
+                      {g.filecount}p
+                    </button>
                   </div>
                   <div className="flex flex-wrap gap-1 p-1">
                     {males.map((v) => (
@@ -279,13 +281,17 @@ export default function GalleryList({
                 </div>
                 {/* 하단 정보 */}
                 <div>
-                  <div className="flex gap-1 px-1 text-gray-500">
-                    <Eye className="w-4" /> {g.view_count}
-                  </div>
-                  <div className="flex justify-between px-1">
-                    <p className="text-gray-500">{g.g_id}</p>
+                  <div className="flex justify-between px-1 pb-1">
+                    <div className="flex gap-1 px-1 text-gray-500">
+                      <Eye className="w-4" /> {g.view_count}
+                    </div>
                     <p>{date}</p>
-                    <p className="text-gray-500">{g.filecount}p</p>
+                    <button
+                      className="cursor-pointer rounded-sm border text-gray-500"
+                      onClick={() => galleryPressHandlers(g)}
+                    >
+                      {g.g_id}
+                    </button>
                   </div>
                 </div>
               </div>

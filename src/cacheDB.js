@@ -5,9 +5,10 @@ const db = new Dexie("sand_hamster");
 
 // db버전 정의. 스키마 같은게 변하면 버전을 올려야한다.
 // stores에 테이블 이름과 인덱스를 걸 컬럼을 정해주면 된다.
-db.version(5).stores({
+db.version(6).stores({
   tag: "tag_id", // 여기에 적는다면 인덱스를 걸겠다는 의미. 인덱스를 걸지 않은 필드도 저장은 된다. where로 빠른검색하고싶다면 해야됨.
   gallery: "g_id, last_accessed_at",
+  hidden_galleries: "g_id",
   ranking: "[rank_type+period]", // rankType, period복합키로 생성.
 });
 
@@ -15,6 +16,14 @@ const tagCache = {
   getMaxId: () => db.tag.orderBy("tag_id").last(),
   bulkAdd: (tags) => db.tag.bulkAdd(tags),
   getAllTagList: () => db.tag.toArray(),
+};
+
+const hiddenGalleryCache = {
+  getAll: () => db.hidden_galleries.toArray(),
+  add: (g_id) => db.hidden_galleries.add({ g_id }),
+  bulkPut: (g_ids) =>
+    db.hidden_galleries.bulkPut(g_ids.map((g_id) => ({ g_id }))),
+  delete: (g_id) => db.hidden_galleries.delete(g_id),
 };
 
 const galleryCache = {
@@ -46,4 +55,4 @@ const rankCache = {
   put: (row) => db.ranking.put(row),
 };
 
-export { tagCache, galleryCache, rankCache };
+export { tagCache, hiddenGalleryCache, galleryCache, rankCache };

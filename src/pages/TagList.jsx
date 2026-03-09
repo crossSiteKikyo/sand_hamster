@@ -109,7 +109,7 @@ export default function TagList({
                     </p>
                   )}
                 </div>
-                <div className="flex min-h-36 items-center select-none">
+                <div className="relative flex min-h-36 items-center select-none">
                   {t.thumbnails[0] && (
                     <img
                       className="h-auto w-1/3"
@@ -130,6 +130,11 @@ export default function TagList({
                       alt="세번째 썸네일"
                       src={decodeHitomiThumbnailUrl(t.thumbnails[2])}
                     />
+                  )}
+                  {userTagLikeFlag === false && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 px-1 text-sm dark:bg-gray-900">
+                      싫어요 태그 검열
+                    </div>
                   )}
                 </div>
               </div>

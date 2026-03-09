@@ -6,15 +6,18 @@ import TagList from "./TagList";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import useTagInfoStore from "../store/useTagInfoStore";
 import useTagLikeStore from "../store/useTagLikeStore";
+import useTagStore from "../store/useTagStore";
 
 // 좋아요/싫어요 한 태그들을 보여준다.
 export default function MyTag() {
   const navigate = useNavigate();
   const { tagLikeList } = useTagLikeStore();
+  const { tagMap } = useTagStore();
   const { getTagsInfoByIds } = useTagInfoStore();
   const [maxPage, setMaxPage] = useState(1);
   const [searchParams] = useSearchParams();
   const page = searchParams.get("page") || 1;
+  const order = searchParams.get("order") || "date";
   const flag = searchParams.get("flag") == "false" ? false : true;
   const [isLoading, setIsLoading] = useState(true);
   // 태그 모달창을 위한 변수들
@@ -40,11 +43,19 @@ export default function MyTag() {
     await getTagsInfoByIds(selectedUTL.map((v) => v.tag_id));
     setIsLoading(false);
   }
-  const pageMove = (flag) => {
+  const changeOrder = (order) => {
     // 현재 url에서 path를 추출한다.
     const pathname = window.location.pathname;
     // 새로운 객체 생성
-    const newParams = new URLSearchParams();
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("order", order);
+    navigate(`${pathname}?${newParams.toString()}`);
+  };
+  const flagChange = (flag) => {
+    // 현재 url에서 path를 추출한다.
+    const pathname = window.location.pathname;
+    // 새로운 객체 생성
+    const newParams = new URLSearchParams(searchParams);
     newParams.set("page", 1);
     newParams.set("flag", flag);
     navigate(`${pathname}?${newParams.toString()}`);
@@ -52,11 +63,15 @@ export default function MyTag() {
   useEffect(() => {
     //tagLikeList를 정렬하면 된다.
     let selectedUTL = tagLikeList.filter((v) => v.flag == flag);
+    if (order == "dict")
+      selectedUTL.sort((a, b) =>
+        tagMap.get(a.tag_id).name.localeCompare(tagMap.get(b.tag_id).name),
+      );
     const maxPage = Math.ceil(selectedUTL.length / 20);
     setMaxPage(maxPage > 0 ? maxPage : 1);
     console.log(selectedUTL.slice(20 * (page - 1), 20 * page));
     getTagList(selectedUTL.slice(20 * (page - 1), 20 * page));
-  }, [page, flag, tagLikeList]);
+  }, [page, order, flag, tagLikeList]);
   return (
     <div className="flex grow flex-col bg-white p-1 dark:bg-black">
       <ModalTagLike
@@ -69,15 +84,29 @@ export default function MyTag() {
       <div className="mb-2 flex justify-end gap-2">
         <button
           className={`flex gap-1 rounded-xl border border-pink-500 p-2 ${flag ? "bg-pink-300 dark:bg-pink-700" : "cursor-pointer"}`}
-          onClick={() => pageMove(true)}
+          onClick={() => flagChange(true)}
         >
           좋아요 <ThumbsUp className="w-5" />
         </button>
         <button
           className={`flex gap-1 rounded-xl border border-gray-500 p-2 ${!flag ? "bg-gray-200 dark:bg-gray-700" : "cursor-pointer"}`}
-          onClick={() => pageMove(false)}
+          onClick={() => flagChange(false)}
         >
           싫어요 <ThumbsDown className="w-5" />
+        </button>
+      </div>
+      <div className="mb-2 flex justify-end gap-2">
+        <button
+          className={`flex gap-1 rounded-xl border border-gray-500 p-2 ${order == "date" ? "bg-gray-200 dark:bg-gray-700" : "cursor-pointer"}`}
+          onClick={() => changeOrder("date")}
+        >
+          날짜순
+        </button>
+        <button
+          className={`flex gap-1 rounded-xl border border-gray-500 p-2 ${order == "dict" ? "bg-gray-200 dark:bg-gray-700" : "cursor-pointer"}`}
+          onClick={() => changeOrder("dict")}
+        >
+          사전순
         </button>
       </div>
       <div className="grow">

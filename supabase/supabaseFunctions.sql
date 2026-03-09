@@ -106,19 +106,19 @@ BEGIN
   -- 2. 갤러리 좋아요 순 (user_gallery_like 발생일 기준)
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'gallery_like', 'daily', array(
-    SELECT g_id FROM public.user_gallery_like WHERE flag = true AND created_at >= now() - INTERVAL '1 day' GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 20
+    SELECT g_id FROM public.user_gallery_like WHERE created_at >= now() - INTERVAL '1 day' GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 20
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'gallery_like', 'weekly', array(
-    SELECT g_id FROM public.user_gallery_like WHERE flag = true AND created_at >= now() - INTERVAL '7 days' GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 40
+    SELECT g_id FROM public.user_gallery_like WHERE created_at >= now() - INTERVAL '7 days' GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 40
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'gallery_like', 'monthly', array(
-    SELECT g_id FROM public.user_gallery_like WHERE flag = true AND created_at >= now() - INTERVAL '30 days' GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 60
+    SELECT g_id FROM public.user_gallery_like WHERE created_at >= now() - INTERVAL '30 days' GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 60
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'gallery_like', 'all_time', array(
-    SELECT g_id FROM public.user_gallery_like WHERE flag = true GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 100
+    SELECT g_id FROM public.user_gallery_like GROUP BY g_id ORDER BY COUNT(*) DESC LIMIT 100
   );
   -- 3. 태그 좋아요 순 (user_tag_like 발생일 기준)
   INSERT INTO public.ranking (rank_type, period, ids)

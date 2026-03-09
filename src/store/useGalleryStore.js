@@ -61,6 +61,10 @@ const useGalleryStore = create((set, get) => ({
   // 프론트에 저장된 id들로 검색할 때 사용 함수.
   // 숫자 페이지기 때문에 galleryIds만 설정하고 firstGid, lastGid, has_more는 설정 안한다.
   getGalleriesByIds: async (g_ids) => {
+    if (g_ids.length == 0) {
+      set({ galleryIds: [] });
+      return;
+    }
     let { data, error } = await galleryApi.getGalleriesSummaryByIds(g_ids);
     if (data) {
       set({ galleryIds: g_ids });

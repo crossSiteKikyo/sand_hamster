@@ -2,64 +2,51 @@ import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import MyButton from "../components/MyButton";
 import { toast } from "react-toastify";
-import galleryLikeApi from "../api/galleryLikeApi";
 import useUserStore from "../store/useUserStore";
 import useGalleryLikeStore from "../store/useGalleryLikeStore";
-export default function ModalGalleryLike({
-  isOpen,
-  onClose,
-  getGalleryList,
-  gallery,
-}) {
+export default function ModalGalleryLike({ isOpen, onClose, gallery }) {
   const { user } = useUserStore();
   const {
     galleryLikeList,
+    hiddenGalleryIds,
     addGalleryLike,
-    updateGalleryLike,
+    addHiddenGallery,
     deleteGalleryLike,
+    deleteHiddenGallery,
   } = useGalleryLikeStore();
-  let galleryLike = galleryLikeList.find((v) => v.g_id == gallery.g_id);
-  let galleryLikeText = "none";
-  if (galleryLike !== undefined) {
-    if (galleryLike.flag) galleryLikeText = "like";
-    else galleryLikeText = "dislike";
-  }
+
+  let currentStatus = "none";
+  if (hiddenGalleryIds.has(gallery.g_id)) currentStatus = "dislike";
+  else if (galleryLikeList.find((v) => v.g_id == gallery.g_id) != undefined)
+    currentStatus = "like";
+
   const changeLikeStatus = async (selected) => {
-    // 똑같은 것을 클릭했으면 아무일도 일어나지 않는다.
-    if (selected == galleryLikeText) return;
-    // 좋아요나 싫어요를 클릭했으면, insert하거나 update해야함.
-    if (selected == "like" || selected == "dislike") {
-      // 전 상태가 none이라면 insert, 아니면 update
-      if (galleryLikeText == "none") {
-        let { error } = await galleryLikeApi.insertGalleryLike(
-          user.id,
-          gallery.g_id,
-          selected == "like" ? true : false,
-        );
-        if (error) toast("갤러리 좋아요/싫어요 정보 insert 에러");
-        else addGalleryLike(gallery.g_id, selected == "like" ? true : false);
-      } else {
-        let { error } = await galleryLikeApi.updateGalleryLike(
-          user.id,
-          gallery.g_id,
-          selected == "like" ? true : false,
-        );
-        if (error) toast("갤러리 좋아요/싫어요 정보 update 에러");
-        else updateGalleryLike(gallery.g_id, selected == "like" ? true : false);
-      }
-      // dislike를 클릭했다면 갤러리를 다시 로딩해야한다.
-      if (selected == "dislike" && getGalleryList) getGalleryList();
+    // 익명 유저가 좋아요를 클릭할 수 없다.
+    if (user == null && selected == "like") {
+      toast("갤러리 좋아요 기능을 이용하시려면 로그인 해주세요");
+      return;
     }
-    // 상태없음을 클릭했으면, delete하거나 아무것도 안함.
-    else if (selected == "none") {
-      // 전 상태가 none이 아니라면 delete
-      if (galleryLikeText != "none") {
-        let { error } = await galleryLikeApi.deleteGalleryLike(
-          user.id,
-          gallery.g_id,
-        );
-        if (error) toast("갤러리 좋아요/싫어요 정보 delete 에러");
-        else deleteGalleryLike(gallery.g_id);
+    // 똑같은 것을 클릭했으면 아무일도 일어나지 않는다.
+    if (selected == currentStatus) return;
+    // 현재 아무 상태도 아닐 때
+    if (currentStatus == "none") {
+      if (selected == "like") await addGalleryLike(user.id, gallery.g_id);
+      else if (selected == "dislike") await addHiddenGallery(gallery.g_id);
+    }
+    // 현재 좋아요 상태일 때
+    else if (currentStatus == "like") {
+      if (selected == "none") await deleteGalleryLike(user.id, gallery.g_id);
+      else if (selected == "dislike") {
+        await deleteGalleryLike(user.id, gallery.g_id);
+        await addHiddenGallery(gallery.g_id);
+      }
+    }
+    // 현재 싫어요 상태일 때
+    else if (currentStatus == "dislike") {
+      if (selected == "none") await deleteHiddenGallery(gallery.g_id);
+      else if (selected == "like") {
+        await addGalleryLike(user.id, gallery.g_id);
+        await deleteHiddenGallery(gallery.g_id);
       }
     }
     onClose();
@@ -80,19 +67,19 @@ export default function ModalGalleryLike({
           </DialogTitle>
           <div className="flex flex-col gap-2">
             <button
-              className={`flex items-center rounded-md bg-gray-500 px-2 text-2xl ${galleryLikeText !== "like" ? "cursor-pointer opacity-50" : ""}`}
+              className={`flex items-center rounded-md bg-gray-500 px-2 text-2xl ${currentStatus !== "like" ? "cursor-pointer opacity-50" : ""}`}
               onClick={() => changeLikeStatus("like")}
             >
               좋아요 <ThumbsUp />
             </button>
             <button
-              className={`rounded-md bg-gray-500 px-2 text-2xl ${galleryLikeText !== "none" ? "cursor-pointer opacity-50" : ""}`}
+              className={`rounded-md bg-gray-500 px-2 text-2xl ${currentStatus !== "none" ? "cursor-pointer opacity-50" : ""}`}
               onClick={() => changeLikeStatus("none")}
             >
               상태없음
             </button>
             <button
-              className={`flex items-center rounded-md bg-gray-500 px-2 text-2xl ${galleryLikeText !== "dislike" ? "cursor-pointer opacity-50" : ""}`}
+              className={`flex items-center rounded-md bg-gray-500 px-2 text-2xl ${currentStatus !== "dislike" ? "cursor-pointer opacity-50" : ""}`}
               onClick={() => changeLikeStatus("dislike")}
             >
               싫어요 <ThumbsDown />

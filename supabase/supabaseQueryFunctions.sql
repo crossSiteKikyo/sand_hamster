@@ -191,10 +191,6 @@ begin
         )
         -- [유저 제외 필터]
         and not exists (
-          select 1 from user_gallery_like ugl 
-          where ugl.g_id = g.g_id and ugl.user_id = auth.uid() and ugl.flag = false
-        )
-        and not exists (
           select 1 from gallery_tag gt_exc
           join user_tag_like utl on gt_exc.tag_id = utl.tag_id
           where gt_exc.g_id = g.g_id and utl.user_id = auth.uid() and utl.flag = false

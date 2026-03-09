@@ -26,7 +26,8 @@ const useRankStore = create((set, get) => ({
       }
     }
     const ids = row.ids.slice(pageSize * (page - 1), pageSize * page);
-    set({ maxPage: Math.ceil(row.ids.length / pageSize) });
+    const maxPage = Math.ceil(row.ids.length / pageSize);
+    set({ maxPage: maxPage > 0 ? maxPage : 1 });
     // rankType이 tag_like면 태그정보 수정.
     if (rankType == "tag_like") {
       set({ rankTagIds: ids });
