@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         sand_hamster
-// @version      0.0.7
+// @version      0.0.8
 // @author       crossSiteKikyo
 // @description  히토미 웹 뷰어 sand_hamster
 // @icon         https://github.com/crossSiteKikyo/sand_hamster/blob/main/public/sand_hamster_logo.jpg?raw=true
@@ -44,11 +44,31 @@
       // DOM이 생성 된 후 동적으로 삽입된 link와 script는 보안 및 실행 순서 문제로 실행되지 않는다.
       // 그러므로 따로 주입
       // index.css 주입
-      const link2 = document.createElement("link");
-      link2.rel = "stylesheet";
-      link2.crossOrigin = "anonymous";
-      link2.href = `${GitHack_base}assets/index.css`;
-      document.head.appendChild(link2);
+      // const link2 = document.createElement("link");
+      // link2.rel = "stylesheet";
+      // link2.crossOrigin = "anonymous";
+      // link2.href = `${GitHack_base}assets/index.css`;
+      // document.head.appendChild(link2);
+      // --- CSS 주입 (Blob 방식) ---
+      try {
+        const cssResponse = await fetch(
+          `https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/dist/assets/index.css`,
+        );
+        const cssCode = await cssResponse.text();
+
+        // CSS 코드를 Blob으로 변환 (타입을 text/css로 지정)
+        const cssBlob = new Blob([cssCode], { type: "text/css" });
+        const cssBlobUrl = URL.createObjectURL(cssBlob);
+
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = cssBlobUrl;
+        document.head.appendChild(link);
+
+        console.log("CSS를 Blob을 통해 주입 성공");
+      } catch (err) {
+        console.error("CSS 주입 실패:", err);
+      }
       // // index.js 주입 (type="module" 설정 필수). firefox에서는 cors 정책에 막힌다.
       // const script1 = document.createElement("script");
       // script1.type = "module";
