@@ -20,18 +20,18 @@ export default function FloatingActionButton() {
     }
   };
   return (
-    <div className="flex flex-col gap-1 fixed bottom-12 right-4 md:bottom-1">
+    <div className="fixed right-4 bottom-12 z-10 flex flex-col gap-1 md:bottom-1">
       <button
-        className="rounded-full border border-gray-500 bg-gray-400 dark:bg-gray-600 p-3 shadow"
+        className="rounded-full border border-gray-500 bg-gray-400 p-3 shadow dark:bg-gray-600"
         onClick={scrollToTop}
       >
-        <ArrowUp className="w-5 h-5" />
+        <ArrowUp className="h-5 w-5" />
       </button>
       <button
-        className="rounded-full border border-gray-500 bg-gray-400 dark:bg-gray-600 p-3 shadow"
+        className="rounded-full border border-gray-500 bg-gray-400 p-3 shadow dark:bg-gray-600"
         onClick={scrollToBottom}
       >
-        <ArrowDown className="w-5 h-5" />
+        <ArrowDown className="h-5 w-5" />
       </button>
     </div>
   );
