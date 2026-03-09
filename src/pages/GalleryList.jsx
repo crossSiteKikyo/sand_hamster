@@ -241,7 +241,7 @@ export default function GalleryList({
                       // crossOrigin="anonymous" // 👈 이 속성이 HTTP/2 협상을 유도할 수 있습니다.
                     />
                     {status == "dislike" && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-white">
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-50 dark:bg-gray-950">
                         싫어요 갤러리 검열
                       </div>
                     )}
