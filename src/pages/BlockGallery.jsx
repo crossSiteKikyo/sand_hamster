@@ -87,13 +87,13 @@ export default function BlockGallery() {
           className="cursor-pointer rounded-sm bg-gray-300 px-1 dark:bg-gray-700"
           onClick={downloadData}
         >
-          다운로드
+          목록 다운로드
         </button>
         <button
           className="cursor-pointer rounded-sm bg-gray-300 px-1 dark:bg-gray-700"
           onClick={uploadData}
         >
-          업로드
+          목록 업로드
         </button>
       </div>
       <div className="mb-2 flex items-center justify-end gap-2">

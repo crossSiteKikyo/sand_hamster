@@ -16,6 +16,7 @@ import MyTag from "./pages/MyTag";
 import MyGalleryHasLikeTag from "./pages/MyGalleryHasLikeTag";
 import RankPage from "./pages/RankPage";
 import BlockGallery from "./pages/BlockGallery";
+import HelpPage from "./pages/HelpPage";
 import { galleryCache } from "./cacheDB";
 import useThemeStore from "./store/useThemeStore";
 import useUserStore from "./store/useUserStore";
@@ -23,7 +24,6 @@ import useTypeStore from "./store/useTypeStore";
 import useTagStore from "./store/useTagStore";
 import useTagLikeStore from "./store/useTagLikeStore";
 import useGalleryLikeStore from "./store/useGalleryLikeStore";
-import useNotificationStore from "./store/useNotificationStore";
 import ViewMangaPage from "./pages/ViewMangaPage";
 import useHitomiStore from "./store/useHitomiStore";
 
@@ -34,7 +34,6 @@ function App() {
   const { getAllTag } = useTagStore();
   const { getTagLikeList } = useTagLikeStore();
   const { getGalleryLikeList, getHiddenGalleryIds } = useGalleryLikeStore();
-  const { getNotificationList } = useNotificationStore();
   const { getImageDecodeInfo, checkAvifSupport } = useHitomiStore();
   const { pathname } = useLocation(); // 현재 경로를 가져옵니다.
   const isHomePage = pathname === "/";
@@ -50,8 +49,8 @@ function App() {
     await getTypeList();
     setLoadingInfo("태그 정보 받아오는중...");
     await getAllTag();
-    setLoadingInfo("공지사항 정보 받아오는중...");
-    await getNotificationList();
+    // setLoadingInfo("공지사항 정보 받아오는중...");
+    // await getNotificationList();
     setLoadingInfo("태그 좋아요 정보 받아오는중...");
     await getTagLikeList(userId);
     setLoadingInfo("갤러리 좋아요/싫어요 정보 받아오는중...");
@@ -111,6 +110,7 @@ function App() {
                 <Route path="/notification" element={<NotificationPage />} />
                 <Route path="/viewManga" element={<ViewMangaPage />} />
                 <Route path="/blockGallery" element={<BlockGallery />} />
+                <Route path="/help" element={<HelpPage />} />
                 <Route
                   path="/login"
                   element={<Login afterLogin={afterLogin} />}

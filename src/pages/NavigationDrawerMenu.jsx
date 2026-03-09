@@ -5,7 +5,17 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { BookHeart, Images, Menu, Moon, Sun, Tags, Trophy } from "lucide-react";
+import {
+  BookHeart,
+  CircleQuestionMark,
+  EyeOff,
+  Images,
+  Menu,
+  Moon,
+  Sun,
+  Tags,
+} from "lucide-react";
+import { RxDiscordLogo } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
 import useThemeStore from "../store/useThemeStore";
 import useUserStore from "../store/useUserStore";
@@ -71,37 +81,48 @@ export default function NavigationDrawerMenu({ className }) {
                   <p className="pl-3">테마</p>
                 </div>
                 <Link
-                  className={`flex h-12 items-center px-3 ${isActive("/rank") ? "border-y border-l" : ""}`}
-                  to="/rank"
+                  className={`flex h-12 items-center px-3 ${isActive("/blockGallery") ? "border-y border-l" : ""}`}
+                  to="/blockGallery"
                 >
-                  <Trophy className="h-5 w-5" />
-                  <p className="pl-3">랭킹</p>
+                  <EyeOff className="h-5 w-5" />
+                  <p className="pl-3">갤러리 차단</p>
                 </Link>
-                {user != null && (
-                  <>
-                    <Link
-                      className={`flex h-12 items-center px-3 ${isActive("/mygallery") ? "border-y border-l" : ""}`}
-                      to="/mygallery"
-                    >
-                      <Images className="h-5 w-5" />
-                      <p className="pl-3">내 갤러리</p>
-                    </Link>
-                    <Link
-                      className={`flex h-12 items-center px-3 ${isActive("/mytag") ? "border-y border-l" : ""}`}
-                      to="/mytag"
-                    >
-                      <Tags className="h-5 w-5" />
-                      <p className="pl-3">내 태그</p>
-                    </Link>
-                    <Link
-                      className={`flex h-12 items-center px-3 ${isActive("/mygalleryhasliketag") ? "border-y border-l" : ""}`}
-                      to="/mygalleryhasliketag"
-                    >
-                      <BookHeart className="h-5 w-5" />
-                      <p className="pl-3">내 좋아요</p>
-                    </Link>
-                  </>
-                )}
+                <Link
+                  className={`flex h-12 items-center px-3 ${isActive("/help") ? "border-y border-l" : ""}`}
+                  to="/help"
+                >
+                  <CircleQuestionMark className="h-5 w-5" />
+                  <p className="pl-3">도움말</p>
+                </Link>
+                <Link
+                  className={`flex h-12 items-center px-3 ${isActive("/mygallery") ? "border-y border-l" : ""}`}
+                  to="/mygallery"
+                >
+                  <Images className="h-5 w-5" />
+                  <p className="pl-3">내 갤러리</p>
+                </Link>
+                <Link
+                  className={`flex h-12 items-center px-3 ${isActive("/mytag") ? "border-y border-l" : ""}`}
+                  to="/mytag"
+                >
+                  <Tags className="h-5 w-5" />
+                  <p className="pl-3">내 태그</p>
+                </Link>
+                <Link
+                  className={`flex h-12 items-center px-3 ${isActive("/mygalleryhasliketag") ? "border-y border-l" : ""}`}
+                  to="/mygalleryhasliketag"
+                >
+                  <BookHeart className="h-5 w-5" />
+                  <p className="pl-3">내 좋아요</p>
+                </Link>
+                <a
+                  className="flex h-12 items-center px-3"
+                  target="_blank"
+                  href="https://discord.gg/X7r2ADfAH2"
+                >
+                  <RxDiscordLogo className="h-5 w-5" />
+                  <p className="pl-3">디스코드</p>
+                </a>
               </DialogPanel>
             </TransitionChild>
           </div>

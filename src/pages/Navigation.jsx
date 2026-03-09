@@ -1,6 +1,7 @@
 import {
   Bell,
   BookHeart,
+  CircleQuestionMark,
   EyeOff,
   House,
   Images,
@@ -19,6 +20,7 @@ import ModalSearch from "./ModalSearch";
 import useThemeStore from "../store/useThemeStore";
 import useUserStore from "../store/useUserStore";
 import useNotificationStore from "../store/useNotificationStore";
+import { RxDiscordLogo } from "react-icons/rx";
 
 export default function Navigation() {
   const { isDarkMode, toggleDarkMode } = useThemeStore();
@@ -71,6 +73,13 @@ export default function Navigation() {
             <EyeOff className="h-5 w-5" />
             <p className="hidden pl-3 xl:block">갤러리 차단</p>
           </Link>
+          <Link
+            className={`flex h-12 items-center px-3 ${isActive("/help") ? "border-y border-l" : ""}`}
+            to="/help"
+          >
+            <CircleQuestionMark className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">도움말</p>
+          </Link>
           {/* <Link
             className={`relative flex h-12 items-center px-3 ${isActive("/notification") ? "border-y border-l" : ""}`}
             to="/notification"
@@ -112,6 +121,14 @@ export default function Navigation() {
             <BookHeart className="h-5 w-5" />
             <p className="hidden pl-3 xl:block">내 좋아요</p>
           </Link>
+          <a
+            className="flex h-12 items-center px-3"
+            target="_blank"
+            href="https://discord.gg/X7r2ADfAH2"
+          >
+            <RxDiscordLogo className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">디스코드</p>
+          </a>
           {user ? (
             <>
               <Link
@@ -137,7 +154,7 @@ export default function Navigation() {
       </div>
 
       {/* 바텀 네비게이션 */}
-      <div className="fixed right-0 bottom-0 flex min-w-full border-t border-gray-200 bg-white/95 md:hidden dark:border-gray-800 dark:bg-black/95">
+      <div className="fixed right-0 bottom-0 z-10 flex min-w-full border-t border-gray-200 bg-white/95 md:hidden dark:border-gray-800 dark:bg-black/95">
         <NavigationDrawerMenu className="flex grow justify-center p-3" />
         <div
           className="flex grow cursor-pointer justify-center p-3"
@@ -148,7 +165,7 @@ export default function Navigation() {
         <Link to="/list" className="flex grow justify-center p-3">
           <House className="h-5 w-5" strokeWidth={isActive("/list") ? 3 : 2} />
         </Link>
-        <Link to="/notification" className="flex grow justify-center p-3">
+        {/* <Link to="/notification" className="flex grow justify-center p-3">
           <Bell
             className="h-5 w-5"
             strokeWidth={isActive("/notification") ? 3 : 2}
@@ -158,6 +175,9 @@ export default function Navigation() {
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
+        </Link> */}
+        <Link to="/rank" className="flex grow justify-center p-3">
+          <Trophy className="h-5 w-5" strokeWidth={isActive("/rank") ? 3 : 2} />
         </Link>
         {user ? (
           <Link to="/myinfo" className="flex grow justify-center p-3">
