@@ -14,9 +14,7 @@ export default function ViewMangaPage() {
   const [swiper, setSwiper] = useState(null);
   const [page, setPage] = useState(0);
 
-  const [isHorizontal, setIsHorizontal] = useState(true); // 좌우로 페이지를 넘길지 상하로 넘길지.
-  // const [isTwoView, setIsTwoView] = useState(false); // 두쪽보기를 할지.
-  const { isTwoView, setIsTwoView } = useViewerStore();
+  const { isTwoView } = useViewerStore();
 
   // 자동넘기기를 위한 변수들
   const [isOpen, setIsOpen] = useState(false);
@@ -26,16 +24,8 @@ export default function ViewMangaPage() {
     setIntervalID(undefined);
   };
 
-  const {
-    b,
-    o1,
-    o2,
-    numSet,
-    imgHashList,
-    getGalleryInfo,
-    getImageDecodeInfo,
-    isAvifSupported,
-  } = useHitomiStore();
+  const { b, o1, o2, numSet, imgHashList, getGalleryInfo, isAvifSupported } =
+    useHitomiStore();
   const [searchParams] = useSearchParams();
   const g_id = searchParams.get("g_id");
   const getImgHashList = async () => {
@@ -158,7 +148,6 @@ export default function ViewMangaPage() {
         onSlideChange={(s) => setPage(s.activeIndex)}
         virtual={{ addSlidesBefore: 2, addSlidesAfter: 8 }} //앞뒤 미리 로드
         className="h-full w-full"
-        direction={isHorizontal ? `horizontal` : `vertical`}
       >
         {imgHashList.map((hash, idx) => (
           <SwiperSlide key={idx} virtualIndex={idx}>
@@ -193,8 +182,6 @@ export default function ViewMangaPage() {
         setIsOpen={setIsOpen}
         stopAutoSlide={stopAutoSlide}
         intervalID={intervalID}
-        isHorizontal={isHorizontal}
-        setIsHorizontal={setIsHorizontal}
       />
     </div>
   );

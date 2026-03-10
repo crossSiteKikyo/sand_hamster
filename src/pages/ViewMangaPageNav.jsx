@@ -1,8 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import useHitomiStore from "../store/useHitomiStore";
-import { Fullscreen, X } from "lucide-react";
+import {
+  Fullscreen,
+  MoveDown,
+  MoveLeft,
+  MoveRight,
+  Play,
+  Square,
+  X,
+} from "lucide-react";
 import { toast } from "react-toastify";
 import useViewerStore from "../store/useViewerStore";
+import { PiNumberOneBold, PiNumberTwoBold } from "react-icons/pi";
+import { useNavigate } from "react-router-dom";
 
 export default function ViewMangaPageNav({
   swiper,
@@ -10,11 +20,11 @@ export default function ViewMangaPageNav({
   stopAutoSlide,
   setIsOpen,
   intervalID,
-  isHorizontal,
-  setIsHorizontal,
 }) {
+  const navigate = useNavigate();
   const { imgHashList, title } = useHitomiStore();
-  const { isTwoView, setIsTwoView } = useViewerStore();
+  const { isTwoView, setIsTwoView, touchDirection, nextTouchDirection } =
+    useViewerStore();
 
   const [showUI, setShowUI] = useState(false); // 상하 UI 노출 여부
   const toggleUI = () => setShowUI(!showUI);
@@ -82,38 +92,34 @@ export default function ViewMangaPageNav({
   return (
     <>
       {/* [Layer 1] 투명 클릭 영역 (3등분) */}
-      {isHorizontal ? (
+      {touchDirection == "leftToRight" && (
         <div className="absolute inset-0 z-10 flex select-none">
           <div className="h-full w-1/3 cursor-pointer" onClick={goPrev} />
           <div className="h-full w-1/3 cursor-pointer" onClick={toggleUI} />
           <div className="h-full w-1/3 cursor-pointer" onClick={goNext} />
         </div>
-      ) : (
+      )}
+      {touchDirection == "rightToLeft" && (
+        <div className="absolute inset-0 z-10 flex select-none">
+          <div className="h-full w-1/3 cursor-pointer" onClick={goNext} />
+          <div className="h-full w-1/3 cursor-pointer" onClick={toggleUI} />
+          <div className="h-full w-1/3 cursor-pointer" onClick={goPrev} />
+        </div>
+      )}
+      {touchDirection == "topToBottom" && (
         <div className="absolute inset-0 z-10 select-none">
           <div className="h-1/3 w-full cursor-pointer" onClick={goPrev} />
           <div className="h-1/3 w-full cursor-pointer" onClick={toggleUI} />
           <div className="h-1/3 w-full cursor-pointer" onClick={goNext} />
         </div>
       )}
-      {/* <div
-        className="absolute bottom-0 left-0 z-10 h-1/6 w-full select-none"
-        onClick={toggleUI}
-      ></div> */}
 
       {/* [Layer 2] 상하 내비게이션 UI (HUD) */}
       {showUI && (
         <div className="pointer-events-none absolute inset-0 z-20">
           {/* 상단바 */}
-          <div className="pointer-events-auto absolute top-0 left-0 flex w-full items-center justify-between gap-1 border-b border-gray-500 bg-white/80 dark:bg-black/80">
-            <div className="flex items-center">
-              <div className="p-3" onClick={toggleFullscreen}>
-                <Fullscreen className="w-6 shrink-0" />
-              </div>
-              <p className="">{title}</p>
-            </div>
-            <div className="p-3" onClick={toggleUI}>
-              <X className="w-6 shrink-0" />
-            </div>
+          <div className="pointer-events-auto absolute top-0 left-0 flex w-full justify-center border-b border-gray-500 bg-white/80 dark:bg-black/80">
+            {title}
           </div>
           {/* 하단바 */}
           <div className="pointer-events-auto absolute bottom-0 left-0 w-full border-t border-gray-500 bg-white/80 p-3 dark:bg-black/80">
@@ -132,43 +138,67 @@ export default function ViewMangaPageNav({
                 {page + 1} / {imgHashList.length}
               </div>
               {/* 하단 버튼들 */}
-              <div className="flex justify-center gap-2">
-                <button
-                  className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
-                  onClick={() => setIsHorizontal(!isHorizontal)}
-                >
-                  {isHorizontal ? "좌우 넘기기" : "상하 넘기기"}
-                </button>
+              <div className="flex justify-between gap-2">
+                <div className="flex gap-2">
+                  <button
+                    className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
+                    onClick={nextTouchDirection}
+                  >
+                    {touchDirection == "leftToRight" && (
+                      <MoveRight className="h-6 w-6" />
+                    )}
+                    {touchDirection == "rightToLeft" && (
+                      <MoveLeft className="h-6 w-6" />
+                    )}
+                    {touchDirection == "topToBottom" && (
+                      <MoveDown className="h-6 w-6" />
+                    )}
+                  </button>
+                  {isTwoView ? (
+                    <button
+                      className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
+                      onClick={() => setIsTwoView(false)}
+                    >
+                      <PiNumberTwoBold className="h-6 w-6" />
+                    </button>
+                  ) : (
+                    <button
+                      className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
+                      onClick={() => setIsTwoView(true)}
+                    >
+                      <PiNumberOneBold className="h-6 w-6" />
+                    </button>
+                  )}
+                </div>
                 {intervalID ? (
                   <button
-                    className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
+                    className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
                     onClick={stopAutoSlide}
                   >
-                    넘기기 중지
+                    <Square className="h-6 w-6" />
                   </button>
                 ) : (
                   <button
-                    className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
+                    className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
                     onClick={() => setIsOpen(true)}
                   >
-                    자동 넘기기
+                    <Play className="h-6 w-6" />
                   </button>
                 )}
-                {isTwoView ? (
-                  <button
-                    className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
-                    onClick={() => setIsTwoView(false)}
+                <div className="flex gap-2">
+                  <div
+                    className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
+                    onClick={toggleFullscreen}
                   >
-                    두쪽 보기
-                  </button>
-                ) : (
-                  <button
-                    className="rounded-xl bg-black px-2 text-white dark:bg-white dark:text-black"
-                    onClick={() => setIsTwoView(true)}
+                    <Fullscreen className="w-6 shrink-0" />
+                  </div>
+                  <div
+                    className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
+                    onClick={() => navigate(-1)}
                   >
-                    한쪽 보기
-                  </button>
-                )}
+                    <X className="w-6 shrink-0" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

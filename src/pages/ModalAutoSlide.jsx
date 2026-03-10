@@ -1,6 +1,6 @@
 import { Dialog, DialogPanel, Switch } from "@headlessui/react";
-import { useState } from "react";
 import useHitomiStore from "../store/useHitomiStore";
+import useViewerStore from "../store/useViewerStore";
 
 export default function ModalAutoSlide({
   setIntervalID,
@@ -8,8 +8,7 @@ export default function ModalAutoSlide({
   onClose,
   swiper,
 }) {
-  const [second, setSecond] = useState(10);
-  const [loop, setLoop] = useState(false);
+  const { second, setSecond, loop, setLoop } = useViewerStore();
   const { imgHashList } = useHitomiStore();
   const startInterval = () => {
     const intervalID = setInterval(() => {
