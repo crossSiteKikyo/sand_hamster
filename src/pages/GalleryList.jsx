@@ -16,7 +16,6 @@ export default function GalleryList({
   setSelectedTag,
   setIsTagModalOpen,
   setSelectedType,
-  getGalleryList,
 }) {
   const navigate = useNavigate();
   const { typeList } = useTypeStore();
@@ -74,7 +73,6 @@ export default function GalleryList({
       <ModalGalleryLike
         isOpen={isGalleryModalOpen}
         onClose={() => setIsGalleryModalOpen(false)}
-        getGalleryList={getGalleryList}
         gallery={selectedGallery}
       />
       {galleryIds.length > 0 ? (
@@ -254,7 +252,6 @@ export default function GalleryList({
                       <Tag
                         key={v.tag_id}
                         tag={v}
-                        type="male"
                         setSelectedTag={setSelectedTag}
                         setIsTagModalOpen={setIsTagModalOpen}
                       />
@@ -263,7 +260,6 @@ export default function GalleryList({
                       <Tag
                         key={v.tag_id}
                         tag={v}
-                        type="female"
                         setSelectedTag={setSelectedTag}
                         setIsTagModalOpen={setIsTagModalOpen}
                       />
@@ -272,7 +268,6 @@ export default function GalleryList({
                       <Tag
                         key={v.tag_id}
                         tag={v}
-                        type="other"
                         setSelectedTag={setSelectedTag}
                         setIsTagModalOpen={setIsTagModalOpen}
                       />

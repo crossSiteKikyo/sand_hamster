@@ -10,9 +10,10 @@ import ImportData from "./ImportData";
 import downloadFileFromData from "../function/downloadFileFromData";
 
 export default function Myinfo({ afterLogin }) {
-  const { user, tag_like_limit, gallery_like_limit } = useUserStore();
+  const { user, gallery_like_limit, tag_like_limit, tag_dislike_limit } =
+    useUserStore();
   const { galleryLikeList, hiddenGalleryIds } = useGalleryLikeStore();
-  const { tagLikeList } = useTagLikeStore();
+  const { tagLikeList, tagDislikeList } = useTagLikeStore();
   const { tagMap } = useTagStore();
   const [isDeleteCardOpen, setIsDeleteCardOpen] = useState(false); // 초기 상태: 접힘
   const [isDataExportCardOpen, setIsDataExportCardOpen] = useState(false); // 초기 상태: 접힘
@@ -39,9 +40,14 @@ export default function Myinfo({ afterLogin }) {
     for (let i = 0; i < newTagLikeList.length; i++) {
       newTagLikeList[i].name = tagMap.get(newTagLikeList[i].tag_id).name;
     }
+    let newTagDislikeList = structuredClone(tagDislikeList);
+    for (let i = 0; i < newTagDislikeList.length; i++) {
+      newTagDislikeList[i].name = tagMap.get(newTagDislikeList[i].tag_id).name;
+    }
     const likeListData = {
-      tagLikeList: newTagLikeList,
       galleryLikeList,
+      tagLikeList: newTagLikeList,
+      tagDislikeList: newTagDislikeList,
     };
     console.log(likeListData);
     downloadFileFromData(likeListData, `sand_hamster_${Date.now()}.json`);
@@ -66,15 +72,10 @@ export default function Myinfo({ afterLogin }) {
           </p>
           <p>갤러리 싫어요 개수 - {hiddenGalleryIds.size}</p>
           <p>
-            태그 좋아요 개수 -{" "}
-            {tagLikeList.filter((t) => t.flag == true).length}
+            태그 좋아요 개수 - {tagLikeList.length}/{tag_like_limit}
           </p>
           <p>
-            태그 싫어요 개수 -{" "}
-            {tagLikeList.filter((t) => t.flag == false).length}
-          </p>
-          <p>
-            태그 총 개수 - {tagLikeList.length}/{tag_like_limit}
+            태그 싫어요 개수 - {tagDislikeList.length}/{tag_dislike_limit}
           </p>
         </div>
         {/* 데이터 가져오기 카드 */}

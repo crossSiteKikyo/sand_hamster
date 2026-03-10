@@ -79,7 +79,6 @@ export default function RankPage() {
         onClose={() => setIsTagModalOpen(false)}
         tag={selectedTag}
         _type={selectedType}
-        // 재로딩은 이 컴포넌트에서 하기 때문에 getGalleryList를 넘기면 안됨.
       />
       {/* 랭크 타입 선택 */}
       <div className="mb-2 flex justify-end gap-2">
@@ -142,7 +141,6 @@ export default function RankPage() {
             setSelectedTag={setSelectedTag}
             setIsTagModalOpen={setIsTagModalOpen}
             setSelectedType={setSelectedType}
-            // 재로딩은 이 컴포넌트에서 하기 때문에 getGalleryList를 넘기면 안됨.
           />
         )}
       </div>

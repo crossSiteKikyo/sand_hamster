@@ -2,19 +2,18 @@ import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import MyButton from "../components/MyButton";
 import { toast } from "react-toastify";
-import tagLikeApi from "../api/tagLikeApi";
 import useTagLikeStore from "../store/useTagLikeStore";
 import useUserStore from "../store/useUserStore";
-export default function ModalTagLike({
-  isOpen,
-  onClose,
-  getGalleryList,
-  tag,
-  _type,
-}) {
+export default function ModalTagLike({ isOpen, onClose, tag, _type }) {
   const { user } = useUserStore();
-  const { tagLikeList, addTagLike, updateTagLike, deleteTagLike } =
-    useTagLikeStore();
+  const {
+    tagLikeList,
+    tagDislikeList,
+    addTagLike,
+    addTagDislike,
+    deleteTagLike,
+    deleteTagDislike,
+  } = useTagLikeStore();
   const colorMap = {
     doujinshi: `dark:bg-[#CC9999] bg-[#FFCCCC]`,
     manga: `dark:bg-[#CC99CC] bg-[#FFCCFF]`,
@@ -33,45 +32,39 @@ export default function ModalTagLike({
   else if (tag.name.startsWith("character:")) type = _type.name;
   else if (tag.name.startsWith("male:")) type = "male";
   else if (tag.name.startsWith("female:")) type = "female";
-  let tagLike = tagLikeList.find((v) => v.tag_id == tag.tag_id);
-  let tagLikeText = "none";
-  if (tagLike !== undefined) {
-    if (tagLike.flag) tagLikeText = "like";
-    else tagLikeText = "dislike";
-  }
+
+  let currentStatus = "none";
+  if (tagLikeList.find((v) => v.tag_id == tag.tag_id) != undefined)
+    currentStatus = "like";
+  else if (tagDislikeList.find((v) => v.tag_id == tag.tag_id) != undefined)
+    currentStatus = "dislike";
   const changeLikeStatus = async (selected) => {
-    // 똑같은 것을 클릭했으면 아무일도 일어나지 않는다.
-    if (selected == tagLikeText) return;
-    // 좋아요나 싫어요를 클릭했으면, insert하거나 update해야함.
-    if (selected == "like" || selected == "dislike") {
-      // 전 상태가 none이라면 insert, 아니면 update
-      if (tagLikeText == "none") {
-        let { error } = await tagLikeApi.insertTagLike(
-          user.id,
-          tag.tag_id,
-          selected == "like" ? true : false,
-        );
-        if (error) toast("태그 정보 insert 에러");
-        else addTagLike(tag.tag_id, selected == "like" ? true : false);
-      } else {
-        let { error } = await tagLikeApi.updateTagLike(
-          user.id,
-          tag.tag_id,
-          selected == "like" ? true : false,
-        );
-        if (error) toast("태그 정보 update 에러");
-        else updateTagLike(tag.tag_id, selected == "like" ? true : false);
-      }
-      // dislike를 클릭했다면 갤러리를 다시 로딩해야한다.
-      if (selected == "dislike" && getGalleryList) getGalleryList();
+    // 익명 유저가 클릭할 수 없다.
+    if (user == null) {
+      toast("태그 좋아요/싫어요 기능을 이용하시려면 로그인 해주세요");
+      return;
     }
-    // 상태없음을 클릭했으면, delete하거나 아무것도 안함.
-    else if (selected == "none") {
-      // 전 상태가 none이 아니라면 delete
-      if (tagLikeText != "none") {
-        let { error } = await tagLikeApi.deleteTagLike(user.id, tag.tag_id);
-        if (error) toast("태그 정보 delete 에러");
-        else deleteTagLike(tag.tag_id);
+    // 똑같은 것을 클릭했으면 아무일도 일어나지 않는다.
+    if (selected == currentStatus) return;
+    // 현재 아무 상태도 아닐 때
+    if (currentStatus == "none") {
+      if (selected == "like") await addTagLike(user.id, tag.tag_id);
+      else if (selected == "dislike") await addTagDislike(user.id, tag.tag_id);
+    }
+    // 현재 좋아요 상태일 때
+    else if (currentStatus == "like") {
+      if (selected == "none") await deleteTagLike(user.id, tag.tag_id);
+      else if (selected == "dislike") {
+        await deleteTagLike(user.id, tag.tag_id);
+        await addTagDislike(user.id, tag.tag_id);
+      }
+    }
+    // 현재 싫어요 상태일 때
+    else if (currentStatus == "dislike") {
+      if (selected == "none") await deleteTagDislike(user.id, tag.tag_id);
+      else if (selected == "like") {
+        await addTagLike(user.id, tag.tag_id);
+        await deleteTagDislike(user.id, tag.tag_id);
       }
     }
     onClose();
@@ -91,19 +84,19 @@ export default function ModalTagLike({
           </DialogTitle>
           <div className="flex flex-col gap-2">
             <button
-              className={`flex items-center rounded-md bg-gray-500 px-2 text-2xl ${tagLikeText !== "like" ? "cursor-pointer opacity-50" : ""}`}
+              className={`flex items-center rounded-md bg-gray-500 px-2 text-2xl ${currentStatus !== "like" ? "cursor-pointer opacity-50" : ""}`}
               onClick={() => changeLikeStatus("like")}
             >
               좋아요 <ThumbsUp />
             </button>
             <button
-              className={`rounded-md bg-gray-500 px-2 text-2xl ${tagLikeText !== "none" ? "cursor-pointer opacity-50" : ""}`}
+              className={`rounded-md bg-gray-500 px-2 text-2xl ${currentStatus !== "none" ? "cursor-pointer opacity-50" : ""}`}
               onClick={() => changeLikeStatus("none")}
             >
               상태없음
             </button>
             <button
-              className={`flex items-center rounded-md bg-gray-500 px-2 text-2xl ${tagLikeText !== "dislike" ? "cursor-pointer opacity-50" : ""}`}
+              className={`flex items-center rounded-md bg-gray-500 px-2 text-2xl ${currentStatus !== "dislike" ? "cursor-pointer opacity-50" : ""}`}
               onClick={() => changeLikeStatus("dislike")}
             >
               싫어요 <ThumbsDown />

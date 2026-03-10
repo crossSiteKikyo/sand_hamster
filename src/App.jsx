@@ -26,13 +26,14 @@ import useTagLikeStore from "./store/useTagLikeStore";
 import useGalleryLikeStore from "./store/useGalleryLikeStore";
 import ViewMangaPage from "./pages/ViewMangaPage";
 import useHitomiStore from "./store/useHitomiStore";
+import TagBlock from "./pages/TagBlock";
 
 function App() {
   const { isDarkMode } = useThemeStore();
   const { getUser } = useUserStore();
   const { getTypeList } = useTypeStore();
   const { getAllTag } = useTagStore();
-  const { getTagLikeList } = useTagLikeStore();
+  const { getTagLikeList, getTagDislikeList } = useTagLikeStore();
   const { getGalleryLikeList, getHiddenGalleryIds } = useGalleryLikeStore();
   const { getImageDecodeInfo, checkAvifSupport } = useHitomiStore();
   const { pathname } = useLocation(); // 현재 경로를 가져옵니다.
@@ -44,17 +45,18 @@ function App() {
   const init = async () => {
     setIsInitializing(true);
     setLoadingInfo("유저정보 받아오는중...");
-    const userId = await getUser();
+    const user_id = await getUser();
     setLoadingInfo("타입 정보 받아오는중...");
     await getTypeList();
     setLoadingInfo("태그 정보 받아오는중...");
     await getAllTag();
     // setLoadingInfo("공지사항 정보 받아오는중...");
     // await getNotificationList();
-    setLoadingInfo("태그 좋아요 정보 받아오는중...");
-    await getTagLikeList(userId);
+    setLoadingInfo("태그 좋아요/싫어요 정보 받아오는중...");
+    await getTagLikeList(user_id);
+    await getTagDislikeList(user_id);
     setLoadingInfo("갤러리 좋아요/싫어요 정보 받아오는중...");
-    await getGalleryLikeList(userId);
+    await getGalleryLikeList(user_id);
     await getHiddenGalleryIds();
     setLoadingInfo("오래된 캐시 정리중...");
     await galleryCache.cleanOldCache();
@@ -66,11 +68,12 @@ function App() {
   const afterLogin = async () => {
     setIsInitializing(true);
     setLoadingInfo("유저정보 받아오는중...");
-    const userId = await getUser();
-    setLoadingInfo("태그 좋아요 정보 받아오는중...");
-    await getTagLikeList(userId);
+    const user_id = await getUser();
+    setLoadingInfo("태그 좋아요/싫어요 정보 받아오는중...");
+    await getTagLikeList(user_id);
+    await getTagDislikeList(user_id);
     setLoadingInfo("갤러리 좋아요/싫어요 정보 받아오는중...");
-    await getGalleryLikeList(userId);
+    await getGalleryLikeList(user_id);
     setIsInitializing(false);
   };
   useEffect(() => {
@@ -129,6 +132,14 @@ function App() {
                   element={
                     <UserNecessaryRoute>
                       <MyTag />
+                    </UserNecessaryRoute>
+                  }
+                ></Route>
+                <Route
+                  path="/tagBlock"
+                  element={
+                    <UserNecessaryRoute>
+                      <TagBlock />
                     </UserNecessaryRoute>
                   }
                 ></Route>

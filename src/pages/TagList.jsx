@@ -1,6 +1,6 @@
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { useLongPress } from "use-long-press";
-import { Loader2 } from "lucide-react";
+import { Loader2, ThumbsDown, ThumbsUp } from "lucide-react";
 import useTagInfoStore from "../store/useTagInfoStore";
 import useTagLikeStore from "../store/useTagLikeStore";
 import useHitomiStore from "../store/useHitomiStore";
@@ -14,7 +14,7 @@ export default function TagList({
 }) {
   const navigate = useNavigate();
   const { user } = useUserStore();
-  const { tagLikeList } = useTagLikeStore();
+  const { tagLikeList, tagDislikeList } = useTagLikeStore();
   const { tagIds, tagInfoMap } = useTagInfoStore();
   const { thumbChar1, thumbChar2, numSet } = useHitomiStore();
   const tagSearch = (tag) => {
@@ -91,23 +91,27 @@ export default function TagList({
             else if (name.startsWith("character:")) type = "character";
             else if (name.startsWith("male:")) type = "male";
             else if (name.startsWith("female:")) type = "female";
-            const userTagLike = tagLikeList.find((v) => v.tag_id == t.tag_id);
-            const userTagLikeFlag = userTagLike?.flag;
+            let status = "none";
+            if (tagLikeList.find((v) => v.tag_id == t.tag_id)) status = "like";
+            else if (tagDislikeList.find((v) => v.tag_id == t.tag_id))
+              status = "dislike";
 
             return (
               <div
                 key={t.tag_id}
-                className={`flex cursor-pointer flex-col rounded-sm border ${colorMap[type]} ${userTagLikeFlag === true ? "border-pink-500" : ""} ${userTagLikeFlag === false ? "border-gray-500" : ""}`}
+                className={`flex cursor-pointer flex-col rounded-sm border ${colorMap[type]} ${status == "like" ? "border-pink-500" : ""} ${status == "dislike" ? "border-gray-500" : ""}`}
                 onClick={() => tagSearch(t)}
                 {...tagLongPressHandlers(t)}
               >
-                <div className="flex justify-between px-1">
+                <div className="flex items-center gap-1 px-1">
                   <p>{t.name}</p>
-                  {userTagLike != undefined && (
+                  {status == "like" && <ThumbsUp className="h-4 w-4" />}
+                  {status == "dislike" && <ThumbsDown className="h-4 w-4" />}
+                  {/* {userTagLike != undefined && (
                     <p className="text-sm text-gray-500">
                       {new Date(userTagLike.date).toLocaleString()}
                     </p>
-                  )}
+                  )} */}
                 </div>
                 <div className="relative flex min-h-36 items-center select-none">
                   {t.thumbnails[0] && (
@@ -131,7 +135,7 @@ export default function TagList({
                       src={decodeHitomiThumbnailUrl(t.thumbnails[2])}
                     />
                   )}
-                  {userTagLikeFlag === false && (
+                  {status == "dislike" && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100 px-1 text-sm dark:bg-gray-900">
                       싫어요 태그 검열
                     </div>

@@ -109,6 +109,13 @@ export default function NavigationDrawerMenu({ className }) {
                   <p className="pl-3">내 태그</p>
                 </Link>
                 <Link
+                  className={`flex h-12 items-center px-3 ${isActive("/tagBlock") ? "border-y border-l" : ""}`}
+                  to="/tagBlock"
+                >
+                  <EyeOff className="h-5 w-5" />
+                  <p className="pl-3">태그 차단</p>
+                </Link>
+                <Link
                   className={`flex h-12 items-center px-3 ${isActive("/mygalleryhasliketag") ? "border-y border-l" : ""}`}
                   to="/mygalleryhasliketag"
                 >

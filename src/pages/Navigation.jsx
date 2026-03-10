@@ -115,6 +115,13 @@ export default function Navigation() {
             <p className="hidden pl-3 xl:block">내 태그</p>
           </Link>
           <Link
+            className={`flex h-12 items-center px-3 ${isActive("/tagBlock") ? "border-y border-l" : ""}`}
+            to="/tagBlock"
+          >
+            <EyeOff className="h-5 w-5" />
+            <p className="hidden pl-3 xl:block">태그 차단</p>
+          </Link>
+          <Link
             className={`flex h-12 items-center px-3 ${isActive("/mygalleryhasliketag") ? "border-y border-l" : ""}`}
             to="/mygalleryhasliketag"
           >

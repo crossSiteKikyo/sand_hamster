@@ -1,7 +1,6 @@
 import { ChevronDown, ChevronUp, FileUp } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import tagLikeApi from "../api/tagLikeApi";
 import useGalleryLikeStore from "../store/useGalleryLikeStore";
 import getDataFromFile from "../function/getDataFromFile";
 import { hiddenGalleryCache } from "../cacheDB";
@@ -14,7 +13,8 @@ export default function ImportData() {
   const [isDataImportCardOpen, setIsDataImportCardOpen] = useState(false); // 초기 상태: 접힘
   const { galleryLikeList, addGalleryLike, getHiddenGalleryIds } =
     useGalleryLikeStore();
-  const { tagLikeList, addTagLike, updateTagLike } = useTagLikeStore();
+  const { tagLikeList, tagDislikeList, addTagLike, addTagDislike } =
+    useTagLikeStore();
   const { tagList } = useTagStore();
   const uploadData = async (type) => {
     // pc라면 파일 탐색기로, 모바일이라면 저장공간을 열어 파일 하나를 선택한 후, JSON.parse한다.
@@ -32,12 +32,17 @@ export default function ImportData() {
     }
   };
   const handleSandHamsterData = async (data) => {
-    if (data.galleryLikeList == undefined || data.tagLikeList == undefined) {
+    if (
+      data.galleryLikeList == undefined ||
+      data.tagLikeList == undefined ||
+      data.tagDislikeList == undefined
+    ) {
       toast("sand_hamster 데이터 형식이 아닙니다");
       return;
     }
-    await handleGalleryLikeDatas(data.galleryLikeList);
-    await handleTagLikeDatas(data.tagLikeList);
+    await handleGalleryLikeDatas(data.galleryLikeList.map((v) => v.g_id));
+    await handleTagLikeDatas(data.tagLikeList.map((v) => v.tag_id));
+    await handleTagDislikeDatas(data.tagDislikeList.map((v) => v.tag_id));
     toast("sand_hamster 데이터 업로드를 완료했습니다");
   };
   const handleKHitomiData = async (data) => {
@@ -47,31 +52,32 @@ export default function ImportData() {
       return;
     }
     // 싫어요 데이터와 좋아요 데이터를 구분한다.
-    let newGalleryLikeList = data.galleries.filter((v) => v.likeStatus == 2);
-    let newGalleryDislikeList = data.galleries.filter((v) => v.likeStatus == 0);
-    // {g_id, created_at} 배열로 만든다.
-    newGalleryLikeList = newGalleryLikeList.map((v) => ({
-      g_id: v.gId,
-      created_at: Date.now(),
-    }));
+    let galleryLikeGids = data.galleries
+      .filter((v) => v.likeStatus == 2)
+      .map((v) => v.gId);
+    let galleryDislikeGids = data.galleries
+      .filter((v) => v.likeStatus == 0)
+      .map((v) => v.gId);
 
-    // {tag_id, flag} 배열로 만든다.
-    let newTagLikeList = data.tags.map((v) => ({
-      tag_id: tagList.find((t) => t.name == v.name)?.tag_id,
-      flag: v.likeStatus == 2 ? true : false,
-    }));
-    // 좋아요를 앞에오게 만들어 먼저 정보를 넣는다.
-    newTagLikeList.sort((a, b) => b.flag - a.flag);
+    // tag_id 값을 찾아 배열로 만든다.
+    let tagLikeTagIds = data.tags
+      .map((v) => v.likeStatus == 2)
+      .map((v) => tagList.find((t) => t.name == v.name)?.tag_id);
 
-    await handleGalleryLikeDatas(newGalleryLikeList);
-    await handleGalleryDislikeDatas(newGalleryDislikeList.map((v) => v.gId));
-    await handleTagLikeDatas(newTagLikeList);
+    let tagDislikeTagIds = data.tags
+      .map((v) => v.likeStatus == 0)
+      .map((v) => tagList.find((t) => t.name == v.name)?.tag_id);
+
+    await handleGalleryLikeDatas(galleryLikeGids);
+    await handleGalleryDislikeDatas(galleryDislikeGids);
+    await handleTagLikeDatas(tagLikeTagIds);
+    await handleTagDislikeDatas(tagDislikeTagIds);
     toast("kHitomiViewer 데이터 업로드를 완료했습니다");
   };
-  const handleGalleryLikeDatas = async (newGalleryLikeList) => {
-    // newGalleryLikeList는 {g_id, created_at} 배열로 들어온다.
-    for (let i = 0; i < newGalleryLikeList.length; i++) {
-      const { g_id } = newGalleryLikeList[i];
+  const handleGalleryLikeDatas = async (g_ids) => {
+    // newGalleryLikeList는 g_id를 갖는 배열로 들어온다.
+    for (let i = 0; i < g_ids.length; i++) {
+      const g_id = g_ids[i];
       if (g_id == undefined) continue;
       const galleryLike = galleryLikeList.find((v) => v.g_id == g_id);
       // g_id가 없다면 insert
@@ -86,29 +92,31 @@ export default function ImportData() {
     await hiddenGalleryCache.bulkPut(g_ids);
     await getHiddenGalleryIds();
   };
-  const handleTagLikeDatas = async (newTagLikeList) => {
-    // newTagLikeList는 {tag_id, flag} 배열이여야함
-    for (let i = 0; i < newTagLikeList.length; i++) {
-      const { tag_id, flag } = newTagLikeList[i];
-      if (tag_id == undefined || flag === undefined) continue;
+  const handleTagLikeDatas = async (tagLikeTagIds) => {
+    // tag_id 를 갖는 배열이여야함
+    for (let i = 0; i < tagLikeTagIds.length; i++) {
+      const tag_id = tagLikeTagIds[i];
+      if (tag_id == undefined) continue;
       const tagLike = tagLikeList.find((v) => v.tag_id == tag_id);
       // tag_id가 없다면 insert
       if (tagLike == undefined) {
-        let { error } = await tagLikeApi.insertTagLike(user.id, tag_id, flag);
-        if (error) {
-          toast("태그 정보 insert 에러");
-          break;
-        } else addTagLike(tag_id, flag);
+        const flag = await addTagLike(user.id, tag_id);
+        // insert했는데 에러가 났으면 종료
+        if (flag == false) break;
       }
-      // flag가 같다면 아무것도 하지 않는다.
-      else if (tagLike.flag == flag) continue;
-      // flag가 다르다면 update
-      else {
-        let { error } = await tagLikeApi.updateTagLike(user.id, tag_id, flag);
-        if (error) {
-          toast("태그 정보 update 에러");
-          break;
-        } else updateTagLike(tag_id, flag);
+    }
+  };
+  const handleTagDislikeDatas = async (tagDislikeTagIds) => {
+    // tag_id 를 갖는 배열이여야함
+    for (let i = 0; i < tagDislikeTagIds.length; i++) {
+      const tag_id = tagDislikeTagIds[i];
+      if (tag_id == undefined) continue;
+      const tagDislike = tagDislikeList.find((v) => v.tag_id == tag_id);
+      // tag_id가 없다면 insert
+      if (tagDislike == undefined) {
+        const flag = await addTagDislike(user.id, tag_id);
+        // insert했는데 에러가 났으면 종료
+        if (flag == false) break;
       }
     }
   };

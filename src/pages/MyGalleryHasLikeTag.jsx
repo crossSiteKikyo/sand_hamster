@@ -46,7 +46,6 @@ export default function MyGalleryHasLikeTag() {
       <ModalTagLike
         isOpen={isTagModalOpen}
         onClose={() => setIsTagModalOpen(false)}
-        getGalleryList={getGalleryList}
         tag={selectedTag}
         _type={selectedType}
       />
@@ -56,7 +55,6 @@ export default function MyGalleryHasLikeTag() {
           setSelectedTag={setSelectedTag}
           setIsTagModalOpen={setIsTagModalOpen}
           setSelectedType={setSelectedType}
-          getGalleryList={getGalleryList}
         />
       </div>
       <div className="flex justify-center pt-5">

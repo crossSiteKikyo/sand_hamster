@@ -3,18 +3,40 @@ import { useEffect, useState } from "react";
 import useTagStore from "../store/useTagStore";
 import { Search, X } from "lucide-react";
 import SearchRecommendList from "./SearchRecommendList";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import {
+  createSearchParams,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 export default function ModalSearch({ isOpen, onClose }) {
+  // 검색 선택 url에 따라 자동반영하는데 사용하는 변수들
+  const { tagMap } = useTagStore();
+  const [searchParams] = useSearchParams();
+  const title = searchParams.get("title") || "";
+  const galleryId = searchParams.get("galleryId") || "";
+  const tagIds = searchParams.getAll("tag") || [];
+  const { pathname } = useLocation(); // 현재 경로를 가져옵니다.
+
   const navigate = useNavigate();
   const [tagSearch, setTagSearch] = useState("");
   const [titleSearch, setTitleSearch] = useState("");
   const [galleryIdSearch, setGalleryIdSearch] = useState("");
   const [isTagSearchFocused, setIsTagSearchFocused] = useState(false);
-  const [filteredTags, setFilteredTags] = useState([]);
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [filteredTags, setFilteredTags] = useState([]); // 추천 태그들
+  const [selectedTags, setSelectedTags] = useState([]); // 검색에 사용되는 태그들
   const { tagList } = useTagStore();
+  // 검색으로 url이 바뀌는게 아닌, 다른 방법으로 바뀌더라도, id검색 제목검색 태그검색 리스트들을 반영한다.
+  useEffect(() => {
+    if (pathname == "/list") {
+      setGalleryIdSearch(galleryId);
+      setTitleSearch(title);
+      setSelectedTags(tagIds.map((tag_id) => tagMap.get(Number(tag_id))));
+    }
+  }, [title, galleryId, tagIds.toString()]);
   const tagFilter = () => {
+    // 빈칸이면 아무것도 보여주지 않음.
     if (!tagSearch.trim()) {
       setFilteredTags([]);
       return;
@@ -22,20 +44,23 @@ export default function ModalSearch({ isOpen, onClose }) {
     // 태그 결과를 필터링한다.
     setFilteredTags(
       tagList
-        .filter((v) => v.name.includes(tagSearch))
+        .filter((v) => v.name.includes(tagSearch.trim()))
         .filter((t) => !selectedTags.map((v) => v.tag_id).includes(t.tag_id))
         .slice(0, 50),
     );
   };
+  // 태그창에 입력하는 값이 달라지면 추천 태그들 리스트가 달라진다.
   useEffect(() => {
     tagFilter();
   }, [tagSearch]);
+  // id로 검색
   const handleIdSearch = (e) => {
     e.preventDefault();
     navigate(`/list?galleryId=${galleryIdSearch}`);
     // setSearchParams({ galleryId: galleryIdSearch });
     onClose();
   };
+  // 제목과 태그로 검색
   const handleTitleTagSearch = (e) => {
     e.preventDefault();
     // 1. 쿼리 파라미터 객체 생성

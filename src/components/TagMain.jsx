@@ -14,13 +14,9 @@ export default function TagMain({
 }) {
   const navigate = useNavigate();
   const { user } = useUserStore();
-  const { tagLikeList } = useTagLikeStore();
-  const likeTagIds = tagLikeList.map((t) => {
-    if (t.flag) return t.tag_id;
-  });
-  const dislikeTagIds = tagLikeList.map((t) => {
-    if (!t.flag) return t.tag_id;
-  });
+  const { tagLikeList, tagDislikeList } = useTagLikeStore();
+  const likeTagIds = tagLikeList.map((t) => t.tag_id);
+  const dislikeTagIds = tagDislikeList.map((t) => t.tag_id);
   const tagSearch = () => {
     navigate({
       pathname: "/list",
@@ -35,7 +31,8 @@ export default function TagMain({
     } else {
       setSelectedTag(tag);
       setIsTagModalOpen(true);
-      selectTypeCallback();
+      // 메인 태그면, 해당 갤러리 타입에 맞춰 배경색을 정한다.
+      if (selectTypeCallback) selectTypeCallback();
     }
   });
   let name = tag.name;

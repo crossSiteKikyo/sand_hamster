@@ -56,7 +56,6 @@ export default function ListPage({}) {
       <ModalTagLike
         isOpen={isTagModalOpen}
         onClose={() => setIsTagModalOpen(false)}
-        getGalleryList={getGalleryList}
         tag={selectedTag}
         _type={selectedType}
       />
@@ -85,7 +84,6 @@ export default function ListPage({}) {
           setSelectedTag={setSelectedTag}
           setIsTagModalOpen={setIsTagModalOpen}
           setSelectedType={setSelectedType}
-          getGalleryList={getGalleryList}
         />
       </div>
       <div className="flex justify-center pt-5">

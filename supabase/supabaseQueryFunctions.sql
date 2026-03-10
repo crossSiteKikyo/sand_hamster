@@ -88,14 +88,25 @@ returns table (
 language plpgsql
 as $$
 #variable_conflict use_column
+declare 
+  v_liked_tags bigint[];
 begin
+  -- 좋아요 태그 id들 배열에 담기
+  v_liked_tags := array(
+    select tag_id from user_tag_like where user_id = auth.uid()
+  );
+  
+  -- 좋아하는 태그가 하나도 없으면 바로 빈 결과 반환
+  if array_length(v_liked_tags, 1) is null then
+    return;
+  end if;
+
   return query
     with target_ids as (
       select gt.g_id
       from gallery_tag gt
-      inner join user_tag_like utl on gt.tag_id = utl.tag_id
-      where utl.user_id = auth.uid()
-        and utl.flag = true
+      where 
+        gt.tag_id = any(v_liked_tags)
         and (
           case 
             when p_direction = 'next' then (p_cursor_id is null or gt.g_id < p_cursor_id)
@@ -129,12 +140,11 @@ returns table (
 language plpgsql
 as $$
 #variable_conflict use_column
+declare
+  v_disliked_tags bigint[]; -- 싫어하는 태그를 담을 배열 변수
 begin
   -- [분기] 로그인 여부에 따라 로직을 완전히 분리 (PostgreSQL 실행 계획 최적화)
   if auth.uid() is null then
-    ---------------------------------------------------------
-    -- 1. 익명 사용자용 (차단 필터 없음)
-    ---------------------------------------------------------
     return query
       select g.g_id, g.view_count, ver
       from gallery g
@@ -174,6 +184,9 @@ begin
     ---------------------------------------------------------
     -- 2. 로그인 사용자용 (싫어하는 갤러리/태그 제외)
     ---------------------------------------------------------
+    v_disliked_tags := array(
+      select tag_id from user_tag_dislike where user_id = auth.uid()
+    );
     return query
       select g.g_id, g.view_count, ver
       from gallery g
@@ -191,9 +204,9 @@ begin
         )
         -- [유저 제외 필터]
         and not exists (
-          select 1 from gallery_tag gt_exc
-          join user_tag_like utl on gt_exc.tag_id = utl.tag_id
-          where gt_exc.g_id = g.g_id and utl.user_id = auth.uid() and utl.flag = false
+          select 1 from gallery_tag gt2
+          where gt2.g_id = g.g_id 
+            and gt2.tag_id = any(v_disliked_tags)
         )
         and (
           search_tags is null or 

@@ -4,8 +4,9 @@ import authApi from "../api/authApi";
 
 const useUserStore = create((set) => ({
   user: null,
-  tag_like_limit: 0,
   gallery_like_limit: 0,
+  tag_like_limit: 0,
+  tag_dislike_limit: 0,
   deleteUser: () => set({ user: null }),
   getUser: async () => {
     const {
@@ -18,8 +19,9 @@ const useUserStore = create((set) => ({
       if (error) toast("유저 프로필 정보 가져오기 에러");
       if (data) {
         set({
-          tag_like_limit: data[0].tag_like_limit,
           gallery_like_limit: data[0].gallery_like_limit,
+          tag_like_limit: data[0].tag_like_limit,
+          tag_dislike_limit: data[0].tag_dislike_limit,
         });
       }
       return user.id;

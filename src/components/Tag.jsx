@@ -5,16 +5,12 @@ import { createSearchParams, useNavigate } from "react-router-dom";
 import useTagLikeStore from "../store/useTagLikeStore";
 import useUserStore from "../store/useUserStore";
 
-export default function Tag({ tag, type, setSelectedTag, setIsTagModalOpen }) {
+export default function Tag({ tag, setSelectedTag, setIsTagModalOpen }) {
   const navigate = useNavigate();
   const { user } = useUserStore();
-  const { tagLikeList } = useTagLikeStore();
-  const likeTagIds = tagLikeList.map((t) => {
-    if (t.flag) return t.tag_id;
-  });
-  const dislikeTagIds = tagLikeList.map((t) => {
-    if (!t.flag) return t.tag_id;
-  });
+  const { tagLikeList, tagDislikeList } = useTagLikeStore();
+  const likeTagIds = tagLikeList.map((t) => t.tag_id);
+  const dislikeTagIds = tagDislikeList.map((t) => t.tag_id);
   const tagSearch = () => {
     navigate({
       pathname: "/list",
@@ -36,11 +32,14 @@ export default function Tag({ tag, type, setSelectedTag, setIsTagModalOpen }) {
     female: "bg-pink-300 dark:bg-pink-600",
     other: "bg-gray-300 dark:bg-gray-700",
   };
+  let type = "other";
   let name = tag.name;
-  if (type == "male") {
+  if (tag.name.startsWith("male")) {
     name = name.replace("male:", "");
-  } else if (type == "female") {
+    type = "male";
+  } else if (tag.name.startsWith("female")) {
     name = name.replace("female:", "");
+    type = "female";
   }
   return (
     <button

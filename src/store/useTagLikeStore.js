@@ -4,16 +4,17 @@ import tagLikeApi from "../api/tagLikeApi";
 
 const useTagLikeStore = create((set, get) => ({
   tagLikeList: [],
-  getTagLikeList: async (userId) => {
+  tagDislikeList: [],
+  getTagLikeList: async (user_id) => {
     // 로그인 안한 사람은 태그가 좋아요 리스트가 없음
-    if (userId == undefined) {
+    if (user_id == undefined) {
       set({ tagLikeList: [] });
       return;
     }
-    let { data, error } = await tagLikeApi.getTagLikeList(userId);
+    let { data, error } = await tagLikeApi.getTagLikeList(user_id);
     if (error) {
-      console.error("태그 좋아요/싫어요 정보 가져오기 에러: ", error);
-      toast(`태그 좋아요/싫어요 정보 가져오기 에러`);
+      console.error("태그 좋아요 정보 가져오기 에러: ", error);
+      toast(`태그 좋아요 정보 가져오기 에러`);
     } else {
       // 최신 날짜 순으로 정렬
       set({
@@ -21,31 +22,75 @@ const useTagLikeStore = create((set, get) => ({
           (a, b) => new Date(b.date) - new Date(a.date),
         ),
       });
+    }
+  },
+  getTagDislikeList: async (user_id) => {
+    // 로그인 안한 사람은 태그가 싫어요 리스트가 없음
+    if (user_id == undefined) {
+      set({ tagDislikeList: [] });
+      return;
+    }
+    let { data, error } = await tagLikeApi.getTagDislikeList(user_id);
+    if (error) {
+      console.error("태그 싫어요 정보 가져오기 에러: ", error);
+      toast(`태그 싫어요 정보 가져오기 에러`);
+    } else {
+      // 최신 날짜 순으로 정렬
+      set({
+        tagDislikeList: data.toSorted(
+          (a, b) => new Date(b.date) - new Date(a.date),
+        ),
+      });
       console.log(data);
     }
   },
-  addTagLike: (tag_id, flag) => {
+  addTagLike: async (user_id, tag_id) => {
+    const { error } = await tagLikeApi.insertTagLike(user_id, tag_id);
+    if (error) {
+      toast("태그 좋아요 정보 insert 에러");
+      return false;
+    }
     let newTagLikeList = [...get().tagLikeList];
-    newTagLikeList.push({ tag_id, flag, date: Date.now() });
+    newTagLikeList.push({ tag_id, created_at: Date.now() });
     set({
       tagLikeList: newTagLikeList.toSorted(
         (a, b) => new Date(b.date) - new Date(a.date),
       ),
     });
+    return true;
   },
-  updateTagLike: (tag_id, flag) => {
-    let newTagLikeList = [...get().tagLikeList];
-    for (let i = 0; i < newTagLikeList.length; i++) {
-      if (newTagLikeList[i].tag_id == tag_id) {
-        newTagLikeList[i].flag = flag;
-        newTagLikeList[i].date = Date.now();
-        break;
-      }
+  addTagDislike: async (user_id, tag_id) => {
+    const { error } = await tagLikeApi.insertTagDislike(user_id, tag_id);
+    if (error) {
+      toast("태그 싫어요 정보 insert 에러");
+      return false;
     }
-    set({ tagLikeList: newTagLikeList });
+    let newTagDislikeList = [...get().tagDislikeList];
+    newTagDislikeList.push({ tag_id, created_at: Date.now() });
+    set({
+      tagDislikeList: newTagDislikeList.toSorted(
+        (a, b) => new Date(b.date) - new Date(a.date),
+      ),
+    });
+    return true;
   },
-  deleteTagLike: (tag_id) => {
+  deleteTagLike: async (user_id, tag_id) => {
+    const { error } = await tagLikeApi.deleteTagLike(user_id, tag_id);
+    if (error) {
+      toast("태그 좋아요 정보 delete 에러");
+      return;
+    }
     set({ tagLikeList: get().tagLikeList.filter((v) => v.tag_id != tag_id) });
+  },
+  deleteTagDislike: async (user_id, tag_id) => {
+    const { error } = await tagLikeApi.deleteTagLike(user_id, tag_id);
+    if (error) {
+      toast("태그 싫어요 정보 delete 에러");
+      return;
+    }
+    set({
+      tagDislikeList: get().tagDislikeList.filter((v) => v.tag_id != tag_id),
+    });
   },
 }));
 

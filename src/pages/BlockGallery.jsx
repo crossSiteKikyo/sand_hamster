@@ -78,7 +78,6 @@ export default function BlockGallery() {
         onClose={() => setIsTagModalOpen(false)}
         tag={selectedTag}
         _type={selectedType}
-        // 재로딩은 이 컴포넌트에서 하기 때문에 getGalleryList를 넘기면 안됨.
       />
       <div className="mb-1 flex flex-wrap gap-1 border-b pb-1">
         싫어요 갤러리는 계정이 아니라 브라우저에 저장됩니다. 브라우저마다
@@ -117,7 +116,6 @@ export default function BlockGallery() {
           setSelectedTag={setSelectedTag}
           setIsTagModalOpen={setIsTagModalOpen}
           setSelectedType={setSelectedType}
-          // 재로딩은 이 컴포넌트에서 하기 때문에 getGalleryList를 넘기면 안됨.
         />
       </div>
       <div className="flex justify-center pt-5">

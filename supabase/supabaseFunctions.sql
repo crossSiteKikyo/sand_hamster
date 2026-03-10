@@ -123,19 +123,19 @@ BEGIN
   -- 3. 태그 좋아요 순 (user_tag_like 발생일 기준)
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'tag_like', 'daily', array(
-    SELECT tag_id FROM public.user_tag_like WHERE flag = true AND date >= now() - INTERVAL '1 day' GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 20
+    SELECT tag_id FROM public.user_tag_like WHERE created_at >= now() - INTERVAL '1 day' GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 20
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'tag_like', 'weekly', array(
-    SELECT tag_id FROM public.user_tag_like WHERE flag = true AND date >= now() - INTERVAL '7 days' GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 40
+    SELECT tag_id FROM public.user_tag_like WHERE created_at >= now() - INTERVAL '7 days' GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 40
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'tag_like', 'monthly', array(
-    SELECT tag_id FROM public.user_tag_like WHERE flag = true AND date >= now() - INTERVAL '30 days' GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 60
+    SELECT tag_id FROM public.user_tag_like WHERE created_at >= now() - INTERVAL '30 days' GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 60
   );
   INSERT INTO public.ranking (rank_type, period, ids)
   SELECT 'tag_like', 'all_time', array(
-    SELECT tag_id FROM public.user_tag_like WHERE flag = true GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 100
+    SELECT tag_id FROM public.user_tag_like GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 100
   );
 END;
 $$ LANGUAGE plpgsql;

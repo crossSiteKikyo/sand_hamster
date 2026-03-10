@@ -3,12 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import ModalTagLike from "./ModalTagLike";
 import Pagination from "./Pagination";
 import TagList from "./TagList";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
 import useTagInfoStore from "../store/useTagInfoStore";
 import useTagLikeStore from "../store/useTagLikeStore";
 import useTagStore from "../store/useTagStore";
 
-// 좋아요/싫어요 한 태그들을 보여준다.
+// 좋아요 한 태그들을 보여준다.
 export default function MyTag() {
   const navigate = useNavigate();
   const { tagLikeList } = useTagLikeStore();
@@ -17,8 +16,7 @@ export default function MyTag() {
   const [maxPage, setMaxPage] = useState(1);
   const [searchParams] = useSearchParams();
   const page = searchParams.get("page") || 1;
-  const order = searchParams.get("order") || "date";
-  const flag = searchParams.get("flag") == "false" ? false : true;
+  const order = searchParams.get("order") || "created_at";
   const [isLoading, setIsLoading] = useState(true);
   // 태그 모달창을 위한 변수들
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
@@ -28,13 +26,6 @@ export default function MyTag() {
     like_count: 0,
     dislike_count: 0,
   });
-  const selectedType = {
-    type_id: 1,
-    name: "doujinshi",
-    title_bg_color: "CC9999",
-    sub_bg_color: "FFCCCC",
-    sub_text_color: "663333",
-  };
   async function getTagList(selectedUTL) {
     setIsLoading(true);
     document.getElementById("content-scroll").scrollTo({
@@ -51,54 +42,33 @@ export default function MyTag() {
     newParams.set("order", order);
     navigate(`${pathname}?${newParams.toString()}`);
   };
-  const flagChange = (flag) => {
-    // 현재 url에서 path를 추출한다.
-    const pathname = window.location.pathname;
-    // 새로운 객체 생성
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("page", 1);
-    newParams.set("flag", flag);
-    navigate(`${pathname}?${newParams.toString()}`);
-  };
   useEffect(() => {
     //tagLikeList를 정렬하면 된다.
-    let selectedUTL = tagLikeList.filter((v) => v.flag == flag);
     if (order == "dict")
-      selectedUTL.sort((a, b) =>
+      tagLikeList.sort((a, b) =>
         tagMap.get(a.tag_id).name.localeCompare(tagMap.get(b.tag_id).name),
       );
-    const maxPage = Math.ceil(selectedUTL.length / 20);
+    else
+      tagLikeList.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at),
+      );
+    const maxPage = Math.ceil(tagLikeList.length / 20);
     setMaxPage(maxPage > 0 ? maxPage : 1);
-    console.log(selectedUTL.slice(20 * (page - 1), 20 * page));
-    getTagList(selectedUTL.slice(20 * (page - 1), 20 * page));
-  }, [page, order, flag, tagLikeList]);
+    console.log(tagLikeList.slice(20 * (page - 1), 20 * page));
+    getTagList(tagLikeList.slice(20 * (page - 1), 20 * page));
+  }, [page, order, tagLikeList]);
   return (
     <div className="flex grow flex-col bg-white p-1 dark:bg-black">
       <ModalTagLike
         isOpen={isTagModalOpen}
         onClose={() => setIsTagModalOpen(false)}
         tag={selectedTag}
-        _type={selectedType}
-        // 재로딩은 이 컴포넌트에서 하기 때문에 getGalleryList를 넘기면 안됨.
+        _type={{ name: "doujinshi" }}
       />
       <div className="mb-2 flex justify-end gap-2">
         <button
-          className={`flex gap-1 rounded-xl border border-pink-500 p-2 ${flag ? "bg-pink-300 dark:bg-pink-700" : "cursor-pointer"}`}
-          onClick={() => flagChange(true)}
-        >
-          좋아요 <ThumbsUp className="w-5" />
-        </button>
-        <button
-          className={`flex gap-1 rounded-xl border border-gray-500 p-2 ${!flag ? "bg-gray-200 dark:bg-gray-700" : "cursor-pointer"}`}
-          onClick={() => flagChange(false)}
-        >
-          싫어요 <ThumbsDown className="w-5" />
-        </button>
-      </div>
-      <div className="mb-2 flex justify-end gap-2">
-        <button
-          className={`flex gap-1 rounded-xl border border-gray-500 p-2 ${order == "date" ? "bg-gray-200 dark:bg-gray-700" : "cursor-pointer"}`}
-          onClick={() => changeOrder("date")}
+          className={`flex gap-1 rounded-xl border border-gray-500 p-2 ${order == "created_at" ? "bg-gray-200 dark:bg-gray-700" : "cursor-pointer"}`}
+          onClick={() => changeOrder("created_at")}
         >
           날짜순
         </button>
