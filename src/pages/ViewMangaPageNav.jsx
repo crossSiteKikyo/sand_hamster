@@ -145,13 +145,13 @@ export default function ViewMangaPageNav({
                     onClick={nextTouchDirection}
                   >
                     {touchDirection == "leftToRight" && (
-                      <MoveRight className="h-6 w-6" />
+                      <MoveRight className="h-7 w-7" />
                     )}
                     {touchDirection == "rightToLeft" && (
-                      <MoveLeft className="h-6 w-6" />
+                      <MoveLeft className="h-7 w-7" />
                     )}
                     {touchDirection == "topToBottom" && (
-                      <MoveDown className="h-6 w-6" />
+                      <MoveDown className="h-7 w-7" />
                     )}
                   </button>
                   {isTwoView ? (
@@ -159,14 +159,14 @@ export default function ViewMangaPageNav({
                       className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
                       onClick={() => setIsTwoView(false)}
                     >
-                      <PiNumberTwoBold className="h-6 w-6" />
+                      <PiNumberTwoBold className="h-7 w-7" />
                     </button>
                   ) : (
                     <button
                       className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
                       onClick={() => setIsTwoView(true)}
                     >
-                      <PiNumberOneBold className="h-6 w-6" />
+                      <PiNumberOneBold className="h-7 w-7" />
                     </button>
                   )}
                 </div>
@@ -175,14 +175,14 @@ export default function ViewMangaPageNav({
                     className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
                     onClick={stopAutoSlide}
                   >
-                    <Square className="h-6 w-6" />
+                    <Square className="h-7 w-7" />
                   </button>
                 ) : (
                   <button
                     className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
                     onClick={() => setIsOpen(true)}
                   >
-                    <Play className="h-6 w-6" />
+                    <Play className="h-7 w-7" />
                   </button>
                 )}
                 <div className="flex gap-2">
@@ -190,13 +190,13 @@ export default function ViewMangaPageNav({
                     className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
                     onClick={toggleFullscreen}
                   >
-                    <Fullscreen className="w-6 shrink-0" />
+                    <Fullscreen className="h-7 w-7 shrink-0" />
                   </div>
                   <div
                     className="rounded-sm bg-black p-1 text-white dark:bg-white dark:text-black"
                     onClick={() => navigate(-1)}
                   >
-                    <X className="w-6 shrink-0" />
+                    <X className="h-7 w-7 shrink-0" />
                   </div>
                 </div>
               </div>
