@@ -44,11 +44,11 @@ A. 히토미가 정상적으로 로딩이 되었을 때, sand_hamster도 작동�
 
 pc 이용화면
 
-![pc이용화면](https://github.com/user-attachments/assets/9076ca74-a4db-4cf6-a0b6-48625b87eb20)
+![pc이용화면](https://github.com/user-attachments/assets/4ca42514-96fa-449a-948a-2f4a82752e2f)
 
 android 휴대폰 이용화면
 
-![android이용화면](https://github.com/user-attachments/assets/c21e1f5a-42c5-4f83-8db5-56786ac8345f)
+![android이용화면](https://github.com/user-attachments/assets/482c1def-7d90-4d18-aeb0-f04ab23b806d)
 
 ### 문의 및 버그 제보 등
 
