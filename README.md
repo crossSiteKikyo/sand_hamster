@@ -1,5 +1,9 @@
 # <img src="https://raw.githubusercontent.com/crossSiteKikyo/sand_hamster/refs/heads/main/public/sand_hamster_logo.jpg" width="50" height="50"/> sand_hamster
 
+## 서비스 종료
+
+이용자가 없어, 2026년 03월 20일에 서비스 종료합니다
+
 ## 설치하기
 
 ### 1. firefox 웹 브라우저 설치
